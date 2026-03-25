@@ -2,6 +2,8 @@
 
 Starter ML repo for working with CRCNS HC-6 data already extracted on Eureka HPC.
 
+Project narrative and ongoing status live in [PROJECT_NARRATIVE.md](/Users/rayyanshan/IdeaProjects/Finley/PROJECT_NARRATIVE.md).
+
 ## What this gives you
 
 - A clean Python package under `src/finley`
@@ -85,6 +87,12 @@ Build a run-only modeling table across all discovered sessions:
 PYTHONPATH=src python scripts/build_model_table.py --config configs/hc6.local.json --animal Bon
 ```
 
+Train the first run-cell baseline with held-out-session evaluation:
+
+```bash
+PYTHONPATH=src python scripts/train_run_cell_baseline.py --input data/processed/bon_run_cell_model_table.csv
+```
+
 ## Project layout
 
 ```text
@@ -105,4 +113,5 @@ tests/                 unit tests
 - `scripts/export_session_tables.py` writes an epoch table and a cell-level spike table for one session.
 - `scripts/export_session_tables.py --all-sessions` writes combined tables across all discovered sessions for one animal.
 - `scripts/build_model_table.py` builds a run-only cell-level modeling table across all discovered sessions.
+- `scripts/train_run_cell_baseline.py` trains a simple held-out-session regression baseline on the run-cell model table.
 - Reading `.mat` files requires `scipy`, which is not vendored into this repo.
