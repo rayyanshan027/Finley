@@ -370,3 +370,50 @@ def build_cell_rows_from_loaded(loaded: dict[str, dict], animal: str, session: i
                     }
                 )
     return rows
+
+
+def build_run_cell_model_rows(epoch_rows: list[dict[str, Any]], cell_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    epoch_lookup = {
+        (int(row["session"]), int(row["epoch"])): row
+        for row in epoch_rows
+        if str(row.get("task_type", "")).lower() == "run"
+    }
+
+    rows: list[dict[str, Any]] = []
+    for row in cell_rows:
+        if str(row.get("task_type", "")).lower() != "run":
+            continue
+        key = (int(row["session"]), int(row["epoch"]))
+        epoch = epoch_lookup.get(key)
+        if epoch is None:
+            continue
+
+        rows.append(
+            {
+                "animal": row["animal"],
+                "session": int(row["session"]),
+                "epoch": int(row["epoch"]),
+                "task_environment": row["task_environment"],
+                "task_exposure": epoch["task_exposure"],
+                "task_experimentday": epoch["task_experimentday"],
+                "pos_rows": int(epoch["pos_rows"]),
+                "rawpos_rows": int(epoch["rawpos_rows"]),
+                "spike_tetrode_count": int(epoch["spike_tetrode_count"]),
+                "spike_cell_count": int(epoch["spike_cell_count"]),
+                "spike_event_rows_epoch": int(epoch["spike_event_rows"]),
+                "tetrode": int(row["tetrode"]),
+                "cell": int(row["cell"]),
+                "depth": row["depth"],
+                "spikewidth": row["spikewidth"],
+                "num_spikes": int(row["num_spikes"]),
+                "log_num_spikes": None,
+            }
+        )
+
+    for row in rows:
+        # log1p target is often a more stable first regression target than raw spike counts.
+        import math
+
+        row["log_num_spikes"] = math.log1p(row["num_spikes"])
+
+    return rows

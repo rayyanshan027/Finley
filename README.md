@@ -79,6 +79,12 @@ Export flattened CSV tables across all discovered sessions for one animal:
 PYTHONPATH=src python scripts/export_session_tables.py --config configs/hc6.local.json --animal Bon --all-sessions
 ```
 
+Build a run-only modeling table across all discovered sessions:
+
+```bash
+PYTHONPATH=src python scripts/build_model_table.py --config configs/hc6.local.json --animal Bon
+```
+
 ## Project layout
 
 ```text
@@ -98,4 +104,5 @@ tests/                 unit tests
 - `scripts/summarize_session.py` unwraps the HC-6 nesting and reports epoch-level task and spike counts.
 - `scripts/export_session_tables.py` writes an epoch table and a cell-level spike table for one session.
 - `scripts/export_session_tables.py --all-sessions` writes combined tables across all discovered sessions for one animal.
+- `scripts/build_model_table.py` builds a run-only cell-level modeling table across all discovered sessions.
 - Reading `.mat` files requires `scipy`, which is not vendored into this repo.
