@@ -150,7 +150,13 @@ PYTHONPATH=src python scripts/run_session_adaptation_experiment.py \
   --feature-groups movement_summaries population_context cell_metadata
 ```
 
-The adaptation script now evaluates both the current adaptive baseline and a session-unit-identity variant by default. To restrict it to one variant:
+The adaptation script now evaluates three adaptive variants by default:
+
+- `baseline`: the shared nonlinear model only
+- `session_unit_identity`: the shared nonlinear model plus sparse one-hot within-session unit features
+- `baseline_plus_unit_residual`: the shared nonlinear model plus shrunken per-unit residual correction learned from the adapted epochs
+
+To restrict it to one variant:
 
 ```bash
 PYTHONPATH=src python scripts/run_session_adaptation_experiment.py \
@@ -183,8 +189,10 @@ Current recommended setting:
 
 Current session-adaptive result:
 
-- adding 1 labeled epoch from the held-out session materially improves sessions `6`, `7`, and `9`
-- adding 2 labeled epochs improves them further, indicating the remaining gap is substantially session-specific
+- best adaptive variant: nonlinear baseline plus shrunken per-unit residual correction
+- adding `1` labeled epoch from the held-out session materially improves sessions `6`, `7`, and `9`
+- adding `2` labeled epochs improves them further, indicating the remaining gap is substantially session-specific and largely calibratable at the unit level
+- explicit one-hot within-session identity features were worse than the adaptive baseline despite high unit overlap across epochs
 
 Simple linear reference:
 
@@ -218,7 +226,8 @@ tests/                 unit tests
 - `scripts/inspect_hard_sessions.py` compares hard and easy sessions using quantiles and writes top outlier cell/epoch rows for targeted inspection.
 - `scripts/inspect_hard_session_residuals.py` inspects held-out-session residuals so repeated hard-case cells can be identified directly.
 - `scripts/inspect_hard_session_residuals_nonlinear.py` inspects held-out-session residuals for the nonlinear benchmark candidate.
-- `scripts/run_session_adaptation_experiment.py` measures how much one or two labeled epochs from a held-out session reduce error.
+- `scripts/run_session_adaptation_experiment.py` measures how much one or two labeled epochs from a held-out session reduce error, reports unit-overlap diagnostics, and compares adaptive variants including per-unit residual correction.
 - Duration-dependent targets such as `firing_rate_hz` and `log_firing_rate_hz` may be missing for some exported rows; the trainer filters those rows before fitting and reports the kept counts in its metrics output.
-- Current project benchmark candidate: nonlinear LOSO with `movement_summaries`, `population_context`, and `cell_metadata`, mean MAE `0.4265`, mean RMSE `0.5764`.
+- Current strict LOSO benchmark: nonlinear model with `movement_summaries`, `population_context`, and `cell_metadata`, mean MAE `0.4265`, mean RMSE `0.5764`.
+- Current adaptive benchmark: the same nonlinear model plus shrunken per-unit residual correction, which improves the hard sessions substantially once `1-2` labeled epochs are available.
 - Reading `.mat` files requires `scipy`, which is not vendored into this repo.

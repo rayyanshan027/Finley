@@ -181,14 +181,36 @@ Session-adaptive identity-feature follow-up:
   - session `9`: MAE `0.3503` -> `0.3720`, RMSE `0.6587` -> `0.7275`
 - interpretation: sparse one-hot unit identity is too high-variance for the amount of within-session supervision available in the `1-2` epoch adaptation setting
 
+Session-adaptive residual-correction follow-up:
+
+- unit overlap between adaptation and evaluation epochs is very high on the hard sessions:
+  - session `6`: evaluation rows on seen units `89.8%` with `1` adapted epoch, `98.3%` with `2`
+  - session `7`: evaluation rows on seen units `90.7%` with `1` adapted epoch, `90.2%` with `2`
+  - session `9`: evaluation rows on seen units `92.2%` with `1` adapted epoch, `100.0%` with `2`
+- this means the failure of one-hot identity was not caused by missing unit overlap; the overlap is present, but the mechanism was too high-variance
+- a lower-variance adaptive mechanism works substantially better: fit the shared nonlinear model first, then add a shrunken per-unit residual correction learned from the adapted epochs
+- with `1` adapted epoch, residual correction improves every hard session:
+  - session `6`: MAE `0.3978` -> `0.3521`, RMSE `0.5949` -> `0.5061`
+  - session `7`: MAE `0.3628` -> `0.3138`, RMSE `0.5535` -> `0.4703`
+  - session `9`: MAE `0.3859` -> `0.3376`, RMSE `0.6737` -> `0.5710`
+- with `2` adapted epochs, residual correction improves them further:
+  - session `6`: MAE `0.3566` -> `0.3179`, RMSE `0.6079` -> `0.4990`
+  - session `7`: MAE `0.3298` -> `0.2824`, RMSE `0.5360` -> `0.4442`
+  - session `9`: MAE `0.3503` -> `0.2983`, RMSE `0.6587` -> `0.5075`
+- averaged across sessions `6`, `7`, and `9`:
+  - `1` adapted epoch: mean MAE `0.3822` -> `0.3345`, mean RMSE `0.6074` -> `0.5158`
+  - `2` adapted epochs: mean MAE `0.3456` -> `0.2995`, mean RMSE `0.6009` -> `0.4836`
+- interpretation: the remaining adaptive error is largely a per-unit calibration problem, not a need to relearn the entire predictor
+
 ## Likely Next Steps
 
 - Treat the nonlinear model with `movement_summaries`, `population_context`, and `cell_metadata` as the current benchmark to beat
 - Use two benchmark modes going forward:
   - strict LOSO for unseen-session generalization
-  - session-adaptive evaluation for settings where one or two labeled epochs are available
-- Keep the current adaptive benchmark as the non-identity nonlinear model; explicit one-hot unit identity should not be the default adaptive path
-- Next best step: measure unit overlap between adaptation and evaluation epochs, then test a lower-variance within-session correction such as per-unit residual adjustment or shrinkage-style target encoding instead of sparse one-hot identity
+  - session-adaptive evaluation for settings where one or two labeled epochs are available, using per-unit residual correction on top of the nonlinear base model
+- Keep the strict LOSO benchmark unchanged; the adaptive benchmark should now be the nonlinear model plus shrunken per-unit residual correction
+- Explicit one-hot unit identity should not be the default adaptive path
+- Next best step: sweep the residual-correction shrinkage strength to confirm the best regularization level before treating the adaptive result as fully settled
 - Consider models that operate on actual spike-event rows or finer temporal bins if per-cell epoch aggregates are collapsing too much structure
 - Expand from `Bon` to additional animals once the single-animal workflow is stable
 
@@ -203,7 +225,7 @@ Feature-engineering lesson from the current phase:
 - explicit ablations and alpha sweeps were useful, but further hand-built linear features showed diminishing returns
 - simple target clipping did not address the main failure mode
 - moving from ridge to a stronger nonlinear baseline with population and cell context gave the first meaningful hard-session improvement
-- naive one-hot unit identity in the adaptive setting increased error, so the next phase should focus on lower-variance within-session corrections and unit-overlap diagnostics rather than more sparse identity features
+- naive one-hot unit identity in the adaptive setting increased error, but residual correction on top of the nonlinear base model worked strongly, so the next phase should focus on calibrated adaptive corrections rather than more sparse identity features
 
 ## Phase Boundary
 
@@ -212,7 +234,7 @@ This is a reasonable stopping point for the initial linear-baseline phase:
 - pipeline is end-to-end
 - exports are stable and fast enough to use on Eureka
 - the repo now has a reproducible benchmark
-- the project now has a better default target (`log_firing_rate_hz`), a simple ridge reference, a stronger nonlinear benchmark candidate, and a clear session-adaptive evaluation mode
+- the project now has a better default target (`log_firing_rate_hz`), a simple ridge reference, a strong strict-LOSO nonlinear benchmark, and a stronger session-adaptive benchmark based on per-unit residual correction
 - the remaining problem is now localized well enough to focus on repeated-cell failures and hard-session modeling rather than more pipeline scaffolding
 
 The next phase should focus on session adaptation, unit-aware residual diagnostics, and failure-mode-specific modeling changes, not more scaffolding.
