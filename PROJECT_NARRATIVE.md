@@ -45,6 +45,19 @@ The first baseline is a simple linear regression with:
 
 The trainer is intended as a smoke-tested baseline, not a final modeling approach.
 
+## Current Baseline Result
+
+Latest Bon run-cell baseline:
+
+- training rows: `1092`
+- test rows: `177`
+- held-out session: `10`
+- target: `log_num_spikes`
+- MAE: `1.6936`
+- RMSE: `2.1107`
+
+This is the current checkpoint metric to beat.
+
 ## Likely Next Steps
 
 - Add richer position-derived features from `pos.data`
@@ -52,6 +65,16 @@ The trainer is intended as a smoke-tested baseline, not a final modeling approac
 - Add track-specific analyses for `TrackA` vs `TrackB`
 - Consider models that operate on actual spike-event rows rather than cell aggregates
 - Expand from `Bon` to additional animals once the single-animal workflow is stable
+
+## Phase Boundary
+
+This is a reasonable stopping point for the initial baseline phase:
+
+- pipeline is end-to-end
+- exports are stable and fast enough to use on Eureka
+- the repo now has a reproducible benchmark
+
+The next phase should focus on feature engineering and better evaluation, not more project scaffolding.
 
 ## Update Rule
 
