@@ -69,7 +69,7 @@ class RunCellBaselineTests(unittest.TestCase):
         ]
         x, y = build_design_matrix(rows, target_column="log_num_spikes")
         self.assertEqual(len(x), 1)
-        self.assertEqual(len(x[0]), 31)
+        self.assertEqual(len(x[0]), 38)
         self.assertEqual(len(y), 1)
 
     def test_build_design_matrix_uses_selected_feature_groups(self) -> None:
@@ -279,10 +279,10 @@ class RunCellBaselineTests(unittest.TestCase):
         self.assertEqual(metrics.test_count, 1)
         self.assertEqual(metrics.dropped_train_count, 1)
         self.assertEqual(metrics.dropped_test_count, 0)
-        self.assertEqual(metrics.feature_count, 31)
+        self.assertEqual(metrics.feature_count, 38)
         self.assertEqual(
             metrics.feature_groups,
-            ["task_context", "movement_summaries", "population_context", "cell_metadata"],
+            ["task_context", "movement_summaries", "movement_nonlinear", "population_context", "cell_metadata"],
         )
 
     def test_resolve_feature_groups_rejects_unknown_group(self) -> None:
@@ -293,6 +293,7 @@ class RunCellBaselineTests(unittest.TestCase):
         self.assertEqual(get_feature_count(["task_context"]), 5)
         self.assertEqual(get_feature_count(["task_context", "cell_metadata"]), 8)
         self.assertEqual(get_feature_count(["movement_summaries"]), 20)
+        self.assertEqual(get_feature_count(["movement_nonlinear"]), 8)
 
     def test_run_feature_ablations_returns_standard_suite(self) -> None:
         rows = [
@@ -418,15 +419,16 @@ class RunCellBaselineTests(unittest.TestCase):
             },
         ]
         results = run_feature_ablations(rows, target_column="log_num_spikes", held_out_session=4)
-        self.assertEqual(len(results), 9)
+        self.assertEqual(len(results), 11)
         self.assertEqual(results[0].name, "all")
         self.assertEqual(results[1].name, "task_context")
         self.assertEqual(results[-1].name, "all_minus_cell_metadata")
 
     def test_get_default_alpha_sweep_specs_returns_shortlist(self) -> None:
         specs = get_default_alpha_sweep_specs()
-        self.assertEqual(len(specs), 5)
+        self.assertEqual(len(specs), 6)
         self.assertEqual(specs[0][0], "movement_summaries")
+        self.assertEqual(specs[1][0], "movement_summaries_movement_nonlinear")
 
     def test_list_sessions_returns_sorted_sessions(self) -> None:
         rows = [{"session": 10}, {"session": 3}, {"session": 4}, {"session": 3}]

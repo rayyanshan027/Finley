@@ -8,6 +8,7 @@ from pathlib import Path
 FEATURE_GROUP_ORDER = [
     "task_context",
     "movement_summaries",
+    "movement_nonlinear",
     "population_context",
     "cell_metadata",
 ]
@@ -34,6 +35,15 @@ FEATURE_GROUP_COLUMNS: dict[str, tuple[str, ...]] = {
         "step_length_max",
         "x_range",
         "y_range",
+    ),
+    "movement_nonlinear": (
+        "mean_speed_sq",
+        "std_speed_sq",
+        "speed_q50_sq",
+        "speed_q75_sq",
+        "mean_abs_accel_sq",
+        "mean_speed_x_std_speed",
+        "speed_q75_x_fast_fraction",
     ),
     "population_context": (
         "rawpos_rows",
@@ -207,6 +217,12 @@ def _feature_map(row: dict) -> dict[str, float]:
     track_b = 1.0 if environment == "TrackB" else 0.0
     other_epoch_spikes = max(int(row["spike_event_rows_epoch"]) - int(row["num_spikes"]), 0)
     other_epoch_cells = max(int(row["spike_cell_count"]) - 1, 0)
+    mean_speed = float(row["mean_speed"] or 0.0)
+    std_speed = float(row["std_speed"] or 0.0)
+    speed_q50 = float(row["speed_q50"] or 0.0)
+    speed_q75 = float(row["speed_q75"] or 0.0)
+    fast_fraction = float(row["fast_fraction"] or 0.0)
+    mean_abs_accel = float(row.get("mean_abs_accel") or 0.0)
 
     return {
         "track_a": track_a,
@@ -215,23 +231,30 @@ def _feature_map(row: dict) -> dict[str, float]:
         "task_experimentday": float(row["task_experimentday"] or 0.0),
         "pos_rows": float(row["pos_rows"]),
         "epoch_duration_sec": float(row["epoch_duration_sec"] or 0.0),
-        "mean_speed": float(row["mean_speed"] or 0.0),
-        "std_speed": float(row["std_speed"] or 0.0),
+        "mean_speed": mean_speed,
+        "std_speed": std_speed,
         "max_speed": float(row["max_speed"] or 0.0),
         "mean_accel": float(row.get("mean_accel") or 0.0),
         "std_accel": float(row.get("std_accel") or 0.0),
-        "mean_abs_accel": float(row.get("mean_abs_accel") or 0.0),
+        "mean_abs_accel": mean_abs_accel,
         "max_abs_accel": float(row.get("max_abs_accel") or 0.0),
         "speed_q25": float(row["speed_q25"] or 0.0),
-        "speed_q50": float(row["speed_q50"] or 0.0),
-        "speed_q75": float(row["speed_q75"] or 0.0),
+        "speed_q50": speed_q50,
+        "speed_q75": speed_q75,
         "moving_fraction": float(row["moving_fraction"] or 0.0),
-        "fast_fraction": float(row["fast_fraction"] or 0.0),
+        "fast_fraction": fast_fraction,
         "path_length": float(row["path_length"] or 0.0),
         "step_length_mean": float(row["step_length_mean"] or 0.0),
         "step_length_max": float(row["step_length_max"] or 0.0),
         "x_range": float(row["x_range"] or 0.0),
         "y_range": float(row["y_range"] or 0.0),
+        "mean_speed_sq": mean_speed * mean_speed,
+        "std_speed_sq": std_speed * std_speed,
+        "speed_q50_sq": speed_q50 * speed_q50,
+        "speed_q75_sq": speed_q75 * speed_q75,
+        "mean_abs_accel_sq": mean_abs_accel * mean_abs_accel,
+        "mean_speed_x_std_speed": mean_speed * std_speed,
+        "speed_q75_x_fast_fraction": speed_q75 * fast_fraction,
         "rawpos_rows": float(row["rawpos_rows"]),
         "spike_tetrode_count": float(row["spike_tetrode_count"]),
         "other_epoch_cells": float(other_epoch_cells),
@@ -460,14 +483,18 @@ def run_feature_ablations(
 def get_default_alpha_sweep_specs() -> list[tuple[str, list[str]]]:
     return [
         ("movement_summaries", ["movement_summaries"]),
+        (
+            "movement_summaries_movement_nonlinear",
+            ["movement_summaries", "movement_nonlinear"],
+        ),
         ("population_context", ["population_context"]),
         (
             "task_context_movement_summaries",
             ["task_context", "movement_summaries"],
         ),
         (
-            "task_context_movement_summaries_cell_metadata",
-            ["task_context", "movement_summaries", "cell_metadata"],
+            "task_context_movement_summaries_movement_nonlinear",
+            ["task_context", "movement_summaries", "movement_nonlinear"],
         ),
         (
             "task_context_population_context_cell_metadata",
