@@ -52,7 +52,9 @@ def load_model_table(path: str | Path) -> list[dict]:
             "mean_dir",
             "depth",
             "spikewidth",
+            "firing_rate_hz",
             "log_num_spikes",
+            "log_firing_rate_hz",
         }
         for row in reader:
             parsed = dict(row)

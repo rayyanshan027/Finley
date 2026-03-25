@@ -130,6 +130,7 @@ class SessionSummaryHelperTests(unittest.TestCase):
         self.assertEqual(rows[0]["task_exposure"], 1)
         self.assertEqual(rows[0]["num_spikes"], 11)
         self.assertEqual(rows[0]["mean_speed"], 1.5)
+        self.assertAlmostEqual(rows[0]["firing_rate_hz"], 1.1)
 
     def test_extract_pos_feature_map_from_mock_pos_struct(self) -> None:
         class PosStruct:

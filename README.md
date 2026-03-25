@@ -95,6 +95,12 @@ Train the first run-cell baseline with held-out-session evaluation:
 PYTHONPATH=src python scripts/train_run_cell_baseline.py --input data/processed/bon_run_cell_model_table.csv
 ```
 
+You can also evaluate duration-normalized targets:
+
+```bash
+PYTHONPATH=src python scripts/train_run_cell_baseline.py --input data/processed/bon_run_cell_model_table.csv --target log_firing_rate_hz
+```
+
 ## Project layout
 
 ```text

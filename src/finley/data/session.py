@@ -512,14 +512,17 @@ def build_run_cell_model_rows(epoch_rows: list[dict[str, Any]], cell_rows: list[
                 "depth": row["depth"],
                 "spikewidth": row["spikewidth"],
                 "num_spikes": int(row["num_spikes"]),
+                "firing_rate_hz": None,
                 "log_num_spikes": None,
+                "log_firing_rate_hz": None,
             }
         )
 
     for row in rows:
-        # log1p target is often a more stable first regression target than raw spike counts.
-        import math
-
+        duration = row["epoch_duration_sec"]
+        if duration is not None and duration > 0:
+            row["firing_rate_hz"] = row["num_spikes"] / duration
+            row["log_firing_rate_hz"] = math.log1p(row["firing_rate_hz"])
         row["log_num_spikes"] = math.log1p(row["num_spikes"])
 
     return rows
