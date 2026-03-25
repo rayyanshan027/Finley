@@ -103,6 +103,21 @@ class AlphaSweepResult:
     rmse: float
 
 
+@dataclass(frozen=True)
+class CrossSessionSummary:
+    target_column: str
+    feature_groups: list[str]
+    feature_count: int
+    ridge_alpha: float
+    session_count: int
+    mean_mae: float
+    mean_rmse: float
+
+
+def list_sessions(rows: list[dict]) -> list[int]:
+    return sorted({int(row["session"]) for row in rows})
+
+
 def load_model_table(path: str | Path) -> list[dict]:
     with Path(path).open("r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
@@ -500,3 +515,37 @@ def run_alpha_sweep(
                 )
             )
     return results
+
+
+def run_leave_one_session_out(
+    rows: list[dict],
+    target_column: str,
+    ridge_alpha: float = 1.0,
+    feature_groups: list[str] | None = None,
+) -> tuple[list[RegressionMetrics], CrossSessionSummary]:
+    sessions = list_sessions(rows)
+    if len(sessions) < 2:
+        raise ValueError("Leave-one-session-out evaluation requires at least two sessions.")
+    metrics_by_session: list[RegressionMetrics] = []
+    for held_out_session in sessions:
+        split = split_by_session(rows, held_out_session=held_out_session)
+        metrics_by_session.append(
+            compute_metrics(
+                split.train_rows,
+                split.test_rows,
+                held_out_session=split.held_out_session,
+                target_column=target_column,
+                ridge_alpha=ridge_alpha,
+                feature_groups=feature_groups,
+            )
+        )
+    summary = CrossSessionSummary(
+        target_column=target_column,
+        feature_groups=metrics_by_session[0].feature_groups,
+        feature_count=metrics_by_session[0].feature_count,
+        ridge_alpha=ridge_alpha,
+        session_count=len(metrics_by_session),
+        mean_mae=sum(metric.mae for metric in metrics_by_session) / len(metrics_by_session),
+        mean_rmse=sum(metric.rmse for metric in metrics_by_session) / len(metrics_by_session),
+    )
+    return metrics_by_session, summary

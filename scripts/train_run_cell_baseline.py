@@ -10,6 +10,7 @@ from finley.models.run_cell_baseline import (
     get_default_alpha_sweep_specs,
     get_available_feature_groups,
     load_model_table,
+    run_leave_one_session_out,
     run_alpha_sweep,
     run_feature_ablations,
     split_by_session,
@@ -63,6 +64,11 @@ def parse_args() -> argparse.Namespace:
         type=float,
         help="Run an alpha sweep for the default shortlist of feature-group settings.",
     )
+    parser.add_argument(
+        "--leave-one-session-out",
+        action="store_true",
+        help="Evaluate the baseline by holding out each session in turn and write per-session metrics.",
+    )
     return parser.parse_args()
 
 
@@ -78,8 +84,9 @@ def main() -> None:
     rows = load_model_table(args.input)
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    if args.ablation and args.alpha_sweep:
-        raise ValueError("Use either --ablation or --alpha-sweep, not both.")
+    mode_count = sum(bool(value) for value in [args.ablation, args.alpha_sweep, args.leave_one_session_out])
+    if mode_count > 1:
+        raise ValueError("Use only one of --ablation, --alpha-sweep, or --leave-one-session-out.")
     if args.alpha_sweep:
         results = run_alpha_sweep(
             rows,
@@ -99,6 +106,29 @@ def main() -> None:
         print(json.dumps(result_rows, indent=2))
         print(f"Wrote alpha sweep results to {output_path}")
         print(f"Wrote alpha sweep table to {csv_path}")
+        return
+    if args.leave_one_session_out:
+        metrics_by_session, summary = run_leave_one_session_out(
+            rows,
+            target_column=args.target,
+            ridge_alpha=args.ridge_alpha,
+            feature_groups=args.feature_groups,
+        )
+        payload = {
+            "summary": dict(summary.__dict__),
+            "sessions": [dict(metric.__dict__) for metric in metrics_by_session],
+        }
+        output_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        csv_path = output_path.with_suffix(".csv")
+        session_rows = []
+        for metric in metrics_by_session:
+            row = dict(metric.__dict__)
+            row["feature_groups"] = ",".join(metric.feature_groups)
+            session_rows.append(row)
+        write_ablation_csv(csv_path, session_rows)
+        print(json.dumps(payload, indent=2))
+        print(f"Wrote leave-one-session-out results to {output_path}")
+        print(f"Wrote leave-one-session-out table to {csv_path}")
         return
     if args.ablation:
         results = run_feature_ablations(
