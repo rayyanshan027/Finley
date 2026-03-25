@@ -1,10 +1,17 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 from pathlib import Path
 
-from finley.models.run_cell_baseline import compute_metrics, load_model_table, split_by_session
+from finley.models.run_cell_baseline import (
+    compute_metrics,
+    get_available_feature_groups,
+    load_model_table,
+    run_feature_ablations,
+    split_by_session,
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -36,12 +43,52 @@ def parse_args() -> argparse.Namespace:
         default=1.0,
         help="Ridge regularization strength for the baseline.",
     )
+    parser.add_argument(
+        "--feature-groups",
+        nargs="+",
+        choices=get_available_feature_groups(),
+        help="Optional feature groups to include. Defaults to all groups.",
+    )
+    parser.add_argument(
+        "--ablation",
+        action="store_true",
+        help="Run the standard feature-group ablation suite and write a table of results.",
+    )
     return parser.parse_args()
+
+
+def write_ablation_csv(path: Path, rows: list[dict]) -> None:
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0].keys()))
+        writer.writeheader()
+        writer.writerows(rows)
 
 
 def main() -> None:
     args = parse_args()
     rows = load_model_table(args.input)
+    output_path = Path(args.output)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    if args.ablation:
+        results = run_feature_ablations(
+            rows,
+            target_column=args.target,
+            held_out_session=args.held_out_session,
+            ridge_alpha=args.ridge_alpha,
+        )
+        result_rows = []
+        for result in results:
+            row = dict(result.__dict__)
+            row["feature_groups"] = ",".join(result.feature_groups)
+            result_rows.append(row)
+        output_path.write_text(json.dumps(result_rows, indent=2), encoding="utf-8")
+        csv_path = output_path.with_suffix(".csv")
+        write_ablation_csv(csv_path, result_rows)
+        print(json.dumps(result_rows, indent=2))
+        print(f"Wrote ablation results to {output_path}")
+        print(f"Wrote ablation table to {csv_path}")
+        return
+
     split = split_by_session(rows, held_out_session=args.held_out_session)
     metrics = compute_metrics(
         split.train_rows,
@@ -49,10 +96,8 @@ def main() -> None:
         held_out_session=split.held_out_session,
         target_column=args.target,
         ridge_alpha=args.ridge_alpha,
+        feature_groups=args.feature_groups,
     )
-
-    output_path = Path(args.output)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(metrics.__dict__, indent=2), encoding="utf-8")
 
     print(json.dumps(metrics.__dict__, indent=2))

@@ -5,6 +5,41 @@ from dataclasses import dataclass
 import math
 from pathlib import Path
 
+FEATURE_GROUP_ORDER = [
+    "task_context",
+    "movement_summaries",
+    "population_context",
+    "cell_metadata",
+]
+
+FEATURE_GROUP_COLUMNS: dict[str, tuple[str, ...]] = {
+    "task_context": ("track_a", "track_b", "task_exposure", "task_experimentday"),
+    "movement_summaries": (
+        "pos_rows",
+        "epoch_duration_sec",
+        "mean_speed",
+        "std_speed",
+        "max_speed",
+        "speed_q25",
+        "speed_q50",
+        "speed_q75",
+        "moving_fraction",
+        "fast_fraction",
+        "path_length",
+        "step_length_mean",
+        "step_length_max",
+        "x_range",
+        "y_range",
+    ),
+    "population_context": (
+        "rawpos_rows",
+        "spike_tetrode_count",
+        "other_epoch_cells",
+        "other_epoch_spikes",
+    ),
+    "cell_metadata": ("tetrode", "depth", "spikewidth"),
+}
+
 
 @dataclass(frozen=True)
 class TrainTestSplit:
@@ -19,6 +54,8 @@ class RegressionMetrics:
     test_count: int
     dropped_train_count: int
     dropped_test_count: int
+    feature_groups: list[str]
+    feature_count: int
     held_out_session: int
     target_column: str
     mae: float
@@ -29,6 +66,21 @@ class RegressionMetrics:
 class FeatureScaler:
     means: list[float]
     scales: list[float]
+
+
+@dataclass(frozen=True)
+class FeatureAblationResult:
+    name: str
+    feature_groups: list[str]
+    feature_count: int
+    train_count: int
+    test_count: int
+    dropped_train_count: int
+    dropped_test_count: int
+    held_out_session: int
+    target_column: str
+    mae: float
+    rmse: float
 
 
 def load_model_table(path: str | Path) -> list[dict]:
@@ -75,9 +127,11 @@ def load_model_table(path: str | Path) -> list[dict]:
         for row in reader:
             parsed = dict(row)
             for field in int_fields:
-                parsed[field] = int(parsed[field])
+                if field in parsed:
+                    parsed[field] = int(parsed[field])
             for field in float_fields:
-                parsed[field] = float(parsed[field]) if parsed[field] != "" else None
+                if field in parsed:
+                    parsed[field] = float(parsed[field]) if parsed[field] != "" else None
             rows.append(parsed)
     return rows
 
@@ -94,45 +148,75 @@ def split_by_session(rows: list[dict], held_out_session: int | None = None) -> T
     return TrainTestSplit(train_rows=train_rows, test_rows=test_rows, held_out_session=chosen)
 
 
-def _feature_vector(row: dict) -> list[float]:
+def get_available_feature_groups() -> list[str]:
+    return list(FEATURE_GROUP_ORDER)
+
+
+def resolve_feature_groups(feature_groups: list[str] | None = None) -> list[str]:
+    if feature_groups is None:
+        return list(FEATURE_GROUP_ORDER)
+    unknown = [group for group in feature_groups if group not in FEATURE_GROUP_COLUMNS]
+    if unknown:
+        raise ValueError(f"Unknown feature groups: {unknown}")
+    return list(feature_groups)
+
+
+def _feature_map(row: dict) -> dict[str, float]:
     environment = row["task_environment"]
     track_a = 1.0 if environment == "TrackA" else 0.0
     track_b = 1.0 if environment == "TrackB" else 0.0
     other_epoch_spikes = max(int(row["spike_event_rows_epoch"]) - int(row["num_spikes"]), 0)
     other_epoch_cells = max(int(row["spike_cell_count"]) - 1, 0)
 
-    return [
-        1.0,
-        track_a,
-        track_b,
-        float(row["task_exposure"] or 0.0),
-        float(row["task_experimentday"] or 0.0),
-        float(row["pos_rows"]),
-        float(row["epoch_duration_sec"] or 0.0),
-        float(row["mean_speed"] or 0.0),
-        float(row["std_speed"] or 0.0),
-        float(row["max_speed"] or 0.0),
-        float(row["speed_q25"] or 0.0),
-        float(row["speed_q50"] or 0.0),
-        float(row["speed_q75"] or 0.0),
-        float(row["moving_fraction"] or 0.0),
-        float(row["fast_fraction"] or 0.0),
-        float(row["path_length"] or 0.0),
-        float(row["step_length_mean"] or 0.0),
-        float(row["step_length_max"] or 0.0),
-        float(row["x_range"] or 0.0),
-        float(row["y_range"] or 0.0),
-        float(row["rawpos_rows"]),
-        float(row["spike_tetrode_count"]),
-        float(other_epoch_cells),
-        float(other_epoch_spikes),
-        float(row["tetrode"]),
-        float(row["depth"] or 0.0),
-        float(row["spikewidth"] or 0.0),
-    ]
+    return {
+        "track_a": track_a,
+        "track_b": track_b,
+        "task_exposure": float(row["task_exposure"] or 0.0),
+        "task_experimentday": float(row["task_experimentday"] or 0.0),
+        "pos_rows": float(row["pos_rows"]),
+        "epoch_duration_sec": float(row["epoch_duration_sec"] or 0.0),
+        "mean_speed": float(row["mean_speed"] or 0.0),
+        "std_speed": float(row["std_speed"] or 0.0),
+        "max_speed": float(row["max_speed"] or 0.0),
+        "speed_q25": float(row["speed_q25"] or 0.0),
+        "speed_q50": float(row["speed_q50"] or 0.0),
+        "speed_q75": float(row["speed_q75"] or 0.0),
+        "moving_fraction": float(row["moving_fraction"] or 0.0),
+        "fast_fraction": float(row["fast_fraction"] or 0.0),
+        "path_length": float(row["path_length"] or 0.0),
+        "step_length_mean": float(row["step_length_mean"] or 0.0),
+        "step_length_max": float(row["step_length_max"] or 0.0),
+        "x_range": float(row["x_range"] or 0.0),
+        "y_range": float(row["y_range"] or 0.0),
+        "rawpos_rows": float(row["rawpos_rows"]),
+        "spike_tetrode_count": float(row["spike_tetrode_count"]),
+        "other_epoch_cells": float(other_epoch_cells),
+        "other_epoch_spikes": float(other_epoch_spikes),
+        "tetrode": float(row["tetrode"]),
+        "depth": float(row["depth"] or 0.0),
+        "spikewidth": float(row["spikewidth"] or 0.0),
+    }
 
 
-def build_design_matrix(rows: list[dict], target_column: str) -> tuple[list[list[float]], list[float]]:
+def _feature_vector(row: dict, feature_groups: list[str] | None = None) -> list[float]:
+    groups = resolve_feature_groups(feature_groups)
+    feature_map = _feature_map(row)
+    vector = [1.0]
+    for group in groups:
+        vector.extend(feature_map[column] for column in FEATURE_GROUP_COLUMNS[group])
+    return vector
+
+
+def get_feature_count(feature_groups: list[str] | None = None) -> int:
+    groups = resolve_feature_groups(feature_groups)
+    return 1 + sum(len(FEATURE_GROUP_COLUMNS[group]) for group in groups)
+
+
+def build_design_matrix(
+    rows: list[dict],
+    target_column: str,
+    feature_groups: list[str] | None = None,
+) -> tuple[list[list[float]], list[float]]:
     if not rows:
         raise ValueError("Cannot build design matrix from empty rows.")
     missing_target_rows = [index for index, row in enumerate(rows) if row.get(target_column) is None]
@@ -141,7 +225,7 @@ def build_design_matrix(rows: list[dict], target_column: str) -> tuple[list[list
             f"Target column {target_column} contains missing values in "
             f"{len(missing_target_rows)} row(s). Filter rows before training."
         )
-    x = [_feature_vector(row) for row in rows]
+    x = [_feature_vector(row, feature_groups=feature_groups) for row in rows]
     y = [float(row[target_column]) for row in rows]
     return x, y
 
@@ -245,15 +329,25 @@ def compute_metrics(
     held_out_session: int,
     target_column: str,
     ridge_alpha: float = 1.0,
+    feature_groups: list[str] | None = None,
 ) -> RegressionMetrics:
+    resolved_feature_groups = resolve_feature_groups(feature_groups)
     filtered_train_rows, dropped_train_count = filter_rows_for_target(train_rows, target_column)
     filtered_test_rows, dropped_test_count = filter_rows_for_target(test_rows, target_column)
     if not filtered_train_rows or not filtered_test_rows:
         raise ValueError(
             f"No usable rows remain for target {target_column} after filtering missing targets."
         )
-    x_train, y_train = build_design_matrix(filtered_train_rows, target_column=target_column)
-    x_test, y_test = build_design_matrix(filtered_test_rows, target_column=target_column)
+    x_train, y_train = build_design_matrix(
+        filtered_train_rows,
+        target_column=target_column,
+        feature_groups=resolved_feature_groups,
+    )
+    x_test, y_test = build_design_matrix(
+        filtered_test_rows,
+        target_column=target_column,
+        feature_groups=resolved_feature_groups,
+    )
     scaler = fit_feature_scaler(x_train)
     x_train_scaled = apply_feature_scaler(x_train, scaler)
     x_test_scaled = apply_feature_scaler(x_test, scaler)
@@ -267,8 +361,53 @@ def compute_metrics(
         test_count=len(filtered_test_rows),
         dropped_train_count=dropped_train_count,
         dropped_test_count=dropped_test_count,
+        feature_groups=resolved_feature_groups,
+        feature_count=get_feature_count(resolved_feature_groups),
         held_out_session=held_out_session,
         target_column=target_column,
         mae=mae,
         rmse=rmse,
     )
+
+
+def run_feature_ablations(
+    rows: list[dict],
+    target_column: str,
+    held_out_session: int | None = None,
+    ridge_alpha: float = 1.0,
+) -> list[FeatureAblationResult]:
+    split = split_by_session(rows, held_out_session=held_out_session)
+    ablation_specs: list[tuple[str, list[str]]] = [
+        ("all", list(FEATURE_GROUP_ORDER)),
+        *[(group, [group]) for group in FEATURE_GROUP_ORDER],
+        *[
+            (f"all_minus_{group}", [name for name in FEATURE_GROUP_ORDER if name != group])
+            for group in FEATURE_GROUP_ORDER
+        ],
+    ]
+    results: list[FeatureAblationResult] = []
+    for name, feature_groups in ablation_specs:
+        metrics = compute_metrics(
+            split.train_rows,
+            split.test_rows,
+            held_out_session=split.held_out_session,
+            target_column=target_column,
+            ridge_alpha=ridge_alpha,
+            feature_groups=feature_groups,
+        )
+        results.append(
+            FeatureAblationResult(
+                name=name,
+                feature_groups=metrics.feature_groups,
+                feature_count=metrics.feature_count,
+                train_count=metrics.train_count,
+                test_count=metrics.test_count,
+                dropped_train_count=metrics.dropped_train_count,
+                dropped_test_count=metrics.dropped_test_count,
+                held_out_session=metrics.held_out_session,
+                target_column=metrics.target_column,
+                mae=metrics.mae,
+                rmse=metrics.rmse,
+            )
+        )
+    return results
