@@ -49,8 +49,8 @@ def parse_args() -> argparse.Namespace:
         "--feature-groups",
         nargs="+",
         choices=get_available_feature_groups(),
-        default=["task_context", "movement_summaries"],
-        help="Optional feature groups to include. Defaults to task_context and movement_summaries.",
+        default=["movement_summaries"],
+        help="Optional feature groups to include. Defaults to movement_summaries.",
     )
     parser.add_argument(
         "--ablation",

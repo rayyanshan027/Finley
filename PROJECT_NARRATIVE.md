@@ -45,7 +45,7 @@ The first baseline is a simple linear regression with:
 - target now best interpreted as `log_firing_rate_hz`
 - standardized numeric features
 - ridge regularization
-- default features from task context and movement summaries
+- default features from movement summaries
 
 The trainer is intended as a smoke-tested baseline, not a final modeling approach.
 Rows with missing values for the selected target are filtered at training time rather than dropped during export.
@@ -57,17 +57,17 @@ Latest Bon run-cell baseline comparison:
 - training rows: `1092`
 - test rows: `177`
 - held-out session: `10`
-- default baseline (`task_context + movement_summaries`, alpha `100`): MAE `0.3830`, RMSE `0.6111`
-- best MAE in the current alpha sweep (`movement_summaries` only, alpha `10`): MAE `0.3667`, RMSE `0.6129`
+- default baseline (`movement_summaries`, alpha `100`): MAE `0.3731`, RMSE `0.6103`
+- best MAE in the current alpha sweep (`movement_summaries`, alpha `10`): MAE `0.3618`, RMSE `0.6130`
 - best RMSE in the current alpha sweep (`population_context` only, alpha `100`): MAE `0.4040`, RMSE `0.6071`
 
 Current default benchmark to beat:
 
 - target: `log_firing_rate_hz`
-- feature groups: `task_context + movement_summaries`
+- feature groups: `movement_summaries`
 - ridge alpha: `100`
-- MAE: `0.3830`
-- RMSE: `0.6111`
+- MAE: `0.3731`
+- RMSE: `0.6103`
 
 ## Likely Next Steps
 
@@ -85,7 +85,7 @@ The target-selection question is now mostly settled for the current phase:
 Feature-engineering lesson from the current phase:
 
 - targeted feature-group ablations were informative and changed the benchmark choice
-- task context plus movement summaries is the current best default tradeoff
+- richer movement summaries, including acceleration features, are the current best default tradeoff
 - the next feature work should continue to use explicit ablations and alpha sweeps rather than larger blind unions
 
 ## Phase Boundary

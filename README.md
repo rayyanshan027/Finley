@@ -101,7 +101,7 @@ Recommended default benchmark:
 PYTHONPATH=src python scripts/train_run_cell_baseline.py --input data/processed/bon_run_cell_model_table.csv
 ```
 
-The default run-cell baseline now uses `task_context` plus `movement_summaries`, `log_firing_rate_hz` as the target, and ridge alpha `100`.
+The default run-cell baseline now uses `movement_summaries`, `log_firing_rate_hz` as the target, and ridge alpha `100`.
 The baseline trainer standardizes numeric features, fits a ridge-regularized linear model, and filters rows with missing target values when the chosen target depends on epoch duration.
 
 ## Project layout
@@ -124,7 +124,7 @@ tests/                 unit tests
 - `scripts/export_session_tables.py` writes an epoch table and a cell-level spike table for one session.
 - `scripts/export_session_tables.py --all-sessions` writes combined tables across all discovered sessions for one animal.
 - `scripts/build_model_table.py` builds a run-only cell-level modeling table across all discovered sessions.
-- `scripts/train_run_cell_baseline.py` trains a simple held-out-session regression baseline on the run-cell model table, with `log_firing_rate_hz` as the default target and `task_context + movement_summaries` as the default feature set.
+- `scripts/train_run_cell_baseline.py` trains a simple held-out-session regression baseline on the run-cell model table, with `log_firing_rate_hz` as the default target and `movement_summaries` as the default feature set.
 - Duration-dependent targets such as `firing_rate_hz` and `log_firing_rate_hz` may be missing for some exported rows; the trainer filters those rows before fitting and reports the kept counts in its metrics output.
-- Current project benchmark: default run-cell baseline on held-out session `10` with MAE `0.3830`, RMSE `0.6111`.
+- Current project benchmark: default run-cell baseline on held-out session `10` with MAE `0.3731`, RMSE `0.6103`.
 - Reading `.mat` files requires `scipy`, which is not vendored into this repo.
