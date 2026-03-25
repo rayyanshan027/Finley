@@ -33,30 +33,33 @@ Columns include:
 - identifiers: animal, session, epoch, tetrode, cell
 - epoch context: environment, exposure, experiment day, position row counts
 - cell metadata: depth, spikewidth
-- targets: `num_spikes`, `log_num_spikes`
+- targets: `num_spikes`, `log_num_spikes`, `firing_rate_hz`, `log_firing_rate_hz`
 
 ## Baseline Strategy
 
 The first baseline is a simple linear regression with:
 
 - held-out-session evaluation
-- target defaulting to `log_num_spikes`
+- target now best interpreted as `log_firing_rate_hz`
 - features from task context, position counts, tetrode/cell context, depth, and spikewidth
 
 The trainer is intended as a smoke-tested baseline, not a final modeling approach.
 
 ## Current Baseline Result
 
-Latest Bon run-cell baseline:
+Latest Bon run-cell baseline comparison:
 
 - training rows: `1092`
 - test rows: `177`
 - held-out session: `10`
-- target: `log_num_spikes`
-- MAE: `1.6936`
-- RMSE: `2.1107`
+- `log_num_spikes`: MAE `1.7028`, RMSE `2.1721`
+- `log_firing_rate_hz`: MAE `0.4830`, RMSE `0.6645`
 
-This is the current checkpoint metric to beat.
+Current default benchmark to beat:
+
+- target: `log_firing_rate_hz`
+- MAE: `0.4830`
+- RMSE: `0.6645`
 
 ## Likely Next Steps
 
@@ -66,6 +69,10 @@ This is the current checkpoint metric to beat.
 - Consider models that operate on actual spike-event rows rather than cell aggregates
 - Expand from `Bon` to additional animals once the single-animal workflow is stable
 
+The target-selection question is now mostly settled for the current phase:
+
+- use firing-rate-style targets rather than raw spike counts when epoch durations vary
+
 ## Phase Boundary
 
 This is a reasonable stopping point for the initial baseline phase:
@@ -73,6 +80,7 @@ This is a reasonable stopping point for the initial baseline phase:
 - pipeline is end-to-end
 - exports are stable and fast enough to use on Eureka
 - the repo now has a reproducible benchmark
+- the project now has a better default target (`log_firing_rate_hz`) for subsequent feature work
 
 The next phase should focus on feature engineering and better evaluation, not more project scaffolding.
 

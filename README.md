@@ -87,7 +87,7 @@ Build a run-only modeling table across all discovered sessions:
 PYTHONPATH=src python scripts/build_model_table.py --config configs/hc6.local.json --animal Bon
 ```
 
-The run-cell model table now includes position-derived epoch features such as duration, mean/std/max speed, moving fraction, spatial range, and mean direction.
+The run-cell model table now includes position-derived epoch features such as duration, mean/std/max speed, moving fraction, spatial range, and mean direction, plus firing-rate targets derived from epoch duration.
 
 Train the first run-cell baseline with held-out-session evaluation:
 
@@ -95,7 +95,7 @@ Train the first run-cell baseline with held-out-session evaluation:
 PYTHONPATH=src python scripts/train_run_cell_baseline.py --input data/processed/bon_run_cell_model_table.csv
 ```
 
-You can also evaluate duration-normalized targets:
+Recommended default benchmark:
 
 ```bash
 PYTHONPATH=src python scripts/train_run_cell_baseline.py --input data/processed/bon_run_cell_model_table.csv --target log_firing_rate_hz
@@ -121,5 +121,5 @@ tests/                 unit tests
 - `scripts/export_session_tables.py` writes an epoch table and a cell-level spike table for one session.
 - `scripts/export_session_tables.py --all-sessions` writes combined tables across all discovered sessions for one animal.
 - `scripts/build_model_table.py` builds a run-only cell-level modeling table across all discovered sessions.
-- `scripts/train_run_cell_baseline.py` trains a simple held-out-session regression baseline on the run-cell model table.
+- `scripts/train_run_cell_baseline.py` trains a simple held-out-session regression baseline on the run-cell model table, with `log_firing_rate_hz` now the preferred target.
 - Reading `.mat` files requires `scipy`, which is not vendored into this repo.
