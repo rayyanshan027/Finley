@@ -67,6 +67,10 @@ class SessionSummaryHelperTests(unittest.TestCase):
                 "mean_speed": None,
                 "std_speed": None,
                 "max_speed": None,
+                "mean_accel": None,
+                "std_accel": None,
+                "mean_abs_accel": None,
+                "max_abs_accel": None,
                 "speed_q25": None,
                 "speed_q50": None,
                 "speed_q75": None,
@@ -93,6 +97,10 @@ class SessionSummaryHelperTests(unittest.TestCase):
                 "mean_speed": 1.5,
                 "std_speed": 0.3,
                 "max_speed": 2.5,
+                "mean_accel": 0.2,
+                "std_accel": 0.1,
+                "mean_abs_accel": 0.2,
+                "max_abs_accel": 0.3,
                 "speed_q25": 1.0,
                 "speed_q50": 1.5,
                 "speed_q75": 2.0,
@@ -161,6 +169,10 @@ class SessionSummaryHelperTests(unittest.TestCase):
         self.assertEqual(features["epoch_duration_sec"], 2.0)
         self.assertEqual(features["mean_speed"], 8.0 / 3.0)
         self.assertEqual(features["max_speed"], 5.0)
+        self.assertEqual(features["mean_accel"], 2.5)
+        self.assertEqual(features["std_accel"], 0.5)
+        self.assertEqual(features["mean_abs_accel"], 2.5)
+        self.assertEqual(features["max_abs_accel"], 3.0)
         self.assertEqual(features["speed_q50"], 3.0)
         self.assertEqual(features["fast_fraction"], 1 / 3)
         self.assertAlmostEqual(features["path_length"], 3 * (5 ** 0.5))

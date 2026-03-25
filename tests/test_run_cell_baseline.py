@@ -20,8 +20,8 @@ from finley.models.run_cell_baseline import (
 class RunCellBaselineTests(unittest.TestCase):
     def test_split_by_session_holds_out_latest_by_default(self) -> None:
         rows = [
-            {"session": 3, "task_environment": "TrackA", "task_exposure": 1, "task_experimentday": 7, "pos_rows": 10, "epoch_duration_sec": 9.0, "mean_speed": 1.0, "std_speed": 0.2, "max_speed": 2.0, "speed_q25": 0.5, "speed_q50": 1.0, "speed_q75": 1.5, "moving_fraction": 0.5, "fast_fraction": 0.1, "path_length": 20.0, "step_length_mean": 2.0, "step_length_max": 3.0, "x_range": 10.0, "y_range": 5.0, "rawpos_rows": 10, "spike_tetrode_count": 1, "spike_cell_count": 2, "spike_event_rows_epoch": 5, "tetrode": 1, "depth": 100, "spikewidth": 8.0, "num_spikes": 2, "log_num_spikes": 1.0},
-            {"session": 4, "task_environment": "TrackB", "task_exposure": 2, "task_experimentday": 8, "pos_rows": 12, "epoch_duration_sec": 10.0, "mean_speed": 1.5, "std_speed": 0.3, "max_speed": 2.5, "speed_q25": 1.0, "speed_q50": 1.5, "speed_q75": 2.0, "moving_fraction": 0.6, "fast_fraction": 0.2, "path_length": 22.0, "step_length_mean": 2.2, "step_length_max": 3.2, "x_range": 12.0, "y_range": 6.0, "rawpos_rows": 12, "spike_tetrode_count": 2, "spike_cell_count": 3, "spike_event_rows_epoch": 9, "tetrode": 2, "depth": 110, "spikewidth": 9.0, "num_spikes": 3, "log_num_spikes": 1.3},
+            {"session": 3, "task_environment": "TrackA", "task_exposure": 1, "task_experimentday": 7, "pos_rows": 10, "epoch_duration_sec": 9.0, "mean_speed": 1.0, "std_speed": 0.2, "max_speed": 2.0, "mean_accel": 0.1, "std_accel": 0.05, "mean_abs_accel": 0.1, "max_abs_accel": 0.2, "speed_q25": 0.5, "speed_q50": 1.0, "speed_q75": 1.5, "moving_fraction": 0.5, "fast_fraction": 0.1, "path_length": 20.0, "step_length_mean": 2.0, "step_length_max": 3.0, "x_range": 10.0, "y_range": 5.0, "rawpos_rows": 10, "spike_tetrode_count": 1, "spike_cell_count": 2, "spike_event_rows_epoch": 5, "tetrode": 1, "depth": 100, "spikewidth": 8.0, "num_spikes": 2, "log_num_spikes": 1.0},
+            {"session": 4, "task_environment": "TrackB", "task_exposure": 2, "task_experimentday": 8, "pos_rows": 12, "epoch_duration_sec": 10.0, "mean_speed": 1.5, "std_speed": 0.3, "max_speed": 2.5, "mean_accel": 0.2, "std_accel": 0.07, "mean_abs_accel": 0.2, "max_abs_accel": 0.4, "speed_q25": 1.0, "speed_q50": 1.5, "speed_q75": 2.0, "moving_fraction": 0.6, "fast_fraction": 0.2, "path_length": 22.0, "step_length_mean": 2.2, "step_length_max": 3.2, "x_range": 12.0, "y_range": 6.0, "rawpos_rows": 12, "spike_tetrode_count": 2, "spike_cell_count": 3, "spike_event_rows_epoch": 9, "tetrode": 2, "depth": 110, "spikewidth": 9.0, "num_spikes": 3, "log_num_spikes": 1.3},
         ]
         split = split_by_session(rows)
         self.assertEqual(split.held_out_session, 4)
@@ -40,6 +40,10 @@ class RunCellBaselineTests(unittest.TestCase):
                 "mean_speed": 1.0,
                 "std_speed": 0.2,
                 "max_speed": 2.0,
+                "mean_accel": 0.1,
+                "std_accel": 0.05,
+                "mean_abs_accel": 0.1,
+                "max_abs_accel": 0.2,
                 "speed_q25": 0.5,
                 "speed_q50": 1.0,
                 "speed_q75": 1.5,
@@ -63,7 +67,7 @@ class RunCellBaselineTests(unittest.TestCase):
         ]
         x, y = build_design_matrix(rows, target_column="log_num_spikes")
         self.assertEqual(len(x), 1)
-        self.assertEqual(len(x[0]), 27)
+        self.assertEqual(len(x[0]), 31)
         self.assertEqual(len(y), 1)
 
     def test_build_design_matrix_uses_selected_feature_groups(self) -> None:
@@ -78,6 +82,10 @@ class RunCellBaselineTests(unittest.TestCase):
                 "mean_speed": 1.0,
                 "std_speed": 0.2,
                 "max_speed": 2.0,
+                "mean_accel": 0.1,
+                "std_accel": 0.05,
+                "mean_abs_accel": 0.1,
+                "max_abs_accel": 0.2,
                 "speed_q25": 0.5,
                 "speed_q50": 1.0,
                 "speed_q75": 1.5,
@@ -118,6 +126,10 @@ class RunCellBaselineTests(unittest.TestCase):
                 "mean_speed": 1.0,
                 "std_speed": 0.2,
                 "max_speed": 2.0,
+                "mean_accel": 0.1,
+                "std_accel": 0.05,
+                "mean_abs_accel": 0.1,
+                "max_abs_accel": 0.2,
                 "speed_q25": 0.5,
                 "speed_q50": 1.0,
                 "speed_q75": 1.5,
@@ -160,6 +172,10 @@ class RunCellBaselineTests(unittest.TestCase):
                 "mean_speed": 1.0,
                 "std_speed": 0.2,
                 "max_speed": 2.0,
+                "mean_accel": 0.1,
+                "std_accel": 0.05,
+                "mean_abs_accel": 0.1,
+                "max_abs_accel": 0.2,
                 "speed_q25": 0.5,
                 "speed_q50": 1.0,
                 "speed_q75": 1.5,
@@ -190,6 +206,10 @@ class RunCellBaselineTests(unittest.TestCase):
                 "mean_speed": 1.2,
                 "std_speed": 0.2,
                 "max_speed": 2.2,
+                "mean_accel": 0.15,
+                "std_accel": 0.04,
+                "mean_abs_accel": 0.15,
+                "max_abs_accel": 0.3,
                 "speed_q25": 0.6,
                 "speed_q50": 1.1,
                 "speed_q75": 1.6,
@@ -222,6 +242,10 @@ class RunCellBaselineTests(unittest.TestCase):
                 "mean_speed": 1.5,
                 "std_speed": 0.3,
                 "max_speed": 2.5,
+                "mean_accel": 0.2,
+                "std_accel": 0.07,
+                "mean_abs_accel": 0.2,
+                "max_abs_accel": 0.4,
                 "speed_q25": 1.0,
                 "speed_q50": 1.5,
                 "speed_q75": 2.0,
@@ -253,7 +277,7 @@ class RunCellBaselineTests(unittest.TestCase):
         self.assertEqual(metrics.test_count, 1)
         self.assertEqual(metrics.dropped_train_count, 1)
         self.assertEqual(metrics.dropped_test_count, 0)
-        self.assertEqual(metrics.feature_count, 27)
+        self.assertEqual(metrics.feature_count, 31)
         self.assertEqual(
             metrics.feature_groups,
             ["task_context", "movement_summaries", "population_context", "cell_metadata"],
@@ -266,6 +290,7 @@ class RunCellBaselineTests(unittest.TestCase):
     def test_get_feature_count_matches_group_selection(self) -> None:
         self.assertEqual(get_feature_count(["task_context"]), 5)
         self.assertEqual(get_feature_count(["task_context", "cell_metadata"]), 8)
+        self.assertEqual(get_feature_count(["movement_summaries"]), 20)
 
     def test_run_feature_ablations_returns_standard_suite(self) -> None:
         rows = [

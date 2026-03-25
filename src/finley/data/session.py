@@ -276,6 +276,10 @@ def _extract_pos_feature_map(pos_struct: Any) -> dict[str, float | None]:
         "mean_speed": None,
         "std_speed": None,
         "max_speed": None,
+        "mean_accel": None,
+        "std_accel": None,
+        "mean_abs_accel": None,
+        "max_abs_accel": None,
         "speed_q25": None,
         "speed_q50": None,
         "speed_q75": None,
@@ -333,6 +337,24 @@ def _extract_pos_feature_map(pos_struct: Any) -> dict[str, float | None]:
         mean = mean_speed or 0.0
         std_speed = math.sqrt(sum((value - mean) ** 2 for value in vel_values) / len(vel_values))
     max_speed = max(vel_values) if vel_values else None
+    accel_values: list[float] = []
+    if len(time_values) >= 2 and len(vel_values) >= 2:
+        limit = min(len(time_values), len(vel_values))
+        for index in range(1, limit):
+            dt = time_values[index] - time_values[index - 1]
+            if dt <= 0:
+                continue
+            dv = vel_values[index] - vel_values[index - 1]
+            accel_values.append(dv / dt)
+    mean_accel = sum(accel_values) / len(accel_values) if accel_values else None
+    std_accel = None
+    if accel_values:
+        mean = mean_accel or 0.0
+        std_accel = math.sqrt(sum((value - mean) ** 2 for value in accel_values) / len(accel_values))
+    mean_abs_accel = (
+        sum(abs(value) for value in accel_values) / len(accel_values) if accel_values else None
+    )
+    max_abs_accel = max(abs(value) for value in accel_values) if accel_values else None
     speed_q25 = quantile(vel_values, 0.25)
     speed_q50 = quantile(vel_values, 0.50)
     speed_q75 = quantile(vel_values, 0.75)
@@ -362,6 +384,10 @@ def _extract_pos_feature_map(pos_struct: Any) -> dict[str, float | None]:
         "mean_speed": mean_speed,
         "std_speed": std_speed,
         "max_speed": max_speed,
+        "mean_accel": mean_accel,
+        "std_accel": std_accel,
+        "mean_abs_accel": mean_abs_accel,
+        "max_abs_accel": max_abs_accel,
         "speed_q25": speed_q25,
         "speed_q50": speed_q50,
         "speed_q75": speed_q75,
@@ -442,6 +468,10 @@ def build_epoch_rows_from_loaded(
                 "mean_speed": pos_features["mean_speed"],
                 "std_speed": pos_features["std_speed"],
                 "max_speed": pos_features["max_speed"],
+                "mean_accel": pos_features["mean_accel"],
+                "std_accel": pos_features["std_accel"],
+                "mean_abs_accel": pos_features["mean_abs_accel"],
+                "max_abs_accel": pos_features["max_abs_accel"],
                 "speed_q25": pos_features["speed_q25"],
                 "speed_q50": pos_features["speed_q50"],
                 "speed_q75": pos_features["speed_q75"],
@@ -537,6 +567,10 @@ def build_run_cell_model_rows(epoch_rows: list[dict[str, Any]], cell_rows: list[
                 "mean_speed": epoch["mean_speed"],
                 "std_speed": epoch["std_speed"],
                 "max_speed": epoch["max_speed"],
+                "mean_accel": epoch["mean_accel"],
+                "std_accel": epoch["std_accel"],
+                "mean_abs_accel": epoch["mean_abs_accel"],
+                "max_abs_accel": epoch["max_abs_accel"],
                 "speed_q25": epoch["speed_q25"],
                 "speed_q50": epoch["speed_q50"],
                 "speed_q75": epoch["speed_q75"],
