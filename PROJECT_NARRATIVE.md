@@ -20,6 +20,7 @@ Build a practical ML workflow for CRCNS HC-6 data on Eureka HPC, starting from o
   - per-session profile summaries for diagnosing hard sessions
   - hard-session residual inspection
   - target-clipping diagnostics for testing tail sensitivity
+  - epoch-level session adaptation experiments
 
 ## What We Learned From Bon
 
@@ -152,12 +153,27 @@ Diagnostic lesson from the current phase:
 - weak cell context such as `depth` and `spikewidth` helps only a little in linear models
 - richer linear models improve sessions `6` and `7` but can hurt session `9`
 - nonlinear modeling plus population and cell context is the first setting that improves the hard regime without relying on target clipping
+- the same repeated cells still dominate the nonlinear residuals, but the misses are smaller than under the linear baselines
+
+Session-adaptive comparison:
+
+- one adapted epoch from the held-out session materially improves the hard cases:
+  - session `6`: MAE `0.4407` -> `0.3978`
+  - session `7`: MAE `0.4259` -> `0.3628`
+  - session `9`: MAE `0.3906` -> `0.3859`
+- two adapted epochs help more:
+  - session `6`: MAE `0.3566`
+  - session `7`: MAE `0.3298`
+  - session `9`: MAE `0.3503`
+- interpretation: a substantial part of the remaining error is session-specific and becomes learnable with modest within-session calibration data
 
 ## Likely Next Steps
 
 - Treat the nonlinear model with `movement_summaries`, `population_context`, and `cell_metadata` as the current benchmark to beat
-- Inspect residuals for that nonlinear setting to confirm whether the same repeated cells still dominate after the modeling upgrade
-- Test stronger cell-identity-aware approaches if repeated cells remain the main source of error
+- Use two benchmark modes going forward:
+  - strict LOSO for unseen-session generalization
+  - session-adaptive evaluation for settings where one or two labeled epochs are available
+- Test stronger cell-identity-aware approaches in the session-adaptive setting, where within-session unit labels are allowed to help
 - Consider models that operate on actual spike-event rows or finer temporal bins if per-cell epoch aggregates are collapsing too much structure
 - Expand from `Bon` to additional animals once the single-animal workflow is stable
 
@@ -172,7 +188,7 @@ Feature-engineering lesson from the current phase:
 - explicit ablations and alpha sweeps were useful, but further hand-built linear features showed diminishing returns
 - simple target clipping did not address the main failure mode
 - moving from ridge to a stronger nonlinear baseline with population and cell context gave the first meaningful hard-session improvement
-- the next phase should focus on residual structure, unit identity effects, and modeling changes that directly address repeated-cell failures rather than more minor feature tweaks
+- the next phase should focus on residual structure, session adaptation, unit identity effects, and modeling changes that directly address repeated-cell failures rather than more minor feature tweaks
 
 ## Phase Boundary
 
@@ -181,10 +197,10 @@ This is a reasonable stopping point for the initial linear-baseline phase:
 - pipeline is end-to-end
 - exports are stable and fast enough to use on Eureka
 - the repo now has a reproducible benchmark
-- the project now has a better default target (`log_firing_rate_hz`), a simple ridge reference, and a stronger nonlinear benchmark candidate
+- the project now has a better default target (`log_firing_rate_hz`), a simple ridge reference, a stronger nonlinear benchmark candidate, and a clear session-adaptive evaluation mode
 - the remaining problem is now localized well enough to focus on repeated-cell failures and hard-session modeling rather than more pipeline scaffolding
 
-The next phase should focus on unit-aware residual diagnostics and failure-mode-specific modeling changes, not more scaffolding.
+The next phase should focus on session adaptation, unit-aware residual diagnostics, and failure-mode-specific modeling changes, not more scaffolding.
 
 ## Update Rule
 

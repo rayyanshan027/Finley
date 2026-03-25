@@ -130,10 +130,22 @@ PYTHONPATH=src python scripts/inspect_hard_sessions.py \
 Inspect leave-one-session-out residuals for the current best nonlinear candidate:
 
 ```bash
-PYTHONPATH=src python scripts/inspect_hard_session_residuals.py \
+PYTHONPATH=src python scripts/inspect_hard_session_residuals_nonlinear.py \
   --input data/processed/bon_run_cell_model_table.csv \
-  --output artifacts/hard_session_residuals.json \
+  --output artifacts/hard_session_residuals_nonlinear.json \
   --sessions 6 7 9 \
+  --target log_firing_rate_hz \
+  --feature-groups movement_summaries population_context cell_metadata
+```
+
+Run the session-adaptation benchmark using 0, 1, or 2 labeled epochs from the held-out session:
+
+```bash
+PYTHONPATH=src python scripts/run_session_adaptation_experiment.py \
+  --input data/processed/bon_run_cell_model_table.csv \
+  --output artifacts/session_adaptation_experiment.json \
+  --sessions 6 7 9 \
+  --adaptation-epochs 0 1 2 \
   --target log_firing_rate_hz \
   --feature-groups movement_summaries population_context cell_metadata
 ```
@@ -155,6 +167,11 @@ Current recommended setting:
 - feature groups: `movement_summaries`, `population_context`, `cell_metadata`
 - LOSO mean MAE: `0.4265`
 - LOSO mean RMSE: `0.5764`
+
+Current session-adaptive result:
+
+- adding 1 labeled epoch from the held-out session materially improves sessions `6`, `7`, and `9`
+- adding 2 labeled epochs improves them further, indicating the remaining gap is substantially session-specific
 
 Simple linear reference:
 
@@ -187,6 +204,8 @@ tests/                 unit tests
 - `scripts/train_run_cell_nonlinear.py` trains a pure-Python random-forest-style nonlinear baseline on the same run-cell model table and supports leave-one-session-out evaluation.
 - `scripts/inspect_hard_sessions.py` compares hard and easy sessions using quantiles and writes top outlier cell/epoch rows for targeted inspection.
 - `scripts/inspect_hard_session_residuals.py` inspects held-out-session residuals so repeated hard-case cells can be identified directly.
+- `scripts/inspect_hard_session_residuals_nonlinear.py` inspects held-out-session residuals for the nonlinear benchmark candidate.
+- `scripts/run_session_adaptation_experiment.py` measures how much one or two labeled epochs from a held-out session reduce error.
 - Duration-dependent targets such as `firing_rate_hz` and `log_firing_rate_hz` may be missing for some exported rows; the trainer filters those rows before fitting and reports the kept counts in its metrics output.
 - Current project benchmark candidate: nonlinear LOSO with `movement_summaries`, `population_context`, and `cell_metadata`, mean MAE `0.4265`, mean RMSE `0.5764`.
 - Reading `.mat` files requires `scipy`, which is not vendored into this repo.
