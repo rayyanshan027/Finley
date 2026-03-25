@@ -107,6 +107,17 @@ Run leave-one-session-out evaluation for the nonlinear baseline:
 PYTHONPATH=src python scripts/train_run_cell_nonlinear.py --input data/processed/bon_run_cell_model_table.csv --leave-one-session-out
 ```
 
+Run the current best nonlinear benchmark candidate:
+
+```bash
+PYTHONPATH=src python scripts/train_run_cell_nonlinear.py \
+  --input data/processed/bon_run_cell_model_table.csv \
+  --leave-one-session-out \
+  --target log_firing_rate_hz \
+  --feature-groups movement_summaries population_context cell_metadata \
+  --output artifacts/run_cell_nonlinear_movement_population_cell.json
+```
+
 Inspect hard sessions against easier comparison sessions using quantiles and outlier rows:
 
 ```bash
@@ -116,14 +127,41 @@ PYTHONPATH=src python scripts/inspect_hard_sessions.py \
   --easy-sessions 3 4 8
 ```
 
+Inspect leave-one-session-out residuals for the current best nonlinear candidate:
+
+```bash
+PYTHONPATH=src python scripts/inspect_hard_session_residuals.py \
+  --input data/processed/bon_run_cell_model_table.csv \
+  --output artifacts/hard_session_residuals.json \
+  --sessions 6 7 9 \
+  --target log_firing_rate_hz \
+  --feature-groups movement_summaries population_context cell_metadata
+```
+
 Recommended default benchmark:
 
 ```bash
-PYTHONPATH=src python scripts/train_run_cell_baseline.py --input data/processed/bon_run_cell_model_table.csv
+PYTHONPATH=src python scripts/train_run_cell_nonlinear.py \
+  --input data/processed/bon_run_cell_model_table.csv \
+  --leave-one-session-out \
+  --target log_firing_rate_hz \
+  --feature-groups movement_summaries population_context cell_metadata
 ```
 
-The default run-cell baseline now uses `movement_summaries`, `log_firing_rate_hz` as the target, and ridge alpha `100`.
-The baseline trainer standardizes numeric features, fits a ridge-regularized linear model, and filters rows with missing target values when the chosen target depends on epoch duration.
+Current recommended setting:
+
+- model: pure-Python nonlinear forest-style baseline
+- target: `log_firing_rate_hz`
+- feature groups: `movement_summaries`, `population_context`, `cell_metadata`
+- LOSO mean MAE: `0.4265`
+- LOSO mean RMSE: `0.5764`
+
+Simple linear reference:
+
+- model: ridge baseline
+- target: `log_firing_rate_hz`
+- feature groups: `movement_summaries`
+- held-out session `10`: MAE `0.3731`, RMSE `0.6103`
 
 ## Project layout
 
@@ -148,6 +186,7 @@ tests/                 unit tests
 - `scripts/train_run_cell_baseline.py` trains a simple held-out-session regression baseline on the run-cell model table, with `log_firing_rate_hz` as the default target and `movement_summaries` as the default feature set.
 - `scripts/train_run_cell_nonlinear.py` trains a pure-Python random-forest-style nonlinear baseline on the same run-cell model table and supports leave-one-session-out evaluation.
 - `scripts/inspect_hard_sessions.py` compares hard and easy sessions using quantiles and writes top outlier cell/epoch rows for targeted inspection.
+- `scripts/inspect_hard_session_residuals.py` inspects held-out-session residuals so repeated hard-case cells can be identified directly.
 - Duration-dependent targets such as `firing_rate_hz` and `log_firing_rate_hz` may be missing for some exported rows; the trainer filters those rows before fitting and reports the kept counts in its metrics output.
-- Current project benchmark: default run-cell baseline on held-out session `10` with MAE `0.3731`, RMSE `0.6103`.
+- Current project benchmark candidate: nonlinear LOSO with `movement_summaries`, `population_context`, and `cell_metadata`, mean MAE `0.4265`, mean RMSE `0.5764`.
 - Reading `.mat` files requires `scipy`, which is not vendored into this repo.

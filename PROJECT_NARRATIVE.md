@@ -18,6 +18,8 @@ Build a practical ML workflow for CRCNS HC-6 data on Eureka HPC, starting from o
   - ridge alpha sweeps
   - leave-one-session-out evaluation
   - per-session profile summaries for diagnosing hard sessions
+  - hard-session residual inspection
+  - target-clipping diagnostics for testing tail sensitivity
 
 ## What We Learned From Bon
 
@@ -68,15 +70,24 @@ Latest Bon run-cell baseline comparison:
 - best RMSE in the current alpha sweep (`population_context` only, alpha `100`): MAE `0.4040`, RMSE `0.6071`
 - adding acceleration features improved the movement-only baseline enough to become the new default
 - adding a small nonlinear movement expansion did not materially improve the benchmark
-- a pure-Python nonlinear forest-style baseline slightly improved the LOSO benchmark but did not change the qualitative failure pattern
+- broader linear feature sets helped some hard sessions but did not remove the dominant repeated-cell failures
+- target clipping at the `0.99` training quantile did not materially change hard-session performance
+- the best current candidate is now a pure-Python nonlinear forest-style baseline using `movement_summaries`, `population_context`, and `cell_metadata`
 
 Current default benchmark to beat:
 
 - target: `log_firing_rate_hz`
+- feature groups: `movement_summaries`, `population_context`, `cell_metadata`
+- model: nonlinear forest-style baseline
+- leave-one-session-out mean MAE: `0.4265`
+- leave-one-session-out mean RMSE: `0.5764`
+
+Simple linear reference benchmark:
+
+- target: `log_firing_rate_hz`
 - feature groups: `movement_summaries`
-- ridge alpha: `100`
-- MAE: `0.3731`
-- RMSE: `0.6103`
+- model: ridge baseline with alpha `100`
+- held-out session `10`: MAE `0.3731`, RMSE `0.6103`
 
 ## Cross-Session Evaluation
 
@@ -87,13 +98,13 @@ Leave-one-session-out evaluation for the current default baseline:
 - easiest sessions: `3`, `4`, `8`
 - hardest sessions: `6`, `7`, `9`
 
-Leave-one-session-out evaluation for the nonlinear baseline on the same target and feature group:
+Leave-one-session-out evaluation for the original nonlinear baseline on the same target and feature group:
 
 - mean MAE: `0.3945`
 - mean RMSE: `0.6016`
 - easiest sessions: `3`, `4`, `8`
 - hardest sessions: `6`, `7`, `9`
-- improvement over ridge is real but small, so model nonlinearity alone does not resolve the remaining gap
+- improvement over ridge is real but small, so model nonlinearity alone with movement-only features does not resolve the remaining gap
 
 Session-centered target diagnostics did not materially improve the cross-session result:
 
@@ -120,15 +131,34 @@ Current interpretation:
 - the main difficulty is not just mixing `TrackA` and `TrackB` in one baseline
 - the broader problem still looks like a session-specific regime shift across sessions `6`, `7`, and `9`
 - `TrackB` makes that regime shift worse, but the same hard sessions remain difficult on `TrackA`
-- stronger nonlinear baselines help only marginally, so the current bottleneck is understanding the hard-session regime rather than choosing between simple model classes
+- harder sessions have much higher population spike load and stronger movement intensity than the easier sessions
+- residual inspection shows that a small set of repeated cells dominate the largest errors within sessions `6`, `7`, and `9`
+- those repeated-cell failures are not resolved by simple target clipping or by adding more linear feature groups alone
+- nonlinear models with population and cell context help materially on the hard sessions, especially session `9`, which points to nonlinear interaction structure rather than a simple session offset or pure outlier problem
+
+Current best nonlinear comparison:
+
+- feature groups: `movement_summaries`, `population_context`, `cell_metadata`
+- LOSO mean MAE: `0.4265`
+- LOSO mean RMSE: `0.5764`
+- hard-session MAE:
+  - session `6`: `0.4407`
+  - session `7`: `0.4259`
+  - session `9`: `0.3906`
+
+Diagnostic lesson from the current phase:
+
+- the dominant failures are repeated high-rate cells, not only broad per-session drift
+- weak cell context such as `depth` and `spikewidth` helps only a little in linear models
+- richer linear models improve sessions `6` and `7` but can hurt session `9`
+- nonlinear modeling plus population and cell context is the first setting that improves the hard regime without relying on target clipping
 
 ## Likely Next Steps
 
-- Compare hard sessions `6`, `7`, `9` against easier sessions within each track, especially `TrackB`
-- Use `session 9 / TrackB` as the clearest diagnostic case, while treating `6` and `7` as part of the same regime rather than isolated failures
-- Check whether the main shift is in target distribution, movement intensity, or population load before adding new features
-- Add richer position-derived features only when they are motivated by a specific failure mode
-- Consider models that operate on actual spike-event rows rather than cell aggregates
+- Treat the nonlinear model with `movement_summaries`, `population_context`, and `cell_metadata` as the current benchmark to beat
+- Inspect residuals for that nonlinear setting to confirm whether the same repeated cells still dominate after the modeling upgrade
+- Test stronger cell-identity-aware approaches if repeated cells remain the main source of error
+- Consider models that operate on actual spike-event rows or finer temporal bins if per-cell epoch aggregates are collapsing too much structure
 - Expand from `Bon` to additional animals once the single-animal workflow is stable
 
 The target-selection question is now mostly settled for the current phase:
@@ -140,20 +170,21 @@ Feature-engineering lesson from the current phase:
 - targeted feature-group ablations were informative and changed the benchmark choice
 - richer movement summaries, including acceleration features, are the current best default tradeoff
 - explicit ablations and alpha sweeps were useful, but further hand-built linear features showed diminishing returns
-- moving from ridge to a stronger nonlinear baseline gave only a small gain
-- the next phase should focus more on diagnosing the hard-session regime than on piling on more summary features or modest model tweaks
+- simple target clipping did not address the main failure mode
+- moving from ridge to a stronger nonlinear baseline with population and cell context gave the first meaningful hard-session improvement
+- the next phase should focus on residual structure, unit identity effects, and modeling changes that directly address repeated-cell failures rather than more minor feature tweaks
 
 ## Phase Boundary
 
-This is a reasonable stopping point for the initial baseline phase:
+This is a reasonable stopping point for the initial linear-baseline phase:
 
 - pipeline is end-to-end
 - exports are stable and fast enough to use on Eureka
 - the repo now has a reproducible benchmark
-- the project now has a better default target (`log_firing_rate_hz`), a stronger default feature set, and a clearer picture of where cross-session failures remain
-- the remaining problem is now localized well enough to focus on hard-session diagnostics rather than more baseline scaffolding
+- the project now has a better default target (`log_firing_rate_hz`), a simple ridge reference, and a stronger nonlinear benchmark candidate
+- the remaining problem is now localized well enough to focus on repeated-cell failures and hard-session modeling rather than more pipeline scaffolding
 
-The next phase should focus on hard-session diagnostics and failure-mode-specific modeling changes, not more scaffolding.
+The next phase should focus on unit-aware residual diagnostics and failure-mode-specific modeling changes, not more scaffolding.
 
 ## Update Rule
 
