@@ -218,8 +218,10 @@ Current benchmark snapshot:
 | --- | --- | --- | --- |
 | Ridge reference | Bon | held-out session `10` | MAE `0.3731`, RMSE `0.6103` |
 | Nonlinear strict LOSO | Bon | all sessions | mean MAE `0.4265`, mean RMSE `0.5764` |
+| XGBoost strict LOSO | Bon | all sessions | mean MAE `0.5960`, mean RMSE `0.7520` |
 | Nonlinear adaptive latest-unit residual | Bon | hard sessions `6,7,9`, `1` adapted epoch | mean MAE `0.1897`, mean RMSE `0.3031` |
 | Nonlinear strict LOSO | Con | all sessions | mean MAE `0.3370`, mean RMSE `0.4848` |
+| XGBoost strict LOSO | Con | all sessions | mean MAE `0.3049`, mean RMSE `0.4479` |
 | Nonlinear adaptive latest-unit residual | Con | hard sessions `1,3,4`, `1` adapted epoch | mean MAE `0.2469` |
 
 Multi-animal takeaway:
@@ -227,6 +229,7 @@ Multi-animal takeaway:
 - the strict LOSO nonlinear benchmark transfers from `Bon` to `Con`
 - the adaptive latest-epoch residual method also transfers to `Con`
 - `Con` appears easier than `Bon` under the same strict LOSO setup, but both animals benefit strongly from the adaptive calibration step
+- a strong standard baseline does not dominate uniformly: XGBoost is better on `Con`, while the custom nonlinear forest-style model is much better on `Bon`
 
 Simple linear reference:
 

@@ -39,6 +39,7 @@ Build a practical ML workflow for CRCNS HC-6 data on Eureka HPC, starting from o
   - mean MAE: `0.3370`
   - mean RMSE: `0.4848`
 - this is better than `Bon` under the same benchmark, suggesting `Con` is an easier or cleaner prediction regime
+- XGBoost is even stronger on `Con`, with LOSO mean MAE `0.3049` and mean RMSE `0.4479`
 - harder held-out `Con` sessions are currently `1`, `3`, and `4`
 - the adaptive latest-epoch residual method transfers to `Con`:
   - on sessions `1`, `3`, and `4`, adding `1` labeled epoch reduces mean MAE from about `0.3934` to about `0.2469`
@@ -94,6 +95,17 @@ Current default benchmark to beat:
 - model: nonlinear forest-style baseline
 - leave-one-session-out mean MAE: `0.4265`
 - leave-one-session-out mean RMSE: `0.5764`
+
+Standard-library comparison:
+
+- XGBoost is now available as a stronger tabular baseline comparison
+- on `Bon`, XGBoost is substantially worse than the current nonlinear forest-style model:
+  - XGBoost LOSO mean MAE: `0.5960`
+  - XGBoost LOSO mean RMSE: `0.7520`
+- on `Con`, XGBoost is better than the current nonlinear forest-style model:
+  - XGBoost LOSO mean MAE: `0.3049`
+  - XGBoost LOSO mean RMSE: `0.4479`
+- interpretation: model ranking is now animal-dependent; the benchmark should report both the custom nonlinear model and a strong library baseline rather than assuming one strict winner everywhere
 
 Simple linear reference benchmark:
 
