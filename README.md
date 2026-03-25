@@ -95,6 +95,18 @@ Train the first run-cell baseline with held-out-session evaluation:
 PYTHONPATH=src python scripts/train_run_cell_baseline.py --input data/processed/bon_run_cell_model_table.csv
 ```
 
+Train the pure-Python nonlinear baseline with held-out-session evaluation:
+
+```bash
+PYTHONPATH=src python scripts/train_run_cell_nonlinear.py --input data/processed/bon_run_cell_model_table.csv
+```
+
+Run leave-one-session-out evaluation for the nonlinear baseline:
+
+```bash
+PYTHONPATH=src python scripts/train_run_cell_nonlinear.py --input data/processed/bon_run_cell_model_table.csv --leave-one-session-out
+```
+
 Recommended default benchmark:
 
 ```bash
@@ -125,6 +137,7 @@ tests/                 unit tests
 - `scripts/export_session_tables.py --all-sessions` writes combined tables across all discovered sessions for one animal.
 - `scripts/build_model_table.py` builds a run-only cell-level modeling table across all discovered sessions.
 - `scripts/train_run_cell_baseline.py` trains a simple held-out-session regression baseline on the run-cell model table, with `log_firing_rate_hz` as the default target and `movement_summaries` as the default feature set.
+- `scripts/train_run_cell_nonlinear.py` trains a pure-Python random-forest-style nonlinear baseline on the same run-cell model table and supports leave-one-session-out evaluation.
 - Duration-dependent targets such as `firing_rate_hz` and `log_firing_rate_hz` may be missing for some exported rows; the trainer filters those rows before fitting and reports the kept counts in its metrics output.
 - Current project benchmark: default run-cell baseline on held-out session `10` with MAE `0.3731`, RMSE `0.6103`.
 - Reading `.mat` files requires `scipy`, which is not vendored into this repo.
