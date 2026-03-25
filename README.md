@@ -87,7 +87,7 @@ Build a run-only modeling table across all discovered sessions:
 PYTHONPATH=src python scripts/build_model_table.py --config configs/hc6.local.json --animal Bon
 ```
 
-The run-cell model table now includes position-derived epoch features such as duration, mean/std/max speed, moving fraction, spatial range, and mean direction, plus firing-rate targets derived from epoch duration.
+The run-cell model table now includes position-derived epoch features such as duration, mean/std/max speed, moving fraction, and spatial range, plus firing-rate targets when epoch duration is available.
 
 Train the first run-cell baseline with held-out-session evaluation:
 
@@ -101,7 +101,7 @@ Recommended default benchmark:
 PYTHONPATH=src python scripts/train_run_cell_baseline.py --input data/processed/bon_run_cell_model_table.csv --target log_firing_rate_hz
 ```
 
-The baseline trainer now standardizes numeric features and fits a ridge-regularized linear model.
+The baseline trainer now standardizes numeric features, fits a ridge-regularized linear model, and filters rows with missing target values when the chosen target depends on epoch duration.
 
 ## Project layout
 
@@ -123,6 +123,7 @@ tests/                 unit tests
 - `scripts/export_session_tables.py` writes an epoch table and a cell-level spike table for one session.
 - `scripts/export_session_tables.py --all-sessions` writes combined tables across all discovered sessions for one animal.
 - `scripts/build_model_table.py` builds a run-only cell-level modeling table across all discovered sessions.
-- `scripts/train_run_cell_baseline.py` trains a simple held-out-session regression baseline on the run-cell model table, with `log_firing_rate_hz` now the preferred target.
+- `scripts/train_run_cell_baseline.py` trains a simple held-out-session regression baseline on the run-cell model table, with `log_firing_rate_hz` now the default and preferred target.
+- Duration-dependent targets such as `firing_rate_hz` and `log_firing_rate_hz` may be missing for some exported rows; the trainer filters those rows before fitting and reports the kept counts in its metrics output.
 - Current project benchmark: `log_firing_rate_hz` on held-out session `10` with MAE `0.4830`, RMSE `0.6645`.
 - Reading `.mat` files requires `scipy`, which is not vendored into this repo.

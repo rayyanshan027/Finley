@@ -35,6 +35,8 @@ Columns include:
 - cell metadata: depth, spikewidth
 - targets: `num_spikes`, `log_num_spikes`, `firing_rate_hz`, `log_firing_rate_hz`
 
+Duration-dependent targets are only populated when epoch duration can be computed from `pos.data`.
+
 ## Baseline Strategy
 
 The first baseline is a simple linear regression with:
@@ -43,9 +45,10 @@ The first baseline is a simple linear regression with:
 - target now best interpreted as `log_firing_rate_hz`
 - standardized numeric features
 - ridge regularization
-- features from task context, position counts, tetrode/cell context, depth, and spikewidth
+- features from task context, position counts, movement summaries, tetrode/cell context, depth, and spikewidth
 
 The trainer is intended as a smoke-tested baseline, not a final modeling approach.
+Rows with missing values for the selected target are filtered at training time rather than dropped during export.
 
 ## Current Baseline Result
 
@@ -66,6 +69,7 @@ Current default benchmark to beat:
 
 ## Likely Next Steps
 
+- Add targeted feature-group ablations before adding more features
 - Add richer position-derived features from `pos.data`
 - Add per-cell normalized firing targets
 - Add track-specific analyses for `TrackA` vs `TrackB`
