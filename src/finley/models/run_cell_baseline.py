@@ -23,6 +23,12 @@ class RegressionMetrics:
     rmse: float
 
 
+@dataclass(frozen=True)
+class FeatureScaler:
+    means: list[float]
+    scales: list[float]
+
+
 def load_model_table(path: str | Path) -> list[dict]:
     with Path(path).open("r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
@@ -134,6 +140,40 @@ def build_design_matrix(rows: list[dict], target_column: str) -> tuple[list[list
     return x, y
 
 
+def fit_feature_scaler(x_train: list[list[float]]) -> FeatureScaler:
+    if not x_train:
+        raise ValueError("Cannot fit scaler on empty training data.")
+    feature_count = len(x_train[0])
+    means: list[float] = []
+    scales: list[float] = []
+    for column_index in range(feature_count):
+        column = [row[column_index] for row in x_train]
+        mean = sum(column) / len(column)
+        variance = sum((value - mean) ** 2 for value in column) / len(column)
+        scale = math.sqrt(variance)
+        if scale < 1e-8:
+            scale = 1.0
+        means.append(mean)
+        scales.append(scale)
+
+    # Preserve the intercept term as a constant 1 instead of standardizing it away.
+    means[0] = 0.0
+    scales[0] = 1.0
+    return FeatureScaler(means=means, scales=scales)
+
+
+def apply_feature_scaler(x: list[list[float]], scaler: FeatureScaler) -> list[list[float]]:
+    transformed: list[list[float]] = []
+    for row in x:
+        transformed.append(
+            [
+                (value - mean) / scale
+                for value, mean, scale in zip(row, scaler.means, scaler.scales)
+            ]
+        )
+    return transformed
+
+
 def _transpose(matrix: list[list[float]]) -> list[list[float]]:
     return [list(column) for column in zip(*matrix)]
 
@@ -168,13 +208,15 @@ def _invert_matrix(matrix: list[list[float]]) -> list[list[float]]:
     return [row[n:] for row in augmented]
 
 
-def fit_linear_regression(x_train: list[list[float]], y_train: list[float]) -> list[float]:
+def fit_ridge_regression(x_train: list[list[float]], y_train: list[float], alpha: float = 1.0) -> list[float]:
     xt = _transpose(x_train)
     xtx = _matmul(xt, x_train)
     xty = [sum(feature * target for feature, target in zip(column, y_train)) for column in xt]
-    identity_jitter = 1e-8
     xtx = [
-        [value + (identity_jitter if i == j else 0.0) for j, value in enumerate(row)]
+        [
+            value + (alpha if i == j and i != 0 else 0.0)
+            for j, value in enumerate(row)
+        ]
         for i, row in enumerate(xtx)
     ]
     inv_xtx = _invert_matrix(xtx)
@@ -191,11 +233,15 @@ def compute_metrics(
     test_rows: list[dict],
     held_out_session: int,
     target_column: str,
+    ridge_alpha: float = 1.0,
 ) -> RegressionMetrics:
     x_train, y_train = build_design_matrix(train_rows, target_column=target_column)
     x_test, y_test = build_design_matrix(test_rows, target_column=target_column)
-    coefficients = fit_linear_regression(x_train, y_train)
-    predictions = predict(x_test, coefficients)
+    scaler = fit_feature_scaler(x_train)
+    x_train_scaled = apply_feature_scaler(x_train, scaler)
+    x_test_scaled = apply_feature_scaler(x_test, scaler)
+    coefficients = fit_ridge_regression(x_train_scaled, y_train, alpha=ridge_alpha)
+    predictions = predict(x_test_scaled, coefficients)
     errors = [prediction - actual for prediction, actual in zip(predictions, y_test)]
     mae = sum(abs(error) for error in errors) / len(errors)
     rmse = math.sqrt(sum(error * error for error in errors) / len(errors))

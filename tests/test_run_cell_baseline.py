@@ -2,7 +2,12 @@ from __future__ import annotations
 
 import unittest
 
-from finley.models.run_cell_baseline import build_design_matrix, split_by_session
+from finley.models.run_cell_baseline import (
+    apply_feature_scaler,
+    build_design_matrix,
+    fit_feature_scaler,
+    split_by_session,
+)
 
 
 class RunCellBaselineTests(unittest.TestCase):
@@ -55,6 +60,17 @@ class RunCellBaselineTests(unittest.TestCase):
         self.assertEqual(len(x), 1)
         self.assertEqual(len(x[0]), 29)
         self.assertEqual(len(y), 1)
+
+    def test_feature_scaler_preserves_intercept_and_scales_columns(self) -> None:
+        x = [
+            [1.0, 10.0, 100.0],
+            [1.0, 20.0, 300.0],
+        ]
+        scaler = fit_feature_scaler(x)
+        transformed = apply_feature_scaler(x, scaler)
+        self.assertEqual(transformed[0][0], 1.0)
+        self.assertEqual(transformed[1][0], 1.0)
+        self.assertAlmostEqual(sum(row[1] for row in transformed) / 2, 0.0)
 
 
 if __name__ == "__main__":

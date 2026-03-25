@@ -30,6 +30,12 @@ def parse_args() -> argparse.Namespace:
         default="artifacts/run_cell_baseline_metrics.json",
         help="Path to JSON metrics output.",
     )
+    parser.add_argument(
+        "--ridge-alpha",
+        type=float,
+        default=1.0,
+        help="Ridge regularization strength for the baseline.",
+    )
     return parser.parse_args()
 
 
@@ -42,6 +48,7 @@ def main() -> None:
         split.test_rows,
         held_out_session=split.held_out_session,
         target_column=args.target,
+        ridge_alpha=args.ridge_alpha,
     )
 
     output_path = Path(args.output)
