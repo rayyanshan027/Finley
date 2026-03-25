@@ -212,6 +212,22 @@ Current session-adaptive result:
 - explicit one-hot within-session identity features were worse than the adaptive baseline despite high unit overlap across epochs
 - epoch-specific diagnostics showed that the most recent adapted epoch is usually a better calibrator than pooling older and newer adaptation epochs with equal weight
 
+Current benchmark snapshot:
+
+| Setting | Animal | Split | Metric summary |
+| --- | --- | --- | --- |
+| Ridge reference | Bon | held-out session `10` | MAE `0.3731`, RMSE `0.6103` |
+| Nonlinear strict LOSO | Bon | all sessions | mean MAE `0.4265`, mean RMSE `0.5764` |
+| Nonlinear adaptive latest-unit residual | Bon | hard sessions `6,7,9`, `1` adapted epoch | mean MAE `0.1897`, mean RMSE `0.3031` |
+| Nonlinear strict LOSO | Con | all sessions | mean MAE `0.3370`, mean RMSE `0.4848` |
+| Nonlinear adaptive latest-unit residual | Con | hard sessions `1,3,4`, `1` adapted epoch | mean MAE `0.2469` |
+
+Multi-animal takeaway:
+
+- the strict LOSO nonlinear benchmark transfers from `Bon` to `Con`
+- the adaptive latest-epoch residual method also transfers to `Con`
+- `Con` appears easier than `Bon` under the same strict LOSO setup, but both animals benefit strongly from the adaptive calibration step
+
 Simple linear reference:
 
 - model: ridge baseline

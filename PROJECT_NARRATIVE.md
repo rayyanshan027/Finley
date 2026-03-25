@@ -32,6 +32,18 @@ Build a practical ML workflow for CRCNS HC-6 data on Eureka HPC, starting from o
 - Session-to-session variation in active cells and spike counts is substantial, so cross-session evaluation matters.
 - Harder held-out sessions are currently `6`, `7`, and especially `9`.
 
+## Second Animal Check (`Con`)
+
+- `Con` also loads and exports cleanly through the same HC-6 workflow
+- `Con` strict LOSO nonlinear result with `movement_summaries`, `population_context`, and `cell_metadata`:
+  - mean MAE: `0.3370`
+  - mean RMSE: `0.4848`
+- this is better than `Bon` under the same benchmark, suggesting `Con` is an easier or cleaner prediction regime
+- harder held-out `Con` sessions are currently `1`, `3`, and `4`
+- the adaptive latest-epoch residual method transfers to `Con`:
+  - on sessions `1`, `3`, and `4`, adding `1` labeled epoch reduces mean MAE from about `0.3934` to about `0.2469`
+- interpretation: the adaptive residual-calibration story is not specific to `Bon`; it carries to at least one additional animal
+
 ## Current Modeling Shape
 
 The current modeling table is one row per `(session, epoch, tetrode, cell)` during `run` epochs only.
