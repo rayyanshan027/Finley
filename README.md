@@ -49,6 +49,18 @@ Run the starter baseline:
 PYTHONPATH=src python scripts/train_baseline.py --config configs/hc6.local.json
 ```
 
+Inspect one real HC-6 session before writing model code:
+
+```bash
+PYTHONPATH=src python scripts/inspect_mat.py --config configs/hc6.local.json --animal Bon --session 3
+```
+
+Load one session as a smoke test once `scipy` is available:
+
+```bash
+PYTHONPATH=src python scripts/load_session.py --config configs/hc6.local.json --animal Bon --session 3
+```
+
 ## Project layout
 
 ```text
@@ -64,4 +76,5 @@ tests/                 unit tests
 ## Notes
 
 - The inventory output now includes `modality`, `session`, and `top_level_dir` columns derived from filenames like `bonspikes03.mat`.
-- Once you decide the target task, the next step is to add parsers for the `.mat` contents you want to model first.
+- `scripts/inspect_mat.py` is the intended first step for understanding the actual `.mat` contents on Eureka.
+- Reading `.mat` files requires `scipy`, which is not vendored into this repo.
