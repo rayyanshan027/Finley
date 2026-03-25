@@ -72,7 +72,52 @@ def summarize_unit_overlap(adaptation_rows: list[dict], evaluation_rows: list[di
     }
 
 
+def fit_unit_residual_offsets(
+    rows: list[dict],
+    residuals: list[float],
+    shrinkage: float = 4.0,
+) -> dict[tuple[int, int], float]:
+    if shrinkage < 0:
+        raise ValueError("shrinkage must be non-negative.")
+    if len(rows) != len(residuals):
+        raise ValueError("rows and residuals must have the same length.")
+
+    residual_sums: dict[tuple[int, int], float] = {}
+    residual_counts: dict[tuple[int, int], int] = {}
+    for row, residual in zip(rows, residuals):
+        key = get_within_session_unit_key(row)
+        residual_sums[key] = residual_sums.get(key, 0.0) + float(residual)
+        residual_counts[key] = residual_counts.get(key, 0) + 1
+
+    offsets: dict[tuple[int, int], float] = {}
+    for key, residual_sum in residual_sums.items():
+        count = residual_counts[key]
+        mean_residual = residual_sum / count
+        offsets[key] = (count / (count + shrinkage)) * mean_residual
+    return offsets
+
+
+def apply_unit_residual_offsets(
+    rows: list[dict],
+    predictions: list[float],
+    offsets: dict[tuple[int, int], float],
+) -> tuple[list[float], int]:
+    if len(rows) != len(predictions):
+        raise ValueError("rows and predictions must have the same length.")
+
+    corrected_predictions: list[float] = []
+    corrected_row_count = 0
+    for row, prediction in zip(rows, predictions):
+        offset = offsets.get(get_within_session_unit_key(row), 0.0)
+        if offset != 0.0:
+            corrected_row_count += 1
+        corrected_predictions.append(float(prediction) + offset)
+    return corrected_predictions, corrected_row_count
+
+
 __all__ = [
+    "apply_unit_residual_offsets",
+    "fit_unit_residual_offsets",
     "get_within_session_unit_key",
     "list_session_epochs",
     "split_session_adaptation_rows",

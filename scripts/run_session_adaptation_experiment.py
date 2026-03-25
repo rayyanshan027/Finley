@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 
 from finley.analysis.adaptation import (
+    apply_unit_residual_offsets,
+    fit_unit_residual_offsets,
     split_session_adaptation_rows,
     summarize_errors,
     summarize_unit_overlap,
@@ -70,9 +72,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--model-variants",
         nargs="+",
-        default=["baseline", "session_unit_identity"],
-        choices=["baseline", "session_unit_identity"],
+        default=["baseline", "session_unit_identity", "baseline_plus_unit_residual"],
+        choices=["baseline", "session_unit_identity", "baseline_plus_unit_residual"],
         help="Adaptive model variants to evaluate.",
+    )
+    parser.add_argument(
+        "--unit-residual-shrinkage",
+        type=float,
+        default=4.0,
+        help="Shrinkage strength for per-unit residual offsets.",
     )
     parser.add_argument(
         "--n-estimators",
@@ -133,6 +141,7 @@ def evaluate_adaptation_setting(
     feature_groups: list[str],
     config: TreeRegressorConfig,
     model_variant: str,
+    unit_residual_shrinkage: float,
 ) -> dict:
     train_rows, test_rows, adaptation_epochs, evaluation_epochs = split_session_adaptation_rows(
         rows,
@@ -164,12 +173,39 @@ def evaluate_adaptation_setting(
 
     forest = fit_random_forest(x_train, y_train, config=config)
     predictions = predict_forest(x_test, forest)
+    corrected_row_count = 0
+    unit_residual_offset_count = 0
+    if model_variant == "baseline_plus_unit_residual":
+        x_adaptation = build_feature_matrix(
+            filtered_adaptation_rows,
+            feature_groups=feature_groups,
+        )
+        adaptation_predictions = predict_forest(x_adaptation, forest)
+        adaptation_residuals = [
+            float(actual) - float(prediction)
+            for prediction, actual in zip(
+                adaptation_predictions,
+                [row[target_column] for row in filtered_adaptation_rows],
+            )
+        ]
+        unit_offsets = fit_unit_residual_offsets(
+            filtered_adaptation_rows,
+            adaptation_residuals,
+            shrinkage=unit_residual_shrinkage,
+        )
+        predictions, corrected_row_count = apply_unit_residual_offsets(
+            filtered_test_rows,
+            predictions,
+            unit_offsets,
+        )
+        unit_residual_offset_count = len(unit_offsets)
     errors = [float(prediction) - float(actual) for prediction, actual in zip(predictions, y_test)]
     summary = summarize_errors(errors)
     return {
         "held_out_session": held_out_session,
         "model_variant": model_variant,
         "uses_session_unit_identity": model_variant == "session_unit_identity",
+        "uses_unit_residual_correction": model_variant == "baseline_plus_unit_residual",
         "adaptation_epoch_count": adaptation_epoch_count,
         "adaptation_epochs": adaptation_epochs,
         "evaluation_epochs": evaluation_epochs,
@@ -180,6 +216,9 @@ def evaluate_adaptation_setting(
         "session_unit_feature_count": (
             session_unit_encoder.feature_count if session_unit_encoder is not None else 0
         ),
+        "unit_residual_shrinkage": unit_residual_shrinkage,
+        "unit_residual_offset_count": unit_residual_offset_count,
+        "corrected_evaluation_row_count": corrected_row_count,
         **overlap_summary,
         **summary,
     }
@@ -209,6 +248,7 @@ def main() -> None:
                         feature_groups=args.feature_groups,
                         config=config,
                         model_variant=model_variant,
+                        unit_residual_shrinkage=args.unit_residual_shrinkage,
                     )
                 )
 
@@ -223,6 +263,7 @@ def main() -> None:
         "min_samples_leaf": config.min_samples_leaf,
         "max_features": config.max_features,
         "random_seed": config.random_seed,
+        "unit_residual_shrinkage": args.unit_residual_shrinkage,
         "results": results,
     }
 

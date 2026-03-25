@@ -3,6 +3,8 @@ from __future__ import annotations
 import unittest
 
 from finley.analysis.adaptation import (
+    apply_unit_residual_offsets,
+    fit_unit_residual_offsets,
     list_session_epochs,
     split_session_adaptation_rows,
     summarize_unit_overlap,
@@ -62,6 +64,30 @@ class AdaptationTests(unittest.TestCase):
         self.assertAlmostEqual(summary["shared_unit_fraction"], 0.5)
         self.assertEqual(summary["evaluation_rows_on_seen_units"], 2)
         self.assertAlmostEqual(summary["evaluation_row_seen_unit_fraction"], 2 / 3)
+
+    def test_fit_unit_residual_offsets_applies_shrinkage_per_unit(self) -> None:
+        rows = [
+            {"session": 6, "epoch": 2, "tetrode": 1, "cell": 1},
+            {"session": 6, "epoch": 4, "tetrode": 1, "cell": 1},
+            {"session": 6, "epoch": 2, "tetrode": 1, "cell": 2},
+        ]
+        residuals = [0.6, 0.2, -0.3]
+        offsets = fit_unit_residual_offsets(rows, residuals, shrinkage=2.0)
+        self.assertAlmostEqual(offsets[(1, 1)], 0.2)
+        self.assertAlmostEqual(offsets[(1, 2)], -0.1)
+
+    def test_apply_unit_residual_offsets_only_changes_seen_units(self) -> None:
+        rows = [
+            {"session": 6, "epoch": 6, "tetrode": 1, "cell": 1},
+            {"session": 6, "epoch": 6, "tetrode": 1, "cell": 3},
+        ]
+        predictions, corrected_count = apply_unit_residual_offsets(
+            rows,
+            [1.0, 2.0],
+            {(1, 1): 0.25},
+        )
+        self.assertEqual(predictions, [1.25, 2.0])
+        self.assertEqual(corrected_count, 1)
 
 
 if __name__ == "__main__":
