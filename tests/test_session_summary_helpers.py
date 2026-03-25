@@ -67,10 +67,18 @@ class SessionSummaryHelperTests(unittest.TestCase):
                 "mean_speed": None,
                 "std_speed": None,
                 "max_speed": None,
+                "speed_q25": None,
+                "speed_q50": None,
+                "speed_q75": None,
                 "moving_fraction": None,
+                "fast_fraction": None,
+                "path_length": None,
+                "step_length_mean": None,
+                "step_length_max": None,
                 "x_range": None,
                 "y_range": None,
                 "mean_dir": None,
+                "dir_std": None,
                 "rawpos_rows": 10,
                 "spike_tetrode_count": 1,
                 "spike_cell_count": 1,
@@ -87,10 +95,18 @@ class SessionSummaryHelperTests(unittest.TestCase):
                 "mean_speed": 1.5,
                 "std_speed": 0.3,
                 "max_speed": 2.5,
+                "speed_q25": 1.0,
+                "speed_q50": 1.5,
+                "speed_q75": 2.0,
                 "moving_fraction": 0.6,
+                "fast_fraction": 0.2,
+                "path_length": 22.0,
+                "step_length_mean": 2.2,
+                "step_length_max": 3.2,
                 "x_range": 12.0,
                 "y_range": 6.0,
                 "mean_dir": 120.0,
+                "dir_std": 11.0,
                 "rawpos_rows": 21,
                 "spike_tetrode_count": 2,
                 "spike_cell_count": 3,
@@ -149,6 +165,9 @@ class SessionSummaryHelperTests(unittest.TestCase):
         self.assertEqual(features["epoch_duration_sec"], 2.0)
         self.assertEqual(features["mean_speed"], 8.0 / 3.0)
         self.assertEqual(features["max_speed"], 5.0)
+        self.assertEqual(features["speed_q50"], 3.0)
+        self.assertEqual(features["fast_fraction"], 1 / 3)
+        self.assertAlmostEqual(features["path_length"], 3 * (5 ** 0.5))
         self.assertEqual(features["x_range"], 3.0)
         self.assertEqual(features["y_range"], 6.0)
 

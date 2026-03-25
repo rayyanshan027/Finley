@@ -272,34 +272,34 @@ def _to_float_list(value: Any) -> list[float]:
 
 
 def _extract_pos_feature_map(pos_struct: Any) -> dict[str, float | None]:
+    empty_result = {
+        "epoch_duration_sec": None,
+        "mean_speed": None,
+        "std_speed": None,
+        "max_speed": None,
+        "speed_q25": None,
+        "speed_q50": None,
+        "speed_q75": None,
+        "moving_fraction": None,
+        "fast_fraction": None,
+        "path_length": None,
+        "step_length_mean": None,
+        "step_length_max": None,
+        "x_range": None,
+        "y_range": None,
+        "mean_dir": None,
+        "dir_std": None,
+    }
     data = _scalarize(getattr(pos_struct, "data", None))
     if _is_empty(data) or not _is_array_like(data):
-        return {
-            "epoch_duration_sec": None,
-            "mean_speed": None,
-            "std_speed": None,
-            "max_speed": None,
-            "moving_fraction": None,
-            "x_range": None,
-            "y_range": None,
-            "mean_dir": None,
-        }
+        return empty_result
 
     fields_text = _to_python_string(getattr(pos_struct, "fields", None)) or ""
     field_names = fields_text.split()
     field_index = {field_name: index for index, field_name in enumerate(field_names)}
     shape = getattr(data, "shape", ())
     if len(shape) < 2 or shape[1] == 0:
-        return {
-            "epoch_duration_sec": None,
-            "mean_speed": None,
-            "std_speed": None,
-            "max_speed": None,
-            "moving_fraction": None,
-            "x_range": None,
-            "y_range": None,
-            "mean_dir": None,
-        }
+        return empty_result
 
     def column_values(column_name: str) -> list[float]:
         index = field_index.get(column_name)
@@ -313,6 +313,20 @@ def _extract_pos_feature_map(pos_struct: Any) -> dict[str, float | None]:
     dir_values = column_values("dir")
     vel_values = column_values("vel")
 
+    def quantile(values: list[float], q: float) -> float | None:
+        if not values:
+            return None
+        ordered = sorted(values)
+        if len(ordered) == 1:
+            return ordered[0]
+        position = (len(ordered) - 1) * q
+        lower = int(math.floor(position))
+        upper = int(math.ceil(position))
+        if lower == upper:
+            return ordered[lower]
+        weight = position - lower
+        return ordered[lower] * (1.0 - weight) + ordered[upper] * weight
+
     epoch_duration_sec = None
     if len(time_values) >= 2:
         epoch_duration_sec = float(time_values[-1] - time_values[0])
@@ -323,23 +337,53 @@ def _extract_pos_feature_map(pos_struct: Any) -> dict[str, float | None]:
         mean = mean_speed or 0.0
         std_speed = math.sqrt(sum((value - mean) ** 2 for value in vel_values) / len(vel_values))
     max_speed = max(vel_values) if vel_values else None
+    speed_q25 = quantile(vel_values, 0.25)
+    speed_q50 = quantile(vel_values, 0.50)
+    speed_q75 = quantile(vel_values, 0.75)
     moving_fraction = None
     if vel_values:
         moving_count = sum(1 for value in vel_values if value > 0.0)
         moving_fraction = moving_count / len(vel_values)
+    fast_fraction = None
+    if vel_values:
+        fast_count = sum(1 for value in vel_values if value >= 5.0)
+        fast_fraction = fast_count / len(vel_values)
+
+    step_lengths: list[float] = []
+    if len(x_values) >= 2 and len(y_values) >= 2:
+        for index in range(1, min(len(x_values), len(y_values))):
+            dx = x_values[index] - x_values[index - 1]
+            dy = y_values[index] - y_values[index - 1]
+            step_lengths.append(math.sqrt(dx * dx + dy * dy))
+    path_length = sum(step_lengths) if step_lengths else None
+    step_length_mean = (sum(step_lengths) / len(step_lengths)) if step_lengths else None
+    step_length_max = max(step_lengths) if step_lengths else None
+
     x_range = (max(x_values) - min(x_values)) if x_values else None
     y_range = (max(y_values) - min(y_values)) if y_values else None
     mean_dir = sum(dir_values) / len(dir_values) if dir_values else None
+    dir_std = None
+    if dir_values:
+        mean = mean_dir or 0.0
+        dir_std = math.sqrt(sum((value - mean) ** 2 for value in dir_values) / len(dir_values))
 
     return {
         "epoch_duration_sec": epoch_duration_sec,
         "mean_speed": mean_speed,
         "std_speed": std_speed,
         "max_speed": max_speed,
+        "speed_q25": speed_q25,
+        "speed_q50": speed_q50,
+        "speed_q75": speed_q75,
         "moving_fraction": moving_fraction,
+        "fast_fraction": fast_fraction,
+        "path_length": path_length,
+        "step_length_mean": step_length_mean,
+        "step_length_max": step_length_max,
         "x_range": x_range,
         "y_range": y_range,
         "mean_dir": mean_dir,
+        "dir_std": dir_std,
     }
 
 
@@ -410,10 +454,18 @@ def build_epoch_rows_from_loaded(
                 "mean_speed": pos_features["mean_speed"],
                 "std_speed": pos_features["std_speed"],
                 "max_speed": pos_features["max_speed"],
+                "speed_q25": pos_features["speed_q25"],
+                "speed_q50": pos_features["speed_q50"],
+                "speed_q75": pos_features["speed_q75"],
                 "moving_fraction": pos_features["moving_fraction"],
+                "fast_fraction": pos_features["fast_fraction"],
+                "path_length": pos_features["path_length"],
+                "step_length_mean": pos_features["step_length_mean"],
+                "step_length_max": pos_features["step_length_max"],
                 "x_range": pos_features["x_range"],
                 "y_range": pos_features["y_range"],
                 "mean_dir": pos_features["mean_dir"],
+                "dir_std": pos_features["dir_std"],
                 "rawpos_rows": _array_row_count(getattr(rawpos_struct, "data", None)),
                 "rawpos_fields": _to_python_string(getattr(rawpos_struct, "fields", None)),
                 "spike_tetrode_count": len(stats["tetrodes"]),
@@ -499,10 +551,18 @@ def build_run_cell_model_rows(epoch_rows: list[dict[str, Any]], cell_rows: list[
                 "mean_speed": epoch["mean_speed"],
                 "std_speed": epoch["std_speed"],
                 "max_speed": epoch["max_speed"],
+                "speed_q25": epoch["speed_q25"],
+                "speed_q50": epoch["speed_q50"],
+                "speed_q75": epoch["speed_q75"],
                 "moving_fraction": epoch["moving_fraction"],
+                "fast_fraction": epoch["fast_fraction"],
+                "path_length": epoch["path_length"],
+                "step_length_mean": epoch["step_length_mean"],
+                "step_length_max": epoch["step_length_max"],
                 "x_range": epoch["x_range"],
                 "y_range": epoch["y_range"],
                 "mean_dir": epoch["mean_dir"],
+                "dir_std": epoch["dir_std"],
                 "rawpos_rows": int(epoch["rawpos_rows"]),
                 "spike_tetrode_count": int(epoch["spike_tetrode_count"]),
                 "spike_cell_count": int(epoch["spike_cell_count"]),
