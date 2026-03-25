@@ -62,7 +62,7 @@ class HC6InventoryTests(unittest.TestCase):
             eeg.mkdir(parents=True)
             (root / "bonspikes03.mat").write_text("a", encoding="utf-8")
             (root / "boncellinfo.mat").write_text("b", encoding="utf-8")
-            (eeg / "boneeg03.mat").write_text("c", encoding="utf-8")
+            (eeg / "boneeg03-1-02.mat").write_text("c", encoding="utf-8")
 
             config = DatasetConfig(root=root, animals=["Bon"], allowed_extensions=[".mat"], ignore_hidden=True)
             records = scan_dataset(config)
@@ -72,7 +72,8 @@ class HC6InventoryTests(unittest.TestCase):
             self.assertEqual(by_path["bonspikes03.mat"]["session"], 3)
             self.assertEqual(by_path["boncellinfo.mat"]["modality"], "cellinfo")
             self.assertIsNone(by_path["boncellinfo.mat"]["session"])
-            self.assertEqual(by_path["EEG/boneeg03.mat"]["modality"], "eeg")
+            self.assertEqual(by_path["EEG/boneeg03-1-02.mat"]["modality"], "eeg")
+            self.assertEqual(by_path["EEG/boneeg03-1-02.mat"]["session"], 3)
 
 
 if __name__ == "__main__":

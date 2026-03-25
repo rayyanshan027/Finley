@@ -29,6 +29,11 @@ def _infer_metadata(animal: str, relative_path: Path) -> tuple[str, int | None, 
     stem = relative_path.stem.lower()
 
     if top_level_dir.lower() == "eeg":
+        eeg_pattern = re.compile(rf"^{re.escape(animal.lower())}eeg(?P<session>\d+)(?:-\d+-\d+)?$")
+        eeg_match = eeg_pattern.match(stem)
+        if eeg_match:
+            return "eeg", int(eeg_match.group("session")), top_level_dir
+
         session_match = re.search(r"(\d+)$", stem)
         session = int(session_match.group(1)) if session_match else None
         return "eeg", session, top_level_dir
