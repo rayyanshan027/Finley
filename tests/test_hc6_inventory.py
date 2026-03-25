@@ -75,6 +75,23 @@ class HC6InventoryTests(unittest.TestCase):
             self.assertEqual(by_path["EEG/boneeg03-1-02.mat"]["modality"], "eeg")
             self.assertEqual(by_path["EEG/boneeg03-1-02.mat"]["session"], 3)
 
+    def test_scan_dataset_extracts_hc6_metadata_from_extracted_root(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir) / "extracted"
+            bon = root / "Bon"
+            eeg = bon / "EEG"
+            eeg.mkdir(parents=True)
+            (bon / "bonspikes03.mat").write_text("a", encoding="utf-8")
+            (eeg / "boneeg03-1-02.mat").write_text("b", encoding="utf-8")
+
+            config = DatasetConfig(root=root, animals=["Bon"], allowed_extensions=[".mat"], ignore_hidden=True)
+            records = scan_dataset(config)
+
+            by_path = {record["relative_path"]: record for record in records}
+            self.assertEqual(by_path["Bon/bonspikes03.mat"]["modality"], "spikes")
+            self.assertEqual(by_path["Bon/EEG/boneeg03-1-02.mat"]["modality"], "eeg")
+            self.assertEqual(by_path["Bon/EEG/boneeg03-1-02.mat"]["session"], 3)
+
 
 if __name__ == "__main__":
     unittest.main()

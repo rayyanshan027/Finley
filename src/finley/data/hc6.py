@@ -25,8 +25,12 @@ def _is_hidden(path: Path) -> bool:
 
 
 def _infer_metadata(animal: str, relative_path: Path) -> tuple[str, int | None, str]:
-    top_level_dir = relative_path.parts[0] if len(relative_path.parts) > 1 else "."
-    stem = relative_path.stem.lower()
+    normalized_path = relative_path
+    if relative_path.parts and relative_path.parts[0].lower() == animal.lower():
+        normalized_path = Path(*relative_path.parts[1:]) if len(relative_path.parts) > 1 else Path(".")
+
+    top_level_dir = normalized_path.parts[0] if len(normalized_path.parts) > 1 else "."
+    stem = normalized_path.stem.lower()
 
     if top_level_dir.lower() == "eeg":
         eeg_pattern = re.compile(rf"^{re.escape(animal.lower())}eeg(?P<session>\d+)(?:-\d+-\d+)?$")
