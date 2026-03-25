@@ -45,6 +45,19 @@ Build a practical ML workflow for CRCNS HC-6 data on Eureka HPC, starting from o
   - on sessions `1`, `3`, and `4`, adding `1` labeled epoch reduces mean MAE from about `0.3934` to about `0.2469`
 - interpretation: the adaptive residual-calibration story is not specific to `Bon`; it carries to at least one additional animal
 
+## Third Animal Check (`Cor`)
+
+- `Cor` now loads, exports, and builds a run-cell model table through the same HC-6 workflow after fixing a case-sensitive session-file naming bug in the loader
+- `Cor` strict LOSO nonlinear result with `movement_summaries`, `population_context`, and `cell_metadata`:
+  - mean MAE: `0.3474`
+  - mean RMSE: `0.4500`
+- this is close to `Con` on the strict nonlinear benchmark and substantially better than `Bon`
+- XGBoost is much worse on `Cor`, with LOSO mean MAE `0.5945` and mean RMSE `0.7296`
+- harder held-out `Cor` sessions are currently `1`, `6`, and `9`
+- the adaptive latest-epoch residual method also transfers to `Cor`:
+  - on sessions `1`, `6`, and `9`, adding `1` labeled epoch reduces mean MAE from about `0.4014` to about `0.3265`
+- interpretation: the adaptive residual-calibration result now transfers across three animals, while the strict-model ranking remains animal-dependent
+
 ## Current Modeling Shape
 
 The current modeling table is one row per `(session, epoch, tetrode, cell)` during `run` epochs only.
@@ -105,6 +118,9 @@ Standard-library comparison:
 - on `Con`, XGBoost is better than the current nonlinear forest-style model:
   - XGBoost LOSO mean MAE: `0.3049`
   - XGBoost LOSO mean RMSE: `0.4479`
+- on `Cor`, XGBoost is substantially worse than the current nonlinear forest-style model:
+  - XGBoost LOSO mean MAE: `0.5945`
+  - XGBoost LOSO mean RMSE: `0.7296`
 - interpretation: model ranking is now animal-dependent; the benchmark should report both the custom nonlinear model and a strong library baseline rather than assuming one strict winner everywhere
 
 Simple linear reference benchmark:
@@ -264,7 +280,7 @@ Latest-epoch residual follow-up:
 - Explicit one-hot unit identity should not be the default adaptive path
 - Next best step: test recency-weighted residual pooling or explicit epoch-distance weighting to see whether it can beat the latest-epoch-only rule without reintroducing the pooling penalty
 - Consider models that operate on actual spike-event rows or finer temporal bins if per-cell epoch aggregates are collapsing too much structure
-- Expand from `Bon` to additional animals once the single-animal workflow is stable
+- Expand beyond `Bon`, `Con`, and `Cor` once the current three-animal benchmark sheet is frozen and easy to reproduce
 
 The target-selection question is now mostly settled for the current phase:
 
@@ -286,7 +302,7 @@ This is a reasonable stopping point for the initial linear-baseline phase:
 - pipeline is end-to-end
 - exports are stable and fast enough to use on Eureka
 - the repo now has a reproducible benchmark
-- the project now has a better default target (`log_firing_rate_hz`), a simple ridge reference, a strong strict-LOSO nonlinear benchmark, and a stronger session-adaptive benchmark based on latest-epoch per-unit residual correction with `unit_residual_shrinkage=0.0`
+- the project now has a better default target (`log_firing_rate_hz`), a simple ridge reference, a three-animal strict-LOSO benchmark with both custom nonlinear and XGBoost comparisons, and a stronger session-adaptive benchmark based on latest-epoch per-unit residual correction with `unit_residual_shrinkage=0.0`
 - the remaining problem is now localized well enough to focus on repeated-cell failures and hard-session modeling rather than more pipeline scaffolding
 
 The next phase should focus on session adaptation, unit-aware residual diagnostics, and failure-mode-specific modeling changes, not more scaffolding.
