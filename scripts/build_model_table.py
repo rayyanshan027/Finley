@@ -20,8 +20,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--animal", default="Bon", help="Animal ID, for example Bon.")
     parser.add_argument(
         "--output",
-        default="data/processed/bon_run_cell_model_table.csv",
-        help="Path to output CSV.",
+        default=None,
+        help="Path to output CSV. Defaults to data/processed/<animal>_run_cell_model_table.csv.",
     )
     return parser.parse_args()
 
@@ -58,7 +58,11 @@ def main() -> None:
         cell_rows.extend(session_cell_rows)
 
     model_rows = build_run_cell_model_rows(epoch_rows, cell_rows)
-    output_path = Path(args.output)
+    output_path = (
+        Path(args.output)
+        if args.output is not None
+        else Path("data/processed") / f"{args.animal.lower()}_run_cell_model_table.csv"
+    )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     write_csv(output_path, model_rows)
 

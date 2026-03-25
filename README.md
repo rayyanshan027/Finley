@@ -87,6 +87,8 @@ Build a run-only modeling table across all discovered sessions:
 PYTHONPATH=src python scripts/build_model_table.py --config configs/hc6.local.json --animal Bon
 ```
 
+If `--output` is omitted, this writes `data/processed/<animal>_run_cell_model_table.csv`.
+
 The run-cell model table now includes position-derived epoch features such as duration, mean/std/max speed, moving fraction, and spatial range, plus firing-rate targets when epoch duration is available.
 
 Train the first run-cell baseline with held-out-session evaluation:
