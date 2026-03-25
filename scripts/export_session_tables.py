@@ -5,7 +5,7 @@ import csv
 from pathlib import Path
 
 from finley.config import load_config
-from finley.data.session import build_cell_rows, build_epoch_rows
+from finley.data.session import build_cell_rows_from_loaded, build_epoch_rows_from_loaded, load_session_files
 
 
 def parse_args() -> argparse.Namespace:
@@ -35,8 +35,9 @@ def main() -> None:
     args = parse_args()
     config = load_config(args.config)
 
-    epoch_rows = build_epoch_rows(config.dataset, args.animal, args.session)
-    cell_rows = build_cell_rows(config.dataset, args.animal, args.session)
+    loaded = load_session_files(config.dataset, args.animal, args.session)
+    cell_rows = build_cell_rows_from_loaded(loaded, args.animal, args.session)
+    epoch_rows = build_epoch_rows_from_loaded(loaded, args.animal, args.session, cell_rows=cell_rows)
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)

@@ -95,6 +95,12 @@ def _is_empty(value: Any) -> bool:
 def _scalarize(value: Any) -> Any:
     current = value
     while _is_array_like(current) and int(current.size) == 1:
+        if hasattr(current, "item"):
+            try:
+                current = current.item()
+                continue
+            except ValueError:
+                pass
         current = next(iter(current.flat))
     return current
 
@@ -142,12 +148,22 @@ def _extract_session_array(contents: dict[str, Any], key: str, session: int) -> 
     return root
 
 
+def _extract_loaded_session_arrays(loaded: dict[str, dict], session: int) -> dict[str, Any]:
+    return {
+        "spikes": _extract_session_array(loaded["spikes"], "spikes", session),
+        "pos": _extract_session_array(loaded["pos"], "pos", session),
+        "task": _extract_session_array(loaded["task"], "task", session),
+        "rawpos": _extract_session_array(loaded["rawpos"], "rawpos", session),
+    }
+
+
 def summarize_session_data(config: DatasetConfig, animal: str, session: int) -> dict[str, Any]:
     loaded = load_session_files(config, animal, session)
-    spikes_day = _extract_session_array(loaded["spikes"], "spikes", session)
-    pos_day = _extract_session_array(loaded["pos"], "pos", session)
-    task_day = _extract_session_array(loaded["task"], "task", session)
-    rawpos_day = _extract_session_array(loaded["rawpos"], "rawpos", session)
+    arrays = _extract_loaded_session_arrays(loaded, session)
+    spikes_day = arrays["spikes"]
+    pos_day = arrays["pos"]
+    task_day = arrays["task"]
+    rawpos_day = arrays["rawpos"]
 
     epoch_count = max(len(_iter_flat_items(task_day)), len(_iter_flat_items(pos_day)), len(_iter_flat_items(rawpos_day)))
     epochs: list[dict[str, Any]] = []
@@ -226,10 +242,20 @@ def _normalize_task_type(value: Any) -> str | None:
 
 def build_epoch_rows(config: DatasetConfig, animal: str, session: int) -> list[dict[str, Any]]:
     loaded = load_session_files(config, animal, session)
-    spikes_day = _extract_session_array(loaded["spikes"], "spikes", session)
-    pos_day = _extract_session_array(loaded["pos"], "pos", session)
-    task_day = _extract_session_array(loaded["task"], "task", session)
-    rawpos_day = _extract_session_array(loaded["rawpos"], "rawpos", session)
+    return build_epoch_rows_from_loaded(loaded, animal, session)
+
+
+def build_epoch_rows_from_loaded(
+    loaded: dict[str, dict],
+    animal: str,
+    session: int,
+    cell_rows: list[dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
+    arrays = _extract_loaded_session_arrays(loaded, session)
+    spikes_day = arrays["spikes"]
+    pos_day = arrays["pos"]
+    task_day = arrays["task"]
+    rawpos_day = arrays["rawpos"]
 
     spikes_epochs = _iter_flat_items(spikes_day)
     pos_epochs = _iter_flat_items(pos_day)
@@ -237,31 +263,32 @@ def build_epoch_rows(config: DatasetConfig, animal: str, session: int) -> list[d
     rawpos_epochs = _iter_flat_items(rawpos_day)
     epoch_count = max(len(task_epochs), len(pos_epochs), len(rawpos_epochs), len(spikes_epochs))
 
+    epoch_spike_stats: dict[int, dict[str, Any]] = {}
+    if cell_rows is not None:
+        for row in cell_rows:
+            epoch = int(row["epoch"])
+            stats = epoch_spike_stats.setdefault(
+                epoch,
+                {"tetrodes": set(), "cell_count": 0, "spike_event_rows": 0},
+            )
+            stats["tetrodes"].add(int(row["tetrode"]))
+            stats["cell_count"] += 1
+            stats["spike_event_rows"] += int(row["num_spikes"])
+
     rows: list[dict[str, Any]] = []
     for epoch_index in range(epoch_count):
         task_epoch = task_epochs[epoch_index] if epoch_index < len(task_epochs) else None
         pos_epoch = pos_epochs[epoch_index] if epoch_index < len(pos_epochs) else None
         rawpos_epoch = rawpos_epochs[epoch_index] if epoch_index < len(rawpos_epochs) else None
-        spikes_epoch = spikes_epochs[epoch_index] if epoch_index < len(spikes_epochs) else None
 
         task_struct = _scalarize(task_epoch)
         pos_struct = _scalarize(pos_epoch)
         rawpos_struct = _scalarize(rawpos_epoch)
 
-        tetrode_count = 0
-        cell_count = 0
-        spike_event_rows = 0
-        for tetrode in _iter_flat_items(spikes_epoch):
-            cells = _iter_flat_items(tetrode)
-            nonempty_cells = [cell for cell in cells if not _is_empty(cell)]
-            if nonempty_cells:
-                tetrode_count += 1
-            for cell in nonempty_cells:
-                cell_struct = _scalarize(cell)
-                rows_in_cell = _array_row_count(getattr(cell_struct, "data", None))
-                if rows_in_cell > 0:
-                    cell_count += 1
-                    spike_event_rows += rows_in_cell
+        stats = epoch_spike_stats.get(
+            epoch_index + 1,
+            {"tetrodes": set(), "cell_count": 0, "spike_event_rows": 0},
+        )
 
         rows.append(
             {
@@ -277,9 +304,9 @@ def build_epoch_rows(config: DatasetConfig, animal: str, session: int) -> list[d
                 "pos_fields": _to_python_string(getattr(pos_struct, "fields", None)),
                 "rawpos_rows": _array_row_count(getattr(rawpos_struct, "data", None)),
                 "rawpos_fields": _to_python_string(getattr(rawpos_struct, "fields", None)),
-                "spike_tetrode_count": tetrode_count,
-                "spike_cell_count": cell_count,
-                "spike_event_rows": spike_event_rows,
+                "spike_tetrode_count": len(stats["tetrodes"]),
+                "spike_cell_count": int(stats["cell_count"]),
+                "spike_event_rows": int(stats["spike_event_rows"]),
             }
         )
     return rows
@@ -287,8 +314,13 @@ def build_epoch_rows(config: DatasetConfig, animal: str, session: int) -> list[d
 
 def build_cell_rows(config: DatasetConfig, animal: str, session: int) -> list[dict[str, Any]]:
     loaded = load_session_files(config, animal, session)
-    spikes_day = _extract_session_array(loaded["spikes"], "spikes", session)
-    task_day = _extract_session_array(loaded["task"], "task", session)
+    return build_cell_rows_from_loaded(loaded, animal, session)
+
+
+def build_cell_rows_from_loaded(loaded: dict[str, dict], animal: str, session: int) -> list[dict[str, Any]]:
+    arrays = _extract_loaded_session_arrays(loaded, session)
+    spikes_day = arrays["spikes"]
+    task_day = arrays["task"]
 
     spikes_epochs = _iter_flat_items(spikes_day)
     task_epochs = _iter_flat_items(task_day)
