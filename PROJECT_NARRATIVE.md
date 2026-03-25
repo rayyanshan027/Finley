@@ -167,13 +167,28 @@ Session-adaptive comparison:
   - session `9`: MAE `0.3503`
 - interpretation: a substantial part of the remaining error is session-specific and becomes learnable with modest within-session calibration data
 
+Session-adaptive identity-feature follow-up:
+
+- adding explicit within-session unit-identity one-hot features did not help
+- with `0` adapted epochs, identity features are neutral because no held-out-session units are observed yet
+- with `1` adapted epoch, identity features are worse on every hard session:
+  - session `6`: MAE `0.3978` -> `0.4075`, RMSE `0.5949` -> `0.6361`
+  - session `7`: MAE `0.3628` -> `0.4040`, RMSE `0.5535` -> `0.6128`
+  - session `9`: MAE `0.3859` -> `0.4123`, RMSE `0.6737` -> `0.7457`
+- with `2` adapted epochs, identity features are still worse:
+  - session `6`: MAE `0.3566` -> `0.3821`, RMSE `0.6079` -> `0.6245`
+  - session `7`: MAE `0.3298` -> `0.3457`, RMSE `0.5360` -> `0.5763`
+  - session `9`: MAE `0.3503` -> `0.3720`, RMSE `0.6587` -> `0.7275`
+- interpretation: sparse one-hot unit identity is too high-variance for the amount of within-session supervision available in the `1-2` epoch adaptation setting
+
 ## Likely Next Steps
 
 - Treat the nonlinear model with `movement_summaries`, `population_context`, and `cell_metadata` as the current benchmark to beat
 - Use two benchmark modes going forward:
   - strict LOSO for unseen-session generalization
   - session-adaptive evaluation for settings where one or two labeled epochs are available
-- Test stronger cell-identity-aware approaches in the session-adaptive setting, where within-session unit labels are allowed to help
+- Keep the current adaptive benchmark as the non-identity nonlinear model; explicit one-hot unit identity should not be the default adaptive path
+- Next best step: measure unit overlap between adaptation and evaluation epochs, then test a lower-variance within-session correction such as per-unit residual adjustment or shrinkage-style target encoding instead of sparse one-hot identity
 - Consider models that operate on actual spike-event rows or finer temporal bins if per-cell epoch aggregates are collapsing too much structure
 - Expand from `Bon` to additional animals once the single-animal workflow is stable
 
@@ -188,7 +203,7 @@ Feature-engineering lesson from the current phase:
 - explicit ablations and alpha sweeps were useful, but further hand-built linear features showed diminishing returns
 - simple target clipping did not address the main failure mode
 - moving from ridge to a stronger nonlinear baseline with population and cell context gave the first meaningful hard-session improvement
-- the next phase should focus on residual structure, session adaptation, unit identity effects, and modeling changes that directly address repeated-cell failures rather than more minor feature tweaks
+- naive one-hot unit identity in the adaptive setting increased error, so the next phase should focus on lower-variance within-session corrections and unit-overlap diagnostics rather than more sparse identity features
 
 ## Phase Boundary
 
