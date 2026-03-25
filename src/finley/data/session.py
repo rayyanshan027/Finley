@@ -180,13 +180,12 @@ def summarize_session_data(config: DatasetConfig, animal: str, session: int) -> 
     task_day = arrays["task"]
     rawpos_day = arrays["rawpos"]
 
-    epoch_count = max(len(_iter_flat_items(task_day)), len(_iter_flat_items(pos_day)), len(_iter_flat_items(rawpos_day)))
-    epochs: list[dict[str, Any]] = []
-
     spikes_epochs = _iter_flat_items(spikes_day)
     pos_epochs = _iter_flat_items(pos_day)
     task_epochs = _iter_flat_items(task_day)
     rawpos_epochs = _iter_flat_items(rawpos_day)
+    epoch_count = max(len(task_epochs), len(pos_epochs), len(rawpos_epochs), len(spikes_epochs))
+    epochs: list[dict[str, Any]] = []
 
     for epoch_index in range(epoch_count):
         task_epoch = task_epochs[epoch_index] if epoch_index < len(task_epochs) else None
@@ -287,8 +286,6 @@ def _extract_pos_feature_map(pos_struct: Any) -> dict[str, float | None]:
         "step_length_max": None,
         "x_range": None,
         "y_range": None,
-        "mean_dir": None,
-        "dir_std": None,
     }
     data = _scalarize(getattr(pos_struct, "data", None))
     if _is_empty(data) or not _is_array_like(data):
@@ -310,7 +307,6 @@ def _extract_pos_feature_map(pos_struct: Any) -> dict[str, float | None]:
     time_values = column_values("time")
     x_values = column_values("x")
     y_values = column_values("y")
-    dir_values = column_values("dir")
     vel_values = column_values("vel")
 
     def quantile(values: list[float], q: float) -> float | None:
@@ -361,12 +357,6 @@ def _extract_pos_feature_map(pos_struct: Any) -> dict[str, float | None]:
 
     x_range = (max(x_values) - min(x_values)) if x_values else None
     y_range = (max(y_values) - min(y_values)) if y_values else None
-    mean_dir = sum(dir_values) / len(dir_values) if dir_values else None
-    dir_std = None
-    if dir_values:
-        mean = mean_dir or 0.0
-        dir_std = math.sqrt(sum((value - mean) ** 2 for value in dir_values) / len(dir_values))
-
     return {
         "epoch_duration_sec": epoch_duration_sec,
         "mean_speed": mean_speed,
@@ -382,8 +372,6 @@ def _extract_pos_feature_map(pos_struct: Any) -> dict[str, float | None]:
         "step_length_max": step_length_max,
         "x_range": x_range,
         "y_range": y_range,
-        "mean_dir": mean_dir,
-        "dir_std": dir_std,
     }
 
 
@@ -464,8 +452,6 @@ def build_epoch_rows_from_loaded(
                 "step_length_max": pos_features["step_length_max"],
                 "x_range": pos_features["x_range"],
                 "y_range": pos_features["y_range"],
-                "mean_dir": pos_features["mean_dir"],
-                "dir_std": pos_features["dir_std"],
                 "rawpos_rows": _array_row_count(getattr(rawpos_struct, "data", None)),
                 "rawpos_fields": _to_python_string(getattr(rawpos_struct, "fields", None)),
                 "spike_tetrode_count": len(stats["tetrodes"]),
@@ -561,8 +547,6 @@ def build_run_cell_model_rows(epoch_rows: list[dict[str, Any]], cell_rows: list[
                 "step_length_max": epoch["step_length_max"],
                 "x_range": epoch["x_range"],
                 "y_range": epoch["y_range"],
-                "mean_dir": epoch["mean_dir"],
-                "dir_std": epoch["dir_std"],
                 "rawpos_rows": int(epoch["rawpos_rows"]),
                 "spike_tetrode_count": int(epoch["spike_tetrode_count"]),
                 "spike_cell_count": int(epoch["spike_cell_count"]),

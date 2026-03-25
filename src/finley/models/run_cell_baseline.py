@@ -17,6 +17,8 @@ class TrainTestSplit:
 class RegressionMetrics:
     train_count: int
     test_count: int
+    dropped_train_count: int
+    dropped_test_count: int
     held_out_session: int
     target_column: str
     mae: float
@@ -120,8 +122,6 @@ def _feature_vector(row: dict) -> list[float]:
         float(row["step_length_max"] or 0.0),
         float(row["x_range"] or 0.0),
         float(row["y_range"] or 0.0),
-        float(row["mean_dir"] or 0.0),
-        float(row["dir_std"] or 0.0),
         float(row["rawpos_rows"]),
         float(row["spike_tetrode_count"]),
         float(other_epoch_cells),
@@ -135,9 +135,20 @@ def _feature_vector(row: dict) -> list[float]:
 def build_design_matrix(rows: list[dict], target_column: str) -> tuple[list[list[float]], list[float]]:
     if not rows:
         raise ValueError("Cannot build design matrix from empty rows.")
+    missing_target_rows = [index for index, row in enumerate(rows) if row.get(target_column) is None]
+    if missing_target_rows:
+        raise ValueError(
+            f"Target column {target_column} contains missing values in "
+            f"{len(missing_target_rows)} row(s). Filter rows before training."
+        )
     x = [_feature_vector(row) for row in rows]
     y = [float(row[target_column]) for row in rows]
     return x, y
+
+
+def filter_rows_for_target(rows: list[dict], target_column: str) -> tuple[list[dict], int]:
+    filtered = [row for row in rows if row.get(target_column) is not None]
+    return filtered, len(rows) - len(filtered)
 
 
 def fit_feature_scaler(x_train: list[list[float]]) -> FeatureScaler:
@@ -235,8 +246,14 @@ def compute_metrics(
     target_column: str,
     ridge_alpha: float = 1.0,
 ) -> RegressionMetrics:
-    x_train, y_train = build_design_matrix(train_rows, target_column=target_column)
-    x_test, y_test = build_design_matrix(test_rows, target_column=target_column)
+    filtered_train_rows, dropped_train_count = filter_rows_for_target(train_rows, target_column)
+    filtered_test_rows, dropped_test_count = filter_rows_for_target(test_rows, target_column)
+    if not filtered_train_rows or not filtered_test_rows:
+        raise ValueError(
+            f"No usable rows remain for target {target_column} after filtering missing targets."
+        )
+    x_train, y_train = build_design_matrix(filtered_train_rows, target_column=target_column)
+    x_test, y_test = build_design_matrix(filtered_test_rows, target_column=target_column)
     scaler = fit_feature_scaler(x_train)
     x_train_scaled = apply_feature_scaler(x_train, scaler)
     x_test_scaled = apply_feature_scaler(x_test, scaler)
@@ -246,8 +263,10 @@ def compute_metrics(
     mae = sum(abs(error) for error in errors) / len(errors)
     rmse = math.sqrt(sum(error * error for error in errors) / len(errors))
     return RegressionMetrics(
-        train_count=len(train_rows),
-        test_count=len(test_rows),
+        train_count=len(filtered_train_rows),
+        test_count=len(filtered_test_rows),
+        dropped_train_count=dropped_train_count,
+        dropped_test_count=dropped_test_count,
         held_out_session=held_out_session,
         target_column=target_column,
         mae=mae,
