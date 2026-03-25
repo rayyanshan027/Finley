@@ -97,12 +97,24 @@ Interpretation from the current phase:
 - harder sessions have higher spike load, denser active populations, and stronger movement intensity
 - the current linear ridge model still struggles with that harder regime even after stronger movement features
 
+Track-specific evaluation added one more useful detail:
+
+- `TrackB` carries most of the higher-intensity hard regime across sessions `6`, `7`, and `9`
+- `session 9 / TrackB` is currently the clearest hard-case example
+- `session 4 / TrackA` is a separate outlier and does not look hard for the same reason as the `TrackB` failures
+
+Current interpretation:
+
+- the main difficulty is not just mixing `TrackA` and `TrackB` in one baseline
+- the broader problem still looks like a session-specific regime shift, especially on high-intensity `TrackB` runs
+- a track-specific baseline may still be worth trying, but it is unlikely to fully solve the cross-session gap by itself
+
 ## Likely Next Steps
 
 - Compare the current linear ridge baseline against a stronger nonlinear model baseline
-- Consider track-specific baselines if staying dependency-light
+- Try track-specific baselines as a dependency-light follow-up
+- Use `session 9 / TrackB` and `session 4 / TrackA` as explicit diagnostic cases
 - Add richer position-derived features only when they are motivated by a specific failure mode
-- Add track-specific analyses for `TrackA` vs `TrackB`
 - Consider models that operate on actual spike-event rows rather than cell aggregates
 - Expand from `Bon` to additional animals once the single-animal workflow is stable
 
