@@ -7,6 +7,7 @@ from finley.models.run_cell_baseline import (
     build_design_matrix,
     compute_metrics,
     filter_rows_for_target,
+    filter_rows_by_environment,
     fit_feature_scaler,
     get_default_alpha_sweep_specs,
     get_feature_count,
@@ -161,6 +162,14 @@ class RunCellBaselineTests(unittest.TestCase):
         filtered_rows, dropped_count = filter_rows_for_target(rows, "log_firing_rate_hz")
         self.assertEqual(len(filtered_rows), 1)
         self.assertEqual(dropped_count, 1)
+
+    def test_filter_rows_by_environment_keeps_only_requested_track(self) -> None:
+        rows = [
+            {"task_environment": "TrackA", "value": 1},
+            {"task_environment": "TrackB", "value": 2},
+        ]
+        filtered_rows = filter_rows_by_environment(rows, "TrackA")
+        self.assertEqual(filtered_rows, [{"task_environment": "TrackA", "value": 1}])
 
     def test_compute_metrics_filters_missing_target_rows(self) -> None:
         train_rows = [

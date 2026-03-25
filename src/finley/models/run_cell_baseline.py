@@ -124,6 +124,10 @@ class CrossSessionSummary:
     mean_rmse: float
 
 
+def filter_rows_by_environment(rows: list[dict], environment: str) -> list[dict]:
+    return [row for row in rows if row.get("task_environment") == environment]
+
+
 def list_sessions(rows: list[dict]) -> list[int]:
     return sorted({int(row["session"]) for row in rows})
 

@@ -7,6 +7,7 @@ from pathlib import Path
 
 from finley.models.run_cell_baseline import (
     compute_metrics,
+    filter_rows_by_environment,
     get_default_alpha_sweep_specs,
     get_available_feature_groups,
     load_model_table,
@@ -75,6 +76,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Evaluate the baseline by holding out each session in turn and write per-session metrics.",
     )
+    parser.add_argument(
+        "--by-track",
+        action="store_true",
+        help="Run separate evaluations for TrackA and TrackB using the selected evaluation mode.",
+    )
     return parser.parse_args()
 
 
@@ -93,6 +99,8 @@ def main() -> None:
     mode_count = sum(bool(value) for value in [args.ablation, args.alpha_sweep, args.leave_one_session_out])
     if mode_count > 1:
         raise ValueError("Use only one of --ablation, --alpha-sweep, or --leave-one-session-out.")
+    if args.by_track and not args.leave_one_session_out:
+        raise ValueError("--by-track currently requires --leave-one-session-out.")
     if args.alpha_sweep:
         results = run_alpha_sweep(
             rows,
@@ -114,6 +122,33 @@ def main() -> None:
         print(f"Wrote alpha sweep table to {csv_path}")
         return
     if args.leave_one_session_out:
+        if args.by_track:
+            payload: dict[str, object] = {}
+            session_rows: list[dict] = []
+            for environment in ["TrackA", "TrackB"]:
+                track_rows = filter_rows_by_environment(rows, environment)
+                metrics_by_session, summary = run_leave_one_session_out(
+                    track_rows,
+                    target_column=args.target,
+                    ridge_alpha=args.ridge_alpha,
+                    feature_groups=args.feature_groups,
+                )
+                payload[environment] = {
+                    "summary": dict(summary.__dict__),
+                    "sessions": [dict(metric.__dict__) for metric in metrics_by_session],
+                }
+                for metric in metrics_by_session:
+                    row = dict(metric.__dict__)
+                    row["feature_groups"] = ",".join(metric.feature_groups)
+                    row["task_environment"] = environment
+                    session_rows.append(row)
+            output_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+            csv_path = output_path.with_suffix(".csv")
+            write_ablation_csv(csv_path, session_rows)
+            print(json.dumps(payload, indent=2))
+            print(f"Wrote track-specific leave-one-session-out results to {output_path}")
+            print(f"Wrote track-specific leave-one-session-out table to {csv_path}")
+            return
         metrics_by_session, summary = run_leave_one_session_out(
             rows,
             target_column=args.target,
