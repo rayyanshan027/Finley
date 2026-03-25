@@ -27,7 +27,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--target",
         default="log_firing_rate_hz",
-        choices=["log_num_spikes", "num_spikes", "firing_rate_hz", "log_firing_rate_hz"],
+        choices=[
+            "log_num_spikes",
+            "num_spikes",
+            "firing_rate_hz",
+            "log_firing_rate_hz",
+            "session_centered_log_firing_rate_hz",
+        ],
         help="Target column to predict.",
     )
     parser.add_argument(

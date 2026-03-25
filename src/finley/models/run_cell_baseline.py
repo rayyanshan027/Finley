@@ -162,6 +162,7 @@ def load_model_table(path: str | Path) -> list[dict]:
             "firing_rate_hz",
             "log_num_spikes",
             "log_firing_rate_hz",
+            "session_centered_log_firing_rate_hz",
         }
         for row in reader:
             parsed = dict(row)

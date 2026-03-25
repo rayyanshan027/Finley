@@ -593,6 +593,7 @@ def build_run_cell_model_rows(epoch_rows: list[dict[str, Any]], cell_rows: list[
                 "firing_rate_hz": None,
                 "log_num_spikes": None,
                 "log_firing_rate_hz": None,
+                "session_centered_log_firing_rate_hz": None,
             }
         )
 
@@ -602,5 +603,16 @@ def build_run_cell_model_rows(epoch_rows: list[dict[str, Any]], cell_rows: list[
             row["firing_rate_hz"] = row["num_spikes"] / duration
             row["log_firing_rate_hz"] = math.log1p(row["firing_rate_hz"])
         row["log_num_spikes"] = math.log1p(row["num_spikes"])
+
+    rows_by_session: dict[int, list[dict[str, Any]]] = {}
+    for row in rows:
+        rows_by_session.setdefault(int(row["session"]), []).append(row)
+    for session_rows in rows_by_session.values():
+        valid_rows = [row for row in session_rows if row["log_firing_rate_hz"] is not None]
+        if not valid_rows:
+            continue
+        session_mean = sum(float(row["log_firing_rate_hz"]) for row in valid_rows) / len(valid_rows)
+        for row in valid_rows:
+            row["session_centered_log_firing_rate_hz"] = float(row["log_firing_rate_hz"]) - session_mean
 
     return rows
