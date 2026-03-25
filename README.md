@@ -101,6 +101,8 @@ Recommended default benchmark:
 PYTHONPATH=src python scripts/train_run_cell_baseline.py --input data/processed/bon_run_cell_model_table.csv --target log_firing_rate_hz
 ```
 
+The baseline trainer now standardizes numeric features and fits a ridge-regularized linear model.
+
 ## Project layout
 
 ```text
@@ -122,4 +124,5 @@ tests/                 unit tests
 - `scripts/export_session_tables.py --all-sessions` writes combined tables across all discovered sessions for one animal.
 - `scripts/build_model_table.py` builds a run-only cell-level modeling table across all discovered sessions.
 - `scripts/train_run_cell_baseline.py` trains a simple held-out-session regression baseline on the run-cell model table, with `log_firing_rate_hz` now the preferred target.
+- Current project benchmark: `log_firing_rate_hz` on held-out session `10` with MAE `0.4830`, RMSE `0.6645`.
 - Reading `.mat` files requires `scipy`, which is not vendored into this repo.

@@ -41,6 +41,8 @@ The first baseline is a simple linear regression with:
 
 - held-out-session evaluation
 - target now best interpreted as `log_firing_rate_hz`
+- standardized numeric features
+- ridge regularization
 - features from task context, position counts, tetrode/cell context, depth, and spikewidth
 
 The trainer is intended as a smoke-tested baseline, not a final modeling approach.
@@ -54,6 +56,7 @@ Latest Bon run-cell baseline comparison:
 - held-out session: `10`
 - `log_num_spikes`: MAE `1.7028`, RMSE `2.1721`
 - `log_firing_rate_hz`: MAE `0.4830`, RMSE `0.6645`
+- `log_firing_rate_hz` with richer epoch-level position summaries and stabilized ridge regression: MAE `0.9204`, RMSE `1.0794`
 
 Current default benchmark to beat:
 
@@ -72,6 +75,12 @@ Current default benchmark to beat:
 The target-selection question is now mostly settled for the current phase:
 
 - use firing-rate-style targets rather than raw spike counts when epoch durations vary
+
+Feature-engineering lesson from the current phase:
+
+- adding broader epoch-level movement summaries did not improve the benchmark
+- the simpler firing-rate baseline remains stronger than the richer position-summary version
+- the next feature work should be more targeted, and ideally evaluated through feature-group ablations
 
 ## Phase Boundary
 
