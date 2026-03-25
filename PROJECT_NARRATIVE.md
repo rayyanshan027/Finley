@@ -13,7 +13,11 @@ Build a practical ML workflow for CRCNS HC-6 data on Eureka HPC, starting from o
   - cell-level spike tables
   - multi-session combined tables for one animal
   - a run-only cell-level modeling table
-- A first baseline trainer exists for the run-only model table.
+- The baseline workflow now includes:
+  - feature-group ablations
+  - ridge alpha sweeps
+  - leave-one-session-out evaluation
+  - per-session profile summaries for diagnosing hard sessions
 
 ## What We Learned From Bon
 
@@ -23,6 +27,7 @@ Build a practical ML workflow for CRCNS HC-6 data on Eureka HPC, starting from o
   - `3257` cell rows
 - Run epochs include track labels such as `TrackA` and `TrackB`
 - Session-to-session variation in active cells and spike counts is substantial, so cross-session evaluation matters.
+- Harder held-out sessions are currently `6`, `7`, and especially `9`.
 
 ## Current Modeling Shape
 
@@ -33,9 +38,10 @@ Columns include:
 - identifiers: animal, session, epoch, tetrode, cell
 - epoch context: environment, exposure, experiment day, position row counts
 - cell metadata: depth, spikewidth
-- targets: `num_spikes`, `log_num_spikes`, `firing_rate_hz`, `log_firing_rate_hz`
+- targets: `num_spikes`, `log_num_spikes`, `firing_rate_hz`, `log_firing_rate_hz`, and the diagnostic target `session_centered_log_firing_rate_hz`
 
 Duration-dependent targets are only populated when epoch duration can be computed from `pos.data`.
+Movement summaries now also include acceleration-derived features from `vel` and `time`.
 
 ## Baseline Strategy
 
@@ -60,6 +66,8 @@ Latest Bon run-cell baseline comparison:
 - default baseline (`movement_summaries`, alpha `100`): MAE `0.3731`, RMSE `0.6103`
 - best MAE in the current alpha sweep (`movement_summaries`, alpha `10`): MAE `0.3618`, RMSE `0.6130`
 - best RMSE in the current alpha sweep (`population_context` only, alpha `100`): MAE `0.4040`, RMSE `0.6071`
+- adding acceleration features improved the movement-only baseline enough to become the new default
+- adding a small nonlinear movement expansion did not materially improve the benchmark
 
 Current default benchmark to beat:
 
@@ -69,11 +77,31 @@ Current default benchmark to beat:
 - MAE: `0.3731`
 - RMSE: `0.6103`
 
+## Cross-Session Evaluation
+
+Leave-one-session-out evaluation for the current default baseline:
+
+- mean MAE: `0.3978`
+- mean RMSE: `0.6027`
+- easiest sessions: `3`, `4`, `8`
+- hardest sessions: `6`, `7`, `9`
+
+Session-centered target diagnostics did not materially improve the cross-session result:
+
+- session-centered LOSO mean MAE: `0.3991`
+- session-centered LOSO mean RMSE: `0.6040`
+
+Interpretation from the current phase:
+
+- the remaining error is not mainly a session-level offset problem
+- harder sessions have higher spike load, denser active populations, and stronger movement intensity
+- the current linear ridge model still struggles with that harder regime even after stronger movement features
+
 ## Likely Next Steps
 
-- Add targeted feature-group ablations before adding more features
-- Add richer position-derived features from `pos.data`
-- Add per-cell normalized firing targets
+- Compare the current linear ridge baseline against a stronger nonlinear model baseline
+- Consider track-specific baselines if staying dependency-light
+- Add richer position-derived features only when they are motivated by a specific failure mode
 - Add track-specific analyses for `TrackA` vs `TrackB`
 - Consider models that operate on actual spike-event rows rather than cell aggregates
 - Expand from `Bon` to additional animals once the single-animal workflow is stable
@@ -86,7 +114,8 @@ Feature-engineering lesson from the current phase:
 
 - targeted feature-group ablations were informative and changed the benchmark choice
 - richer movement summaries, including acceleration features, are the current best default tradeoff
-- the next feature work should continue to use explicit ablations and alpha sweeps rather than larger blind unions
+- explicit ablations and alpha sweeps were useful, but further hand-built linear features showed diminishing returns
+- the next phase should focus more on model class and evaluation robustness than on piling on more summary features
 
 ## Phase Boundary
 
@@ -95,9 +124,9 @@ This is a reasonable stopping point for the initial baseline phase:
 - pipeline is end-to-end
 - exports are stable and fast enough to use on Eureka
 - the repo now has a reproducible benchmark
-- the project now has a better default target (`log_firing_rate_hz`) and a stronger default feature set for subsequent feature work
+- the project now has a better default target (`log_firing_rate_hz`), a stronger default feature set, and a clearer picture of where cross-session failures remain
 
-The next phase should focus on feature engineering and better evaluation, not more project scaffolding.
+The next phase should focus on stronger models and more robust cross-session evaluation, not more scaffolding.
 
 ## Update Rule
 
