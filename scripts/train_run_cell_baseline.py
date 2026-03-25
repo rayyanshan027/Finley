@@ -42,14 +42,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--ridge-alpha",
         type=float,
-        default=1.0,
+        default=100.0,
         help="Ridge regularization strength for the baseline.",
     )
     parser.add_argument(
         "--feature-groups",
         nargs="+",
         choices=get_available_feature_groups(),
-        help="Optional feature groups to include. Defaults to all groups.",
+        default=["task_context", "movement_summaries"],
+        help="Optional feature groups to include. Defaults to task_context and movement_summaries.",
     )
     parser.add_argument(
         "--ablation",
