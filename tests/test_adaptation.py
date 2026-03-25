@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import unittest
 
-from finley.analysis.adaptation import list_session_epochs, split_session_adaptation_rows
+from finley.analysis.adaptation import (
+    list_session_epochs,
+    split_session_adaptation_rows,
+    summarize_unit_overlap,
+)
 
 
 class AdaptationTests(unittest.TestCase):
@@ -39,6 +43,25 @@ class AdaptationTests(unittest.TestCase):
         ]
         with self.assertRaises(ValueError):
             split_session_adaptation_rows(rows, held_out_session=6, adaptation_epoch_count=2)
+
+    def test_summarize_unit_overlap_reports_unit_and_row_coverage(self) -> None:
+        adaptation_rows = [
+            {"session": 6, "epoch": 2, "tetrode": 1, "cell": 1},
+            {"session": 6, "epoch": 2, "tetrode": 1, "cell": 2},
+            {"session": 6, "epoch": 4, "tetrode": 1, "cell": 1},
+        ]
+        evaluation_rows = [
+            {"session": 6, "epoch": 6, "tetrode": 1, "cell": 1},
+            {"session": 6, "epoch": 6, "tetrode": 1, "cell": 1},
+            {"session": 6, "epoch": 6, "tetrode": 1, "cell": 3},
+        ]
+        summary = summarize_unit_overlap(adaptation_rows, evaluation_rows)
+        self.assertEqual(summary["adaptation_unit_count"], 2)
+        self.assertEqual(summary["evaluation_unit_count"], 2)
+        self.assertEqual(summary["shared_unit_count"], 1)
+        self.assertAlmostEqual(summary["shared_unit_fraction"], 0.5)
+        self.assertEqual(summary["evaluation_rows_on_seen_units"], 2)
+        self.assertAlmostEqual(summary["evaluation_row_seen_unit_fraction"], 2 / 3)
 
 
 if __name__ == "__main__":

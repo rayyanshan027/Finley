@@ -5,7 +5,11 @@ import csv
 import json
 from pathlib import Path
 
-from finley.analysis.adaptation import split_session_adaptation_rows, summarize_errors
+from finley.analysis.adaptation import (
+    split_session_adaptation_rows,
+    summarize_errors,
+    summarize_unit_overlap,
+)
 from finley.models.run_cell_baseline import load_model_table
 from finley.models.run_cell_nonlinear import (
     TreeRegressorConfig,
@@ -137,12 +141,13 @@ def evaluate_adaptation_setting(
     )
     filtered_train_rows, dropped_train_count = filter_rows_for_target(train_rows, target_column)
     filtered_test_rows, dropped_test_count = filter_rows_for_target(test_rows, target_column)
+    filtered_adaptation_rows = [
+        row for row in filtered_train_rows if int(row["session"]) == held_out_session
+    ]
+    overlap_summary = summarize_unit_overlap(filtered_adaptation_rows, filtered_test_rows)
     session_unit_encoder = None
     if model_variant == "session_unit_identity":
-        adaptation_rows = [
-            row for row in filtered_train_rows if int(row["session"]) == held_out_session
-        ]
-        session_unit_encoder = fit_session_unit_feature_encoder(adaptation_rows)
+        session_unit_encoder = fit_session_unit_feature_encoder(filtered_adaptation_rows)
 
     x_train = build_feature_matrix(
         filtered_train_rows,
@@ -175,6 +180,7 @@ def evaluate_adaptation_setting(
         "session_unit_feature_count": (
             session_unit_encoder.feature_count if session_unit_encoder is not None else 0
         ),
+        **overlap_summary,
         **summary,
     }
 

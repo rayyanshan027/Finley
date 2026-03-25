@@ -3,6 +3,10 @@ from __future__ import annotations
 import math
 
 
+def get_within_session_unit_key(row: dict) -> tuple[int, int]:
+    return int(row["tetrode"]), int(row["cell"])
+
+
 def list_session_epochs(rows: list[dict], held_out_session: int) -> list[int]:
     return sorted({int(row["epoch"]) for row in rows if int(row["session"]) == held_out_session})
 
@@ -47,4 +51,31 @@ def summarize_errors(errors: list[float]) -> dict[str, float]:
     }
 
 
-__all__ = ["list_session_epochs", "split_session_adaptation_rows", "summarize_errors"]
+def summarize_unit_overlap(adaptation_rows: list[dict], evaluation_rows: list[dict]) -> dict[str, float | int]:
+    adaptation_units = {get_within_session_unit_key(row) for row in adaptation_rows}
+    evaluation_units = {get_within_session_unit_key(row) for row in evaluation_rows}
+    shared_units = adaptation_units & evaluation_units
+    evaluation_rows_on_seen_units = sum(
+        1 for row in evaluation_rows if get_within_session_unit_key(row) in adaptation_units
+    )
+    return {
+        "adaptation_unit_count": len(adaptation_units),
+        "evaluation_unit_count": len(evaluation_units),
+        "shared_unit_count": len(shared_units),
+        "shared_unit_fraction": (
+            len(shared_units) / len(evaluation_units) if evaluation_units else 0.0
+        ),
+        "evaluation_rows_on_seen_units": evaluation_rows_on_seen_units,
+        "evaluation_row_seen_unit_fraction": (
+            evaluation_rows_on_seen_units / len(evaluation_rows) if evaluation_rows else 0.0
+        ),
+    }
+
+
+__all__ = [
+    "get_within_session_unit_key",
+    "list_session_epochs",
+    "split_session_adaptation_rows",
+    "summarize_errors",
+    "summarize_unit_overlap",
+]
