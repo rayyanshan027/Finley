@@ -15,5 +15,6 @@ dist/
 data/cache/
 data/processed/
 data/inventory/
+data/*.csv
+data/*.pdf
 artifacts/
-

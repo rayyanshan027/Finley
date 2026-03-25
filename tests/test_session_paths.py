@@ -5,7 +5,7 @@ import tempfile
 import unittest
 
 from finley.config import DatasetConfig
-from finley.data.session import build_session_paths, resolve_animal_root
+from finley.data.session import build_session_paths, list_available_sessions, resolve_animal_root
 
 
 class HC6SessionPathTests(unittest.TestCase):
@@ -32,6 +32,18 @@ class HC6SessionPathTests(unittest.TestCase):
             self.assertEqual(paths.pos_path, bon / "bonpos03.mat")
             self.assertEqual(paths.task_path, bon / "bontask03.mat")
             self.assertEqual(paths.rawpos_path, bon / "bonrawpos03.mat")
+
+    def test_list_available_sessions_from_spike_files(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir) / "extracted"
+            bon = root / "Bon"
+            bon.mkdir(parents=True)
+            (bon / "bonspikes03.mat").write_text("", encoding="utf-8")
+            (bon / "bonspikes10.mat").write_text("", encoding="utf-8")
+            (bon / "bonpos03.mat").write_text("", encoding="utf-8")
+
+            config = DatasetConfig(root=root, animals=["Bon"], allowed_extensions=[], ignore_hidden=True)
+            self.assertEqual(list_available_sessions(config, "Bon"), [3, 10])
 
 
 if __name__ == "__main__":

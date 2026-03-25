@@ -73,6 +73,12 @@ Export flattened CSV tables for one session:
 PYTHONPATH=src python scripts/export_session_tables.py --config configs/hc6.local.json --animal Bon --session 3
 ```
 
+Export flattened CSV tables across all discovered sessions for one animal:
+
+```bash
+PYTHONPATH=src python scripts/export_session_tables.py --config configs/hc6.local.json --animal Bon --all-sessions
+```
+
 ## Project layout
 
 ```text
@@ -91,4 +97,5 @@ tests/                 unit tests
 - `scripts/inspect_mat.py` is the intended first step for understanding the actual `.mat` contents on Eureka.
 - `scripts/summarize_session.py` unwraps the HC-6 nesting and reports epoch-level task and spike counts.
 - `scripts/export_session_tables.py` writes an epoch table and a cell-level spike table for one session.
+- `scripts/export_session_tables.py --all-sessions` writes combined tables across all discovered sessions for one animal.
 - Reading `.mat` files requires `scipy`, which is not vendored into this repo.

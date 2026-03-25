@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+import re
 from typing import Any
 
 from finley.config import DatasetConfig
@@ -41,6 +42,19 @@ def build_session_paths(config: DatasetConfig, animal: str, session: int) -> HC6
         task_path=animal_root / f"{prefix}task{suffix}",
         rawpos_path=animal_root / f"{prefix}rawpos{suffix}",
     )
+
+
+def list_available_sessions(config: DatasetConfig, animal: str) -> list[int]:
+    animal_root = resolve_animal_root(config, animal)
+    pattern = re.compile(rf"^{re.escape(animal.lower())}spikes(?P<session>\d{{2}})\.mat$")
+    sessions: set[int] = set()
+    for path in animal_root.iterdir():
+        if not path.is_file():
+            continue
+        match = pattern.match(path.name.lower())
+        if match:
+            sessions.add(int(match.group("session")))
+    return sorted(sessions)
 
 
 def inspect_session_files(config: DatasetConfig, animal: str, session: int) -> dict[str, dict]:
