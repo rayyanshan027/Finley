@@ -1,0 +1,17 @@
+# CRCNS.org 'hc-6' dataset files
+# To use this for fetching files, comment out files that are
+# not needed by putting a '#' as the first character on the line (default mode)
+# or put a '+' as the first character to specifiy files to be fetched (+ mode).
+# mode='default' (change to '+' for + mode).
+ data/Bon.tar.gz	3219088249 (2.9 GB)
+ data/Con.tar.gz	1693504687 (1.5 GB)
+ data/Cor.tar.gz	2403757435 (2.2 GB)
+ data/Dud.tar.gz	2790487772 (2.5 GB)
+ data/Eig.tar.gz	2102861001 (1.9 GB)
+ data/Fiv.tar.gz	1520803674 (1.4 GB)
+ data/Fra.tar.gz	4903167770 (4.5 GB)
+ data/Mil.tar.gz	2081494052 (1.9 GB)
+ data/Ten.tar.gz	2605828560 (2.4 GB)
+ docs/crcns_hc-6_data_description.docx	174408 (170.3 KB)
+ docs/crcns_hc-6_data_description.pdf	104549 (102.0 KB)
+ checksums.md5	640

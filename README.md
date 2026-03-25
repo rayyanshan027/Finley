@@ -61,6 +61,18 @@ Load one session as a smoke test once `scipy` is available:
 PYTHONPATH=src python scripts/load_session.py --config configs/hc6.local.json --animal Bon --session 3
 ```
 
+Generate a parsed per-epoch summary you can actually model from:
+
+```bash
+PYTHONPATH=src python scripts/summarize_session.py --config configs/hc6.local.json --animal Bon --session 3
+```
+
+Export flattened CSV tables for one session:
+
+```bash
+PYTHONPATH=src python scripts/export_session_tables.py --config configs/hc6.local.json --animal Bon --session 3
+```
+
 ## Project layout
 
 ```text
@@ -77,4 +89,6 @@ tests/                 unit tests
 
 - The inventory output now includes `modality`, `session`, and `top_level_dir` columns derived from filenames like `bonspikes03.mat`.
 - `scripts/inspect_mat.py` is the intended first step for understanding the actual `.mat` contents on Eureka.
+- `scripts/summarize_session.py` unwraps the HC-6 nesting and reports epoch-level task and spike counts.
+- `scripts/export_session_tables.py` writes an epoch table and a cell-level spike table for one session.
 - Reading `.mat` files requires `scipy`, which is not vendored into this repo.
