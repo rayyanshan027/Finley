@@ -7,6 +7,7 @@ from finley.analysis.adaptation import (
     fit_unit_residual_offsets,
     list_session_epochs,
     split_session_adaptation_rows,
+    summarize_unit_offset_drift,
     summarize_unit_overlap,
 )
 from scripts.run_session_adaptation_experiment import resolve_unit_residual_shrinkages
@@ -99,6 +100,16 @@ class AdaptationTests(unittest.TestCase):
             resolve_unit_residual_shrinkages("baseline", [0.0, 4.0, 8.0]),
             [0.0],
         )
+
+    def test_summarize_unit_offset_drift_reports_shift_and_correlation(self) -> None:
+        summary = summarize_unit_offset_drift(
+            {(1, 1): 0.1, (1, 2): 0.3, (1, 3): -0.2},
+            {(1, 1): 0.2, (1, 2): 0.1, (1, 3): -0.1},
+        )
+        self.assertEqual(summary["shared_unit_count"], 3)
+        self.assertAlmostEqual(summary["mean_signed_offset_diff"], 0.0)
+        self.assertAlmostEqual(summary["mean_abs_offset_diff"], 0.13333333333333333)
+        self.assertGreater(summary["offset_correlation"], 0.5)
 
 
 if __name__ == "__main__":

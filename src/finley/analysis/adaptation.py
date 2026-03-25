@@ -115,6 +115,45 @@ def apply_unit_residual_offsets(
     return corrected_predictions, corrected_row_count
 
 
+def summarize_unit_offset_drift(
+    first_offsets: dict[tuple[int, int], float],
+    second_offsets: dict[tuple[int, int], float],
+) -> dict[str, float | int]:
+    shared_units = sorted(set(first_offsets) & set(second_offsets))
+    if not shared_units:
+        return {
+            "shared_unit_count": 0,
+            "mean_signed_offset_diff": 0.0,
+            "mean_abs_offset_diff": 0.0,
+            "offset_correlation": 0.0,
+        }
+
+    first_values = [float(first_offsets[unit]) for unit in shared_units]
+    second_values = [float(second_offsets[unit]) for unit in shared_units]
+    diffs = [second - first for first, second in zip(first_values, second_values)]
+    mean_signed_diff = sum(diffs) / len(diffs)
+    mean_abs_diff = sum(abs(diff) for diff in diffs) / len(diffs)
+
+    first_mean = sum(first_values) / len(first_values)
+    second_mean = sum(second_values) / len(second_values)
+    covariance = sum(
+        (first - first_mean) * (second - second_mean)
+        for first, second in zip(first_values, second_values)
+    )
+    first_var = sum((first - first_mean) ** 2 for first in first_values)
+    second_var = sum((second - second_mean) ** 2 for second in second_values)
+    correlation = 0.0
+    if first_var > 1e-12 and second_var > 1e-12:
+        correlation = covariance / math.sqrt(first_var * second_var)
+
+    return {
+        "shared_unit_count": len(shared_units),
+        "mean_signed_offset_diff": mean_signed_diff,
+        "mean_abs_offset_diff": mean_abs_diff,
+        "offset_correlation": correlation,
+    }
+
+
 __all__ = [
     "apply_unit_residual_offsets",
     "fit_unit_residual_offsets",
@@ -122,5 +161,6 @@ __all__ = [
     "list_session_epochs",
     "split_session_adaptation_rows",
     "summarize_errors",
+    "summarize_unit_offset_drift",
     "summarize_unit_overlap",
 ]
