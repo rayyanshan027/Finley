@@ -10,7 +10,10 @@ from finley.analysis.adaptation import (
     summarize_unit_offset_drift,
     summarize_unit_overlap,
 )
-from scripts.run_session_adaptation_experiment import resolve_unit_residual_shrinkages
+from scripts.run_session_adaptation_experiment import (
+    resolve_residual_adaptation_rows,
+    resolve_unit_residual_shrinkages,
+)
 
 
 class AdaptationTests(unittest.TestCase):
@@ -97,9 +100,30 @@ class AdaptationTests(unittest.TestCase):
             [0.0, 4.0, 8.0],
         )
         self.assertEqual(
+            resolve_unit_residual_shrinkages(
+                "baseline_plus_latest_unit_residual",
+                [0.0, 4.0, 8.0],
+            ),
+            [0.0, 4.0, 8.0],
+        )
+        self.assertEqual(
             resolve_unit_residual_shrinkages("baseline", [0.0, 4.0, 8.0]),
             [0.0],
         )
+
+    def test_resolve_residual_adaptation_rows_uses_latest_epoch_for_latest_variant(self) -> None:
+        rows = [
+            {"session": 6, "epoch": 2, "tetrode": 1, "cell": 1},
+            {"session": 6, "epoch": 4, "tetrode": 1, "cell": 1},
+            {"session": 6, "epoch": 4, "tetrode": 1, "cell": 2},
+        ]
+        latest_rows = resolve_residual_adaptation_rows(
+            "baseline_plus_latest_unit_residual",
+            rows,
+        )
+        self.assertEqual([row["epoch"] for row in latest_rows], [4, 4])
+        all_rows = resolve_residual_adaptation_rows("baseline_plus_unit_residual", rows)
+        self.assertEqual(len(all_rows), 3)
 
     def test_summarize_unit_offset_drift_reports_shift_and_correlation(self) -> None:
         summary = summarize_unit_offset_drift(

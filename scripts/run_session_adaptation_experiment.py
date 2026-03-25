@@ -72,8 +72,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--model-variants",
         nargs="+",
-        default=["baseline", "session_unit_identity", "baseline_plus_unit_residual"],
-        choices=["baseline", "session_unit_identity", "baseline_plus_unit_residual"],
+        default=[
+            "baseline",
+            "session_unit_identity",
+            "baseline_plus_unit_residual",
+            "baseline_plus_latest_unit_residual",
+        ],
+        choices=[
+            "baseline",
+            "session_unit_identity",
+            "baseline_plus_unit_residual",
+            "baseline_plus_latest_unit_residual",
+        ],
         help="Adaptive model variants to evaluate.",
     )
     parser.add_argument(
@@ -137,9 +147,21 @@ def write_csv(path: Path, rows: list[dict]) -> None:
 def resolve_unit_residual_shrinkages(model_variant: str, shrinkage_values: list[float]) -> list[float]:
     if any(value < 0 for value in shrinkage_values):
         raise ValueError("--unit-residual-shrinkage-values must all be non-negative.")
-    if model_variant == "baseline_plus_unit_residual":
+    if model_variant in {"baseline_plus_unit_residual", "baseline_plus_latest_unit_residual"}:
         return list(shrinkage_values)
     return [shrinkage_values[0]]
+
+
+def resolve_residual_adaptation_rows(
+    model_variant: str,
+    adaptation_rows: list[dict],
+) -> list[dict]:
+    if model_variant != "baseline_plus_latest_unit_residual":
+        return list(adaptation_rows)
+    if not adaptation_rows:
+        return []
+    latest_epoch = max(int(row["epoch"]) for row in adaptation_rows)
+    return [row for row in adaptation_rows if int(row["epoch"]) == latest_epoch]
 
 
 def evaluate_adaptation_setting(
@@ -184,9 +206,13 @@ def evaluate_adaptation_setting(
     predictions = predict_forest(x_test, forest)
     corrected_row_count = 0
     unit_residual_offset_count = 0
-    if model_variant == "baseline_plus_unit_residual":
+    residual_adaptation_rows = resolve_residual_adaptation_rows(
+        model_variant,
+        filtered_adaptation_rows,
+    )
+    if model_variant in {"baseline_plus_unit_residual", "baseline_plus_latest_unit_residual"}:
         x_adaptation = build_feature_matrix(
-            filtered_adaptation_rows,
+            residual_adaptation_rows,
             feature_groups=feature_groups,
         )
         adaptation_predictions = predict_forest(x_adaptation, forest)
@@ -194,11 +220,11 @@ def evaluate_adaptation_setting(
             float(actual) - float(prediction)
             for prediction, actual in zip(
                 adaptation_predictions,
-                [row[target_column] for row in filtered_adaptation_rows],
+                [row[target_column] for row in residual_adaptation_rows],
             )
         ]
         unit_offsets = fit_unit_residual_offsets(
-            filtered_adaptation_rows,
+            residual_adaptation_rows,
             adaptation_residuals,
             shrinkage=unit_residual_shrinkage,
         )
@@ -214,9 +240,14 @@ def evaluate_adaptation_setting(
         "held_out_session": held_out_session,
         "model_variant": model_variant,
         "uses_session_unit_identity": model_variant == "session_unit_identity",
-        "uses_unit_residual_correction": model_variant == "baseline_plus_unit_residual",
+        "uses_unit_residual_correction": model_variant
+        in {"baseline_plus_unit_residual", "baseline_plus_latest_unit_residual"},
+        "uses_latest_unit_residual_only": model_variant == "baseline_plus_latest_unit_residual",
         "adaptation_epoch_count": adaptation_epoch_count,
         "adaptation_epochs": adaptation_epochs,
+        "residual_adaptation_epochs": sorted(
+            {int(row["epoch"]) for row in residual_adaptation_rows}
+        ),
         "evaluation_epochs": evaluation_epochs,
         "train_count": len(filtered_train_rows),
         "test_count": len(filtered_test_rows),
