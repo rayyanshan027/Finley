@@ -33,6 +33,24 @@ class HC6SessionPathTests(unittest.TestCase):
             self.assertEqual(paths.task_path, bon / "bontask03.mat")
             self.assertEqual(paths.rawpos_path, bon / "bonrawpos03.mat")
 
+    def test_build_session_paths_matches_case_insensitive_filenames(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir) / "extracted"
+            cor = root / "Cor"
+            cor.mkdir(parents=True)
+            (cor / "Corspikes03.mat").write_text("", encoding="utf-8")
+            (cor / "Corpos03.mat").write_text("", encoding="utf-8")
+            (cor / "Cortask03.mat").write_text("", encoding="utf-8")
+            (cor / "Corrawpos03.mat").write_text("", encoding="utf-8")
+
+            config = DatasetConfig(root=root, animals=["Cor"], allowed_extensions=[], ignore_hidden=True)
+            paths = build_session_paths(config, "Cor", 3)
+
+            self.assertEqual(paths.spikes_path, cor / "Corspikes03.mat")
+            self.assertEqual(paths.pos_path, cor / "Corpos03.mat")
+            self.assertEqual(paths.task_path, cor / "Cortask03.mat")
+            self.assertEqual(paths.rawpos_path, cor / "Corrawpos03.mat")
+
     def test_list_available_sessions_from_spike_files(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir) / "extracted"

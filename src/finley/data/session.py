@@ -30,6 +30,17 @@ def resolve_animal_root(config: DatasetConfig, animal: str) -> Path:
     raise FileNotFoundError(f"Could not resolve animal root for {animal} under {config.root}")
 
 
+def _resolve_session_file(animal_root: Path, expected_name: str) -> Path:
+    direct_path = animal_root / expected_name
+    expected_lower = expected_name.lower()
+    for path in animal_root.iterdir():
+        if path.is_file() and path.name.lower() == expected_lower:
+            return path
+    if direct_path.exists():
+        return direct_path
+    return direct_path
+
+
 def build_session_paths(config: DatasetConfig, animal: str, session: int) -> HC6SessionPaths:
     animal_root = resolve_animal_root(config, animal)
     prefix = animal.lower()
@@ -38,10 +49,10 @@ def build_session_paths(config: DatasetConfig, animal: str, session: int) -> HC6
         animal=animal,
         session=session,
         animal_root=animal_root,
-        spikes_path=animal_root / f"{prefix}spikes{suffix}",
-        pos_path=animal_root / f"{prefix}pos{suffix}",
-        task_path=animal_root / f"{prefix}task{suffix}",
-        rawpos_path=animal_root / f"{prefix}rawpos{suffix}",
+        spikes_path=_resolve_session_file(animal_root, f"{prefix}spikes{suffix}"),
+        pos_path=_resolve_session_file(animal_root, f"{prefix}pos{suffix}"),
+        task_path=_resolve_session_file(animal_root, f"{prefix}task{suffix}"),
+        rawpos_path=_resolve_session_file(animal_root, f"{prefix}rawpos{suffix}"),
     )
 
 
