@@ -58,9 +58,32 @@ def summarize_mat_value(value: Any, max_items: int = 10) -> dict[str, Any]:
         summary["keys"] = sorted(str(key) for key in value.keys())[:max_items]
         return summary
 
+    # MATLAB files are commonly loaded as numpy ndarrays of dtype object.
+    # Sampling the first few flattened items gives a useful view into nested cells/structs.
+    if type(value).__name__ == "ndarray":
+        flattened = getattr(value, "flat", None)
+        if flattened is not None:
+            items = []
+            for index, item in enumerate(flattened):
+                if index >= max_items:
+                    break
+                items.append(summarize_mat_value(item, max_items=3))
+            if items:
+                summary["sample_items"] = items
+        return summary
+
     field_names = getattr(value, "_fieldnames", None)
     if field_names:
         summary["field_names"] = list(field_names)[:max_items]
+        field_samples: dict[str, Any] = {}
+        for field_name in field_names[:max_items]:
+            try:
+                field_value = getattr(value, field_name)
+            except AttributeError:
+                continue
+            field_samples[str(field_name)] = summarize_mat_value(field_value, max_items=3)
+        if field_samples:
+            summary["field_samples"] = field_samples
         return summary
 
     if is_dataclass(value):
@@ -77,4 +100,3 @@ def summarize_mat_dict(contents: dict[str, Any]) -> dict[str, Any]:
             continue
         summary[key] = summarize_mat_value(value)
     return summary
-
