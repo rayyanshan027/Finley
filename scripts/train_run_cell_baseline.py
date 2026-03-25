@@ -7,8 +7,10 @@ from pathlib import Path
 
 from finley.models.run_cell_baseline import (
     compute_metrics,
+    get_default_alpha_sweep_specs,
     get_available_feature_groups,
     load_model_table,
+    run_alpha_sweep,
     run_feature_ablations,
     split_by_session,
 )
@@ -54,6 +56,12 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Run the standard feature-group ablation suite and write a table of results.",
     )
+    parser.add_argument(
+        "--alpha-sweep",
+        nargs="+",
+        type=float,
+        help="Run an alpha sweep for the default shortlist of feature-group settings.",
+    )
     return parser.parse_args()
 
 
@@ -69,6 +77,28 @@ def main() -> None:
     rows = load_model_table(args.input)
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    if args.ablation and args.alpha_sweep:
+        raise ValueError("Use either --ablation or --alpha-sweep, not both.")
+    if args.alpha_sweep:
+        results = run_alpha_sweep(
+            rows,
+            target_column=args.target,
+            ridge_alphas=args.alpha_sweep,
+            held_out_session=args.held_out_session,
+            feature_group_specs=get_default_alpha_sweep_specs(),
+        )
+        result_rows = []
+        for result in results:
+            row = dict(result.__dict__)
+            row["feature_groups"] = ",".join(result.feature_groups)
+            result_rows.append(row)
+        output_path.write_text(json.dumps(result_rows, indent=2), encoding="utf-8")
+        csv_path = output_path.with_suffix(".csv")
+        write_ablation_csv(csv_path, result_rows)
+        print(json.dumps(result_rows, indent=2))
+        print(f"Wrote alpha sweep results to {output_path}")
+        print(f"Wrote alpha sweep table to {csv_path}")
+        return
     if args.ablation:
         results = run_feature_ablations(
             rows,

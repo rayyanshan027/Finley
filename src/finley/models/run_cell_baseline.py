@@ -83,6 +83,22 @@ class FeatureAblationResult:
     rmse: float
 
 
+@dataclass(frozen=True)
+class AlphaSweepResult:
+    name: str
+    feature_groups: list[str]
+    feature_count: int
+    ridge_alpha: float
+    train_count: int
+    test_count: int
+    dropped_train_count: int
+    dropped_test_count: int
+    held_out_session: int
+    target_column: str
+    mae: float
+    rmse: float
+
+
 def load_model_table(path: str | Path) -> list[dict]:
     with Path(path).open("r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
@@ -375,7 +391,7 @@ def run_feature_ablations(
     target_column: str,
     held_out_session: int | None = None,
     ridge_alpha: float = 1.0,
-) -> list[FeatureAblationResult]:
+    ) -> list[FeatureAblationResult]:
     split = split_by_session(rows, held_out_session=held_out_session)
     ablation_specs: list[tuple[str, list[str]]] = [
         ("all", list(FEATURE_GROUP_ORDER)),
@@ -410,4 +426,65 @@ def run_feature_ablations(
                 rmse=metrics.rmse,
             )
         )
+    return results
+
+
+def get_default_alpha_sweep_specs() -> list[tuple[str, list[str]]]:
+    return [
+        ("movement_summaries", ["movement_summaries"]),
+        ("population_context", ["population_context"]),
+        (
+            "task_context_movement_summaries",
+            ["task_context", "movement_summaries"],
+        ),
+        (
+            "task_context_movement_summaries_cell_metadata",
+            ["task_context", "movement_summaries", "cell_metadata"],
+        ),
+        (
+            "task_context_population_context_cell_metadata",
+            ["task_context", "population_context", "cell_metadata"],
+        ),
+    ]
+
+
+def run_alpha_sweep(
+    rows: list[dict],
+    target_column: str,
+    ridge_alphas: list[float],
+    held_out_session: int | None = None,
+    feature_group_specs: list[tuple[str, list[str]]] | None = None,
+) -> list[AlphaSweepResult]:
+    if not ridge_alphas:
+        raise ValueError("Alpha sweep requires at least one ridge alpha.")
+    specs = feature_group_specs if feature_group_specs is not None else get_default_alpha_sweep_specs()
+    split = split_by_session(rows, held_out_session=held_out_session)
+    results: list[AlphaSweepResult] = []
+    for name, feature_groups in specs:
+        resolved_groups = resolve_feature_groups(feature_groups)
+        for ridge_alpha in ridge_alphas:
+            metrics = compute_metrics(
+                split.train_rows,
+                split.test_rows,
+                held_out_session=split.held_out_session,
+                target_column=target_column,
+                ridge_alpha=ridge_alpha,
+                feature_groups=resolved_groups,
+            )
+            results.append(
+                AlphaSweepResult(
+                    name=name,
+                    feature_groups=metrics.feature_groups,
+                    feature_count=metrics.feature_count,
+                    ridge_alpha=ridge_alpha,
+                    train_count=metrics.train_count,
+                    test_count=metrics.test_count,
+                    dropped_train_count=metrics.dropped_train_count,
+                    dropped_test_count=metrics.dropped_test_count,
+                    held_out_session=metrics.held_out_session,
+                    target_column=metrics.target_column,
+                    mae=metrics.mae,
+                    rmse=metrics.rmse,
+                )
+            )
     return results
