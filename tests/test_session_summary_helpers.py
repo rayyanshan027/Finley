@@ -4,6 +4,7 @@ import unittest
 
 from finley.data.session import (
     _extract_session_array,
+    _extract_pos_feature_map,
     _normalize_task_type,
     _scalarize,
     _to_python_number,
@@ -20,9 +21,15 @@ class FakeArray:
         self.flat = items
 
     def __getitem__(self, index):
-        row, col = index
-        width = self.shape[1]
-        return self._items[row * width + col]
+        if isinstance(index, tuple):
+            row_index, col_index = index
+            if isinstance(row_index, slice):
+                row_indices = range(*row_index.indices(self.shape[0]))
+                values = [self._items[row * self.shape[1] + col_index] for row in row_indices]
+                return FakeArray(values, (len(values),))
+            width = self.shape[1]
+            return self._items[row_index * width + col_index]
+        return self._items[index]
 
 
 class SessionSummaryHelperTests(unittest.TestCase):
@@ -56,6 +63,14 @@ class SessionSummaryHelperTests(unittest.TestCase):
                 "task_exposure": "",
                 "task_experimentday": "",
                 "pos_rows": 10,
+                "epoch_duration_sec": None,
+                "mean_speed": None,
+                "std_speed": None,
+                "max_speed": None,
+                "moving_fraction": None,
+                "x_range": None,
+                "y_range": None,
+                "mean_dir": None,
                 "rawpos_rows": 10,
                 "spike_tetrode_count": 1,
                 "spike_cell_count": 1,
@@ -68,6 +83,14 @@ class SessionSummaryHelperTests(unittest.TestCase):
                 "task_exposure": 1,
                 "task_experimentday": 7,
                 "pos_rows": 20,
+                "epoch_duration_sec": 10.0,
+                "mean_speed": 1.5,
+                "std_speed": 0.3,
+                "max_speed": 2.5,
+                "moving_fraction": 0.6,
+                "x_range": 12.0,
+                "y_range": 6.0,
+                "mean_dir": 120.0,
                 "rawpos_rows": 21,
                 "spike_tetrode_count": 2,
                 "spike_cell_count": 3,
@@ -106,6 +129,27 @@ class SessionSummaryHelperTests(unittest.TestCase):
         self.assertEqual(rows[0]["task_environment"], "TrackA")
         self.assertEqual(rows[0]["task_exposure"], 1)
         self.assertEqual(rows[0]["num_spikes"], 11)
+        self.assertEqual(rows[0]["mean_speed"], 1.5)
+
+    def test_extract_pos_feature_map_from_mock_pos_struct(self) -> None:
+        class PosStruct:
+            def __init__(self):
+                self.fields = "time x y dir vel smooth-v q-time"
+                self.data = FakeArray(
+                    [
+                        0.0, 1.0, 2.0, 10.0, 0.0, 0.0, 0.0,
+                        1.0, 2.0, 4.0, 20.0, 3.0, 3.0, 1.0,
+                        2.0, 4.0, 8.0, 30.0, 5.0, 5.0, 2.0,
+                    ],
+                    (3, 7),
+                )
+
+        features = _extract_pos_feature_map(PosStruct())
+        self.assertEqual(features["epoch_duration_sec"], 2.0)
+        self.assertEqual(features["mean_speed"], 8.0 / 3.0)
+        self.assertEqual(features["max_speed"], 5.0)
+        self.assertEqual(features["x_range"], 3.0)
+        self.assertEqual(features["y_range"], 6.0)
 
 
 if __name__ == "__main__":

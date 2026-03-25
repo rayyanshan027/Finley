@@ -39,7 +39,21 @@ def load_model_table(path: str | Path) -> list[dict]:
             "cell",
             "num_spikes",
         }
-        float_fields = {"task_exposure", "task_experimentday", "depth", "spikewidth", "log_num_spikes"}
+        float_fields = {
+            "task_exposure",
+            "task_experimentday",
+            "epoch_duration_sec",
+            "mean_speed",
+            "std_speed",
+            "max_speed",
+            "moving_fraction",
+            "x_range",
+            "y_range",
+            "mean_dir",
+            "depth",
+            "spikewidth",
+            "log_num_spikes",
+        }
         for row in reader:
             parsed = dict(row)
             for field in int_fields:
@@ -76,6 +90,14 @@ def _feature_vector(row: dict) -> list[float]:
         float(row["task_exposure"] or 0.0),
         float(row["task_experimentday"] or 0.0),
         float(row["pos_rows"]),
+        float(row["epoch_duration_sec"] or 0.0),
+        float(row["mean_speed"] or 0.0),
+        float(row["std_speed"] or 0.0),
+        float(row["max_speed"] or 0.0),
+        float(row["moving_fraction"] or 0.0),
+        float(row["x_range"] or 0.0),
+        float(row["y_range"] or 0.0),
+        float(row["mean_dir"] or 0.0),
         float(row["rawpos_rows"]),
         float(row["spike_tetrode_count"]),
         float(other_epoch_cells),

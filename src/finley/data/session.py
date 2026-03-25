@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import re
 from typing import Any
+import math
 
 from finley.config import DatasetConfig
 from finley.data.matlab import load_mat_file, summarize_mat_dict
@@ -254,6 +255,94 @@ def _normalize_task_type(value: Any) -> str | None:
     return text.lower() if text else None
 
 
+def _to_float_list(value: Any) -> list[float]:
+    scalar = _scalarize(value)
+    if _is_empty(scalar):
+        return []
+    if _is_array_like(scalar):
+        output: list[float] = []
+        for item in scalar.flat:
+            item_scalar = _scalarize(item)
+            number = _to_python_number(item_scalar)
+            if number is not None:
+                output.append(float(number))
+        return output
+    number = _to_python_number(scalar)
+    return [float(number)] if number is not None else []
+
+
+def _extract_pos_feature_map(pos_struct: Any) -> dict[str, float | None]:
+    data = _scalarize(getattr(pos_struct, "data", None))
+    if _is_empty(data) or not _is_array_like(data):
+        return {
+            "epoch_duration_sec": None,
+            "mean_speed": None,
+            "std_speed": None,
+            "max_speed": None,
+            "moving_fraction": None,
+            "x_range": None,
+            "y_range": None,
+            "mean_dir": None,
+        }
+
+    fields_text = _to_python_string(getattr(pos_struct, "fields", None)) or ""
+    field_names = fields_text.split()
+    field_index = {field_name: index for index, field_name in enumerate(field_names)}
+    shape = getattr(data, "shape", ())
+    if len(shape) < 2 or shape[1] == 0:
+        return {
+            "epoch_duration_sec": None,
+            "mean_speed": None,
+            "std_speed": None,
+            "max_speed": None,
+            "moving_fraction": None,
+            "x_range": None,
+            "y_range": None,
+            "mean_dir": None,
+        }
+
+    def column_values(column_name: str) -> list[float]:
+        index = field_index.get(column_name)
+        if index is None or index >= shape[1]:
+            return []
+        return _to_float_list(data[:, index])
+
+    time_values = column_values("time")
+    x_values = column_values("x")
+    y_values = column_values("y")
+    dir_values = column_values("dir")
+    vel_values = column_values("vel")
+
+    epoch_duration_sec = None
+    if len(time_values) >= 2:
+        epoch_duration_sec = float(time_values[-1] - time_values[0])
+
+    mean_speed = sum(vel_values) / len(vel_values) if vel_values else None
+    std_speed = None
+    if vel_values:
+        mean = mean_speed or 0.0
+        std_speed = math.sqrt(sum((value - mean) ** 2 for value in vel_values) / len(vel_values))
+    max_speed = max(vel_values) if vel_values else None
+    moving_fraction = None
+    if vel_values:
+        moving_count = sum(1 for value in vel_values if value > 0.0)
+        moving_fraction = moving_count / len(vel_values)
+    x_range = (max(x_values) - min(x_values)) if x_values else None
+    y_range = (max(y_values) - min(y_values)) if y_values else None
+    mean_dir = sum(dir_values) / len(dir_values) if dir_values else None
+
+    return {
+        "epoch_duration_sec": epoch_duration_sec,
+        "mean_speed": mean_speed,
+        "std_speed": std_speed,
+        "max_speed": max_speed,
+        "moving_fraction": moving_fraction,
+        "x_range": x_range,
+        "y_range": y_range,
+        "mean_dir": mean_dir,
+    }
+
+
 def build_epoch_rows(config: DatasetConfig, animal: str, session: int) -> list[dict[str, Any]]:
     loaded = load_session_files(config, animal, session)
     return build_epoch_rows_from_loaded(loaded, animal, session)
@@ -298,6 +387,7 @@ def build_epoch_rows_from_loaded(
         task_struct = _scalarize(task_epoch)
         pos_struct = _scalarize(pos_epoch)
         rawpos_struct = _scalarize(rawpos_epoch)
+        pos_features = _extract_pos_feature_map(pos_struct)
 
         stats = epoch_spike_stats.get(
             epoch_index + 1,
@@ -316,6 +406,14 @@ def build_epoch_rows_from_loaded(
                 "task_experimentday": _to_python_number(getattr(task_struct, "experimentday", None)),
                 "pos_rows": _array_row_count(getattr(pos_struct, "data", None)),
                 "pos_fields": _to_python_string(getattr(pos_struct, "fields", None)),
+                "epoch_duration_sec": pos_features["epoch_duration_sec"],
+                "mean_speed": pos_features["mean_speed"],
+                "std_speed": pos_features["std_speed"],
+                "max_speed": pos_features["max_speed"],
+                "moving_fraction": pos_features["moving_fraction"],
+                "x_range": pos_features["x_range"],
+                "y_range": pos_features["y_range"],
+                "mean_dir": pos_features["mean_dir"],
                 "rawpos_rows": _array_row_count(getattr(rawpos_struct, "data", None)),
                 "rawpos_fields": _to_python_string(getattr(rawpos_struct, "fields", None)),
                 "spike_tetrode_count": len(stats["tetrodes"]),
@@ -397,6 +495,14 @@ def build_run_cell_model_rows(epoch_rows: list[dict[str, Any]], cell_rows: list[
                 "task_exposure": epoch["task_exposure"],
                 "task_experimentday": epoch["task_experimentday"],
                 "pos_rows": int(epoch["pos_rows"]),
+                "epoch_duration_sec": epoch["epoch_duration_sec"],
+                "mean_speed": epoch["mean_speed"],
+                "std_speed": epoch["std_speed"],
+                "max_speed": epoch["max_speed"],
+                "moving_fraction": epoch["moving_fraction"],
+                "x_range": epoch["x_range"],
+                "y_range": epoch["y_range"],
+                "mean_dir": epoch["mean_dir"],
                 "rawpos_rows": int(epoch["rawpos_rows"]),
                 "spike_tetrode_count": int(epoch["spike_tetrode_count"]),
                 "spike_cell_count": int(epoch["spike_cell_count"]),

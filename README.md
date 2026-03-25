@@ -87,6 +87,8 @@ Build a run-only modeling table across all discovered sessions:
 PYTHONPATH=src python scripts/build_model_table.py --config configs/hc6.local.json --animal Bon
 ```
 
+The run-cell model table now includes position-derived epoch features such as duration, mean/std/max speed, moving fraction, spatial range, and mean direction.
+
 Train the first run-cell baseline with held-out-session evaluation:
 
 ```bash
