@@ -68,6 +68,7 @@ Latest Bon run-cell baseline comparison:
 - best RMSE in the current alpha sweep (`population_context` only, alpha `100`): MAE `0.4040`, RMSE `0.6071`
 - adding acceleration features improved the movement-only baseline enough to become the new default
 - adding a small nonlinear movement expansion did not materially improve the benchmark
+- a pure-Python nonlinear forest-style baseline slightly improved the LOSO benchmark but did not change the qualitative failure pattern
 
 Current default benchmark to beat:
 
@@ -86,6 +87,14 @@ Leave-one-session-out evaluation for the current default baseline:
 - easiest sessions: `3`, `4`, `8`
 - hardest sessions: `6`, `7`, `9`
 
+Leave-one-session-out evaluation for the nonlinear baseline on the same target and feature group:
+
+- mean MAE: `0.3945`
+- mean RMSE: `0.6016`
+- easiest sessions: `3`, `4`, `8`
+- hardest sessions: `6`, `7`, `9`
+- improvement over ridge is real but small, so model nonlinearity alone does not resolve the remaining gap
+
 Session-centered target diagnostics did not materially improve the cross-session result:
 
 - session-centered LOSO mean MAE: `0.3991`
@@ -97,23 +106,27 @@ Interpretation from the current phase:
 - harder sessions have higher spike load, denser active populations, and stronger movement intensity
 - the current linear ridge model still struggles with that harder regime even after stronger movement features
 
-Track-specific evaluation added one more useful detail:
+Track-specific nonlinear evaluation added a more precise picture:
 
-- `TrackB` carries most of the higher-intensity hard regime across sessions `6`, `7`, and `9`
-- `session 9 / TrackB` is currently the clearest hard-case example
-- `session 4 / TrackA` is a separate outlier and does not look hard for the same reason as the `TrackB` failures
+- `TrackB` is worse overall than `TrackA`, with LOSO mean MAE `0.4111` and mean RMSE `0.6108`
+- `TrackA` is better overall, with LOSO mean MAE `0.3646` and mean RMSE `0.5793`
+- sessions `6`, `7`, and `9` are still hard on both tracks
+- `TrackB` amplifies the hard-session pattern rather than fully explaining it
+- `session 9 / TrackB` is still the clearest hard-case example
+- `session 4 / TrackA` no longer looks like the main diagnostic priority in the nonlinear track-specific view
 
 Current interpretation:
 
 - the main difficulty is not just mixing `TrackA` and `TrackB` in one baseline
-- the broader problem still looks like a session-specific regime shift, especially on high-intensity `TrackB` runs
-- a track-specific baseline may still be worth trying, but it is unlikely to fully solve the cross-session gap by itself
+- the broader problem still looks like a session-specific regime shift across sessions `6`, `7`, and `9`
+- `TrackB` makes that regime shift worse, but the same hard sessions remain difficult on `TrackA`
+- stronger nonlinear baselines help only marginally, so the current bottleneck is understanding the hard-session regime rather than choosing between simple model classes
 
 ## Likely Next Steps
 
-- Compare the current linear ridge baseline against a stronger nonlinear model baseline
-- Try track-specific baselines as a dependency-light follow-up
-- Use `session 9 / TrackB` and `session 4 / TrackA` as explicit diagnostic cases
+- Compare hard sessions `6`, `7`, `9` against easier sessions within each track, especially `TrackB`
+- Use `session 9 / TrackB` as the clearest diagnostic case, while treating `6` and `7` as part of the same regime rather than isolated failures
+- Check whether the main shift is in target distribution, movement intensity, or population load before adding new features
 - Add richer position-derived features only when they are motivated by a specific failure mode
 - Consider models that operate on actual spike-event rows rather than cell aggregates
 - Expand from `Bon` to additional animals once the single-animal workflow is stable
@@ -127,7 +140,8 @@ Feature-engineering lesson from the current phase:
 - targeted feature-group ablations were informative and changed the benchmark choice
 - richer movement summaries, including acceleration features, are the current best default tradeoff
 - explicit ablations and alpha sweeps were useful, but further hand-built linear features showed diminishing returns
-- the next phase should focus more on model class and evaluation robustness than on piling on more summary features
+- moving from ridge to a stronger nonlinear baseline gave only a small gain
+- the next phase should focus more on diagnosing the hard-session regime than on piling on more summary features or modest model tweaks
 
 ## Phase Boundary
 
@@ -137,8 +151,9 @@ This is a reasonable stopping point for the initial baseline phase:
 - exports are stable and fast enough to use on Eureka
 - the repo now has a reproducible benchmark
 - the project now has a better default target (`log_firing_rate_hz`), a stronger default feature set, and a clearer picture of where cross-session failures remain
+- the remaining problem is now localized well enough to focus on hard-session diagnostics rather than more baseline scaffolding
 
-The next phase should focus on stronger models and more robust cross-session evaluation, not more scaffolding.
+The next phase should focus on hard-session diagnostics and failure-mode-specific modeling changes, not more scaffolding.
 
 ## Update Rule
 
