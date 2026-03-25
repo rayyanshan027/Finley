@@ -9,6 +9,7 @@ from finley.analysis.adaptation import (
     split_session_adaptation_rows,
     summarize_unit_overlap,
 )
+from scripts.run_session_adaptation_experiment import resolve_unit_residual_shrinkages
 
 
 class AdaptationTests(unittest.TestCase):
@@ -88,6 +89,16 @@ class AdaptationTests(unittest.TestCase):
         )
         self.assertEqual(predictions, [1.25, 2.0])
         self.assertEqual(corrected_count, 1)
+
+    def test_resolve_unit_residual_shrinkages_only_sweeps_residual_variant(self) -> None:
+        self.assertEqual(
+            resolve_unit_residual_shrinkages("baseline_plus_unit_residual", [0.0, 4.0, 8.0]),
+            [0.0, 4.0, 8.0],
+        )
+        self.assertEqual(
+            resolve_unit_residual_shrinkages("baseline", [0.0, 4.0, 8.0]),
+            [0.0],
+        )
 
 
 if __name__ == "__main__":

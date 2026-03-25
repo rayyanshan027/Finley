@@ -77,10 +77,11 @@ def parse_args() -> argparse.Namespace:
         help="Adaptive model variants to evaluate.",
     )
     parser.add_argument(
-        "--unit-residual-shrinkage",
+        "--unit-residual-shrinkage-values",
+        nargs="+",
         type=float,
-        default=4.0,
-        help="Shrinkage strength for per-unit residual offsets.",
+        default=[4.0],
+        help="Shrinkage strengths to compare for per-unit residual offsets.",
     )
     parser.add_argument(
         "--n-estimators",
@@ -131,6 +132,14 @@ def write_csv(path: Path, rows: list[dict]) -> None:
         writer = csv.DictWriter(handle, fieldnames=list(rows[0].keys()))
         writer.writeheader()
         writer.writerows(rows)
+
+
+def resolve_unit_residual_shrinkages(model_variant: str, shrinkage_values: list[float]) -> list[float]:
+    if any(value < 0 for value in shrinkage_values):
+        raise ValueError("--unit-residual-shrinkage-values must all be non-negative.")
+    if model_variant == "baseline_plus_unit_residual":
+        return list(shrinkage_values)
+    return [shrinkage_values[0]]
 
 
 def evaluate_adaptation_setting(
@@ -239,18 +248,22 @@ def main() -> None:
     for session in args.sessions:
         for adaptation_epoch_count in args.adaptation_epochs:
             for model_variant in args.model_variants:
-                results.append(
-                    evaluate_adaptation_setting(
-                        rows,
-                        held_out_session=session,
-                        adaptation_epoch_count=adaptation_epoch_count,
-                        target_column=args.target,
-                        feature_groups=args.feature_groups,
-                        config=config,
-                        model_variant=model_variant,
-                        unit_residual_shrinkage=args.unit_residual_shrinkage,
+                for unit_residual_shrinkage in resolve_unit_residual_shrinkages(
+                    model_variant,
+                    args.unit_residual_shrinkage_values,
+                ):
+                    results.append(
+                        evaluate_adaptation_setting(
+                            rows,
+                            held_out_session=session,
+                            adaptation_epoch_count=adaptation_epoch_count,
+                            target_column=args.target,
+                            feature_groups=args.feature_groups,
+                            config=config,
+                            model_variant=model_variant,
+                            unit_residual_shrinkage=unit_residual_shrinkage,
+                        )
                     )
-                )
 
     payload = {
         "target_column": args.target,
@@ -263,7 +276,7 @@ def main() -> None:
         "min_samples_leaf": config.min_samples_leaf,
         "max_features": config.max_features,
         "random_seed": config.random_seed,
-        "unit_residual_shrinkage": args.unit_residual_shrinkage,
+        "unit_residual_shrinkage_values": args.unit_residual_shrinkage_values,
         "results": results,
     }
 

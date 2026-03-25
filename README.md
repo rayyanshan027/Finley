@@ -147,14 +147,15 @@ PYTHONPATH=src python scripts/run_session_adaptation_experiment.py \
   --sessions 6 7 9 \
   --adaptation-epochs 0 1 2 \
   --target log_firing_rate_hz \
-  --feature-groups movement_summaries population_context cell_metadata
+  --feature-groups movement_summaries population_context cell_metadata \
+  --unit-residual-shrinkage-values 0 1 2 4 8 16
 ```
 
 The adaptation script now evaluates three adaptive variants by default:
 
 - `baseline`: the shared nonlinear model only
 - `session_unit_identity`: the shared nonlinear model plus sparse one-hot within-session unit features
-- `baseline_plus_unit_residual`: the shared nonlinear model plus shrunken per-unit residual correction learned from the adapted epochs
+- `baseline_plus_unit_residual`: the shared nonlinear model plus shrunken per-unit residual correction learned from the adapted epochs; if multiple `--unit-residual-shrinkage-values` are provided, this variant emits one row per shrinkage value
 
 To restrict it to one variant:
 
