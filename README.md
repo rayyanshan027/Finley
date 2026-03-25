@@ -150,6 +150,19 @@ PYTHONPATH=src python scripts/run_session_adaptation_experiment.py \
   --feature-groups movement_summaries population_context cell_metadata
 ```
 
+The adaptation script now evaluates both the current adaptive baseline and a session-unit-identity variant by default. To restrict it to one variant:
+
+```bash
+PYTHONPATH=src python scripts/run_session_adaptation_experiment.py \
+  --input data/processed/bon_run_cell_model_table.csv \
+  --output artifacts/session_adaptation_experiment.json \
+  --sessions 6 7 9 \
+  --adaptation-epochs 0 1 2 \
+  --target log_firing_rate_hz \
+  --feature-groups movement_summaries population_context cell_metadata \
+  --model-variants baseline
+```
+
 Recommended default benchmark:
 
 ```bash

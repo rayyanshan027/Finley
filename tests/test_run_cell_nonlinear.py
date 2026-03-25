@@ -6,6 +6,7 @@ from finley.models.run_cell_nonlinear import (
     TreeRegressorConfig,
     build_feature_matrix,
     compute_nonlinear_metrics,
+    fit_session_unit_feature_encoder,
     fit_random_forest,
     get_nonlinear_feature_count,
     predict_forest,
@@ -77,6 +78,69 @@ class RunCellNonlinearTests(unittest.TestCase):
         self.assertEqual(len(matrix), 1)
         self.assertEqual(len(matrix[0]), 7)
         self.assertEqual(get_nonlinear_feature_count(["movement_summaries"]), 19)
+
+    def test_build_feature_matrix_appends_session_unit_identity_one_hot(self) -> None:
+        first = make_row(
+            session=6,
+            environment="TrackA",
+            mean_speed=1.0,
+            std_speed=0.2,
+            speed_q75=1.5,
+            fast_fraction=0.1,
+            target=1.0,
+        )
+        second = {
+            **make_row(
+                session=6,
+                environment="TrackA",
+                mean_speed=1.1,
+                std_speed=0.25,
+                speed_q75=1.6,
+                fast_fraction=0.1,
+                target=1.1,
+            ),
+            "cell": 2,
+        }
+        encoder = fit_session_unit_feature_encoder([first, second])
+        matrix = build_feature_matrix(
+            [first, second],
+            feature_groups=["movement_summaries"],
+            session_unit_encoder=encoder,
+        )
+        self.assertEqual(len(matrix[0]), 21)
+        self.assertEqual(matrix[0][-2:], [1.0, 0.0])
+        self.assertEqual(matrix[1][-2:], [0.0, 1.0])
+        self.assertEqual(get_nonlinear_feature_count(["movement_summaries"], encoder), 21)
+
+    def test_build_feature_matrix_leaves_unknown_session_unit_all_zero(self) -> None:
+        known = make_row(
+            session=6,
+            environment="TrackA",
+            mean_speed=1.0,
+            std_speed=0.2,
+            speed_q75=1.5,
+            fast_fraction=0.1,
+            target=1.0,
+        )
+        unknown = {
+            **make_row(
+                session=6,
+                environment="TrackB",
+                mean_speed=1.2,
+                std_speed=0.3,
+                speed_q75=1.8,
+                fast_fraction=0.2,
+                target=1.2,
+            ),
+            "cell": 3,
+        }
+        encoder = fit_session_unit_feature_encoder([known])
+        matrix = build_feature_matrix(
+            [unknown],
+            feature_groups=["movement_summaries"],
+            session_unit_encoder=encoder,
+        )
+        self.assertEqual(matrix[0][-1:], [0.0])
 
     def test_random_forest_fits_simple_signal(self) -> None:
         rows = [
@@ -161,6 +225,68 @@ class RunCellNonlinearTests(unittest.TestCase):
         self.assertEqual(metrics.test_count, 1)
         self.assertEqual(metrics.dropped_train_count, 1)
         self.assertEqual(metrics.feature_count, 19)
+
+    def test_compute_nonlinear_metrics_includes_session_unit_features(self) -> None:
+        train_rows = [
+            make_row(
+                session=6,
+                environment="TrackA",
+                mean_speed=1.0,
+                std_speed=0.2,
+                speed_q75=1.5,
+                fast_fraction=0.1,
+                target=1.0,
+            ),
+            {
+                **make_row(
+                    session=6,
+                    environment="TrackA",
+                    mean_speed=1.1,
+                    std_speed=0.2,
+                    speed_q75=1.6,
+                    fast_fraction=0.1,
+                    target=1.1,
+                ),
+                "cell": 2,
+            },
+            make_row(
+                session=5,
+                environment="TrackB",
+                mean_speed=0.9,
+                std_speed=0.2,
+                speed_q75=1.4,
+                fast_fraction=0.1,
+                target=0.8,
+            ),
+        ]
+        test_rows = [
+            make_row(
+                session=6,
+                environment="TrackA",
+                mean_speed=1.2,
+                std_speed=0.25,
+                speed_q75=1.7,
+                fast_fraction=0.2,
+                target=1.2,
+            )
+        ]
+        encoder = fit_session_unit_feature_encoder(train_rows[:2])
+        metrics = compute_nonlinear_metrics(
+            train_rows,
+            test_rows,
+            held_out_session=6,
+            target_column="log_firing_rate_hz",
+            feature_groups=["movement_summaries"],
+            config=TreeRegressorConfig(
+                n_estimators=8,
+                max_depth=3,
+                min_samples_leaf=1,
+                max_features="all",
+                random_seed=1,
+            ),
+            session_unit_encoder=encoder,
+        )
+        self.assertEqual(metrics.feature_count, 21)
 
     def test_run_leave_one_session_out_nonlinear_returns_each_session(self) -> None:
         rows = []

@@ -73,6 +73,15 @@ class NonlinearCrossSessionSummary:
     random_seed: int
 
 
+@dataclass(frozen=True)
+class SessionUnitFeatureEncoder:
+    unit_keys: tuple[tuple[int, int, int], ...]
+
+    @property
+    def feature_count(self) -> int:
+        return len(self.unit_keys)
+
+
 def _resolve_feature_names(feature_groups: list[str] | None = None) -> list[str]:
     groups = resolve_feature_groups(feature_groups)
     feature_names: list[str] = []
@@ -81,20 +90,48 @@ def _resolve_feature_names(feature_groups: list[str] | None = None) -> list[str]
     return feature_names
 
 
+def get_session_unit_key(row: dict) -> tuple[int, int, int]:
+    return int(row["session"]), int(row["tetrode"]), int(row["cell"])
+
+
+def fit_session_unit_feature_encoder(rows: list[dict]) -> SessionUnitFeatureEncoder:
+    unit_keys = tuple(sorted({get_session_unit_key(row) for row in rows}))
+    return SessionUnitFeatureEncoder(unit_keys=unit_keys)
+
+
 def build_feature_matrix(
     rows: list[dict],
     feature_groups: list[str] | None = None,
+    session_unit_encoder: SessionUnitFeatureEncoder | None = None,
 ) -> list[list[float]]:
     feature_names = _resolve_feature_names(feature_groups)
+    session_unit_index = (
+        {key: index for index, key in enumerate(session_unit_encoder.unit_keys)}
+        if session_unit_encoder is not None
+        else {}
+    )
     matrix: list[list[float]] = []
     for row in rows:
         feature_map = _feature_map(row)
-        matrix.append([float(feature_map[name]) for name in feature_names])
+        feature_row = [float(feature_map[name]) for name in feature_names]
+        if session_unit_encoder is not None:
+            unit_features = [0.0] * session_unit_encoder.feature_count
+            unit_index = session_unit_index.get(get_session_unit_key(row))
+            if unit_index is not None:
+                unit_features[unit_index] = 1.0
+            feature_row.extend(unit_features)
+        matrix.append(feature_row)
     return matrix
 
 
-def get_nonlinear_feature_count(feature_groups: list[str] | None = None) -> int:
-    return len(_resolve_feature_names(feature_groups))
+def get_nonlinear_feature_count(
+    feature_groups: list[str] | None = None,
+    session_unit_encoder: SessionUnitFeatureEncoder | None = None,
+) -> int:
+    feature_count = len(_resolve_feature_names(feature_groups))
+    if session_unit_encoder is not None:
+        feature_count += session_unit_encoder.feature_count
+    return feature_count
 
 
 def _variance(y: list[float]) -> float:
@@ -284,6 +321,7 @@ def compute_nonlinear_metrics(
     target_column: str,
     feature_groups: list[str] | None = None,
     config: TreeRegressorConfig | None = None,
+    session_unit_encoder: SessionUnitFeatureEncoder | None = None,
 ) -> NonlinearRegressionMetrics:
     resolved_feature_groups = resolve_feature_groups(feature_groups)
     resolved_config = config or TreeRegressorConfig()
@@ -294,9 +332,17 @@ def compute_nonlinear_metrics(
             f"No usable rows remain for target {target_column} after filtering missing targets."
         )
 
-    x_train = build_feature_matrix(filtered_train_rows, feature_groups=resolved_feature_groups)
+    x_train = build_feature_matrix(
+        filtered_train_rows,
+        feature_groups=resolved_feature_groups,
+        session_unit_encoder=session_unit_encoder,
+    )
     y_train = [float(row[target_column]) for row in filtered_train_rows]
-    x_test = build_feature_matrix(filtered_test_rows, feature_groups=resolved_feature_groups)
+    x_test = build_feature_matrix(
+        filtered_test_rows,
+        feature_groups=resolved_feature_groups,
+        session_unit_encoder=session_unit_encoder,
+    )
     y_test = [float(row[target_column]) for row in filtered_test_rows]
 
     forest = fit_random_forest(x_train, y_train, config=resolved_config)
@@ -310,7 +356,10 @@ def compute_nonlinear_metrics(
         dropped_train_count=dropped_train_count,
         dropped_test_count=dropped_test_count,
         feature_groups=resolved_feature_groups,
-        feature_count=get_nonlinear_feature_count(resolved_feature_groups),
+        feature_count=get_nonlinear_feature_count(
+            resolved_feature_groups,
+            session_unit_encoder=session_unit_encoder,
+        ),
         held_out_session=held_out_session,
         target_column=target_column,
         mae=mae,
@@ -365,14 +414,17 @@ def run_leave_one_session_out_nonlinear(
 __all__ = [
     "NonlinearCrossSessionSummary",
     "NonlinearRegressionMetrics",
+    "SessionUnitFeatureEncoder",
     "TreeNode",
     "TreeRegressorConfig",
     "build_feature_matrix",
     "compute_nonlinear_metrics",
     "filter_rows_by_environment",
     "fit_random_forest",
+    "fit_session_unit_feature_encoder",
     "get_available_feature_groups",
     "get_nonlinear_feature_count",
+    "get_session_unit_key",
     "load_model_table",
     "predict_forest",
     "run_leave_one_session_out_nonlinear",

@@ -11,6 +11,7 @@ from finley.models.run_cell_nonlinear import (
     TreeRegressorConfig,
     build_feature_matrix,
     filter_rows_for_target,
+    fit_session_unit_feature_encoder,
     fit_random_forest,
     predict_forest,
 )
@@ -61,6 +62,13 @@ def parse_args() -> argparse.Namespace:
         nargs="+",
         default=["movement_summaries", "population_context", "cell_metadata"],
         help="Feature groups to include.",
+    )
+    parser.add_argument(
+        "--model-variants",
+        nargs="+",
+        default=["baseline", "session_unit_identity"],
+        choices=["baseline", "session_unit_identity"],
+        help="Adaptive model variants to evaluate.",
     )
     parser.add_argument(
         "--n-estimators",
@@ -120,6 +128,7 @@ def evaluate_adaptation_setting(
     target_column: str,
     feature_groups: list[str],
     config: TreeRegressorConfig,
+    model_variant: str,
 ) -> dict:
     train_rows, test_rows, adaptation_epochs, evaluation_epochs = split_session_adaptation_rows(
         rows,
@@ -128,9 +137,24 @@ def evaluate_adaptation_setting(
     )
     filtered_train_rows, dropped_train_count = filter_rows_for_target(train_rows, target_column)
     filtered_test_rows, dropped_test_count = filter_rows_for_target(test_rows, target_column)
-    x_train = build_feature_matrix(filtered_train_rows, feature_groups=feature_groups)
+    session_unit_encoder = None
+    if model_variant == "session_unit_identity":
+        adaptation_rows = [
+            row for row in filtered_train_rows if int(row["session"]) == held_out_session
+        ]
+        session_unit_encoder = fit_session_unit_feature_encoder(adaptation_rows)
+
+    x_train = build_feature_matrix(
+        filtered_train_rows,
+        feature_groups=feature_groups,
+        session_unit_encoder=session_unit_encoder,
+    )
     y_train = [float(row[target_column]) for row in filtered_train_rows]
-    x_test = build_feature_matrix(filtered_test_rows, feature_groups=feature_groups)
+    x_test = build_feature_matrix(
+        filtered_test_rows,
+        feature_groups=feature_groups,
+        session_unit_encoder=session_unit_encoder,
+    )
     y_test = [float(row[target_column]) for row in filtered_test_rows]
 
     forest = fit_random_forest(x_train, y_train, config=config)
@@ -139,6 +163,8 @@ def evaluate_adaptation_setting(
     summary = summarize_errors(errors)
     return {
         "held_out_session": held_out_session,
+        "model_variant": model_variant,
+        "uses_session_unit_identity": model_variant == "session_unit_identity",
         "adaptation_epoch_count": adaptation_epoch_count,
         "adaptation_epochs": adaptation_epochs,
         "evaluation_epochs": evaluation_epochs,
@@ -146,6 +172,9 @@ def evaluate_adaptation_setting(
         "test_count": len(filtered_test_rows),
         "dropped_train_count": dropped_train_count,
         "dropped_test_count": dropped_test_count,
+        "session_unit_feature_count": (
+            session_unit_encoder.feature_count if session_unit_encoder is not None else 0
+        ),
         **summary,
     }
 
@@ -164,20 +193,23 @@ def main() -> None:
     results: list[dict] = []
     for session in args.sessions:
         for adaptation_epoch_count in args.adaptation_epochs:
-            results.append(
-                evaluate_adaptation_setting(
-                    rows,
-                    held_out_session=session,
-                    adaptation_epoch_count=adaptation_epoch_count,
-                    target_column=args.target,
-                    feature_groups=args.feature_groups,
-                    config=config,
+            for model_variant in args.model_variants:
+                results.append(
+                    evaluate_adaptation_setting(
+                        rows,
+                        held_out_session=session,
+                        adaptation_epoch_count=adaptation_epoch_count,
+                        target_column=args.target,
+                        feature_groups=args.feature_groups,
+                        config=config,
+                        model_variant=model_variant,
+                    )
                 )
-            )
 
     payload = {
         "target_column": args.target,
         "feature_groups": args.feature_groups,
+        "model_variants": args.model_variants,
         "sessions": args.sessions,
         "adaptation_epochs": args.adaptation_epochs,
         "n_estimators": config.n_estimators,
