@@ -58,10 +58,14 @@ def main() -> None:
     session_profiles = summary["session_profiles"]
     csv_path = output_path.with_suffix(".csv")
     write_csv(csv_path, session_profiles)
+    session_track_profiles = summary["session_track_profiles"]
+    track_csv_path = output_path.with_name(f"{output_path.stem}_tracks.csv")
+    write_csv(track_csv_path, session_track_profiles)
 
     print(json.dumps(summary, indent=2))
     print(f"Wrote session profiles to {output_path}")
     print(f"Wrote session profile table to {csv_path}")
+    print(f"Wrote session-track profile table to {track_csv_path}")
 
 
 if __name__ == "__main__":

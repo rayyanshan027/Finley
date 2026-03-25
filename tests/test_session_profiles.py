@@ -71,10 +71,12 @@ class SessionProfileTests(unittest.TestCase):
         ]
         summary = summarize_model_table_by_session(rows, hard_sessions=[4], easy_sessions=[3])
         self.assertEqual(len(summary["session_profiles"]), 2)
+        self.assertEqual(len(summary["session_track_profiles"]), 2)
         self.assertIn("group_summaries", summary)
         self.assertIn("group_comparison", summary)
         self.assertEqual(summary["session_profiles"][0]["session"], 3)
         self.assertAlmostEqual(summary["session_profiles"][0]["mean_speed_mean"], 1.0)
+        self.assertEqual(summary["session_track_profiles"][0]["task_environment"], "TrackA")
         self.assertAlmostEqual(
             summary["group_comparison"]["hard_minus_easy"]["mean_speed_mean"],
             0.5,

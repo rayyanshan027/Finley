@@ -98,6 +98,21 @@ def summarize_session_rows(session: int, rows: list[dict]) -> dict:
     return output
 
 
+def summarize_session_track_rows(session: int, task_environment: str, rows: list[dict]) -> dict:
+    output = {
+        "session": session,
+        "task_environment": task_environment,
+        "row_count": len(rows),
+        "epoch_count": len({int(row["epoch"]) for row in rows}),
+    }
+    for column in PROFILE_NUMERIC_COLUMNS:
+        values = _numeric_values(rows, column)
+        output[f"{column}_mean"] = _mean(values)
+        output[f"{column}_std"] = _std(values)
+        output[f"{column}_q50"] = _quantile(values, 0.5)
+    return output
+
+
 def summarize_group(name: str, rows: list[dict], sessions: list[int]) -> SessionGroupSummary:
     mean_metrics: dict[str, float | None] = {}
     summary_row = summarize_session_rows(session=-1, rows=rows)
@@ -124,7 +139,24 @@ def summarize_model_table_by_session(
         held_rows = [row for row in rows if int(row["session"]) == session]
         session_rows.append(summarize_session_rows(session, held_rows))
 
-    output: dict[str, object] = {"session_profiles": session_rows}
+    session_track_rows = []
+    for session in sessions:
+        for task_environment in ["TrackA", "TrackB"]:
+            held_rows = [
+                row
+                for row in rows
+                if int(row["session"]) == session and row.get("task_environment") == task_environment
+            ]
+            if not held_rows:
+                continue
+            session_track_rows.append(
+                summarize_session_track_rows(session, task_environment, held_rows)
+            )
+
+    output: dict[str, object] = {
+        "session_profiles": session_rows,
+        "session_track_profiles": session_track_rows,
+    }
     group_summaries: list[dict] = []
     if hard_sessions:
         hard_rows = [row for row in rows if int(row["session"]) in set(hard_sessions)]
