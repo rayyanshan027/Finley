@@ -218,15 +218,27 @@ Residual-correction shrinkage sweep:
 - interpretation: the per-unit correction carries strong enough signal that shrinking offsets back toward zero mostly hurts in this setting
 - another notable result is that `1` adapted epoch now outperforms `2`, suggesting the earliest adaptation epoch may be the cleanest calibration source and that later epochs can introduce mismatch or noisier unit corrections
 
+Latest-epoch residual follow-up:
+
+- epoch-specific diagnostics showed that the issue is not simple noise in epoch `4`; the more recent adaptation epoch is usually the better calibrator for predicting epoch `6`
+- comparing epoch-specific corrections on the final held-out epoch:
+  - session `6`: first-only MAE `0.2812`, second-only `0.2775`, pooled `0.2727`, latest-only adaptive benchmark `0.2692`
+  - session `7`: first-only MAE `0.2526`, second-only `0.2387`, pooled `0.2448`, latest-only adaptive benchmark `0.2391`
+  - session `9`: first-only MAE `0.2676`, second-only `0.2632`, pooled `0.2732`, latest-only adaptive benchmark `0.2738`
+- across sessions `6`, `7`, and `9`, the latest-epoch-only residual correction is better overall than pooling adaptation epochs with equal weight:
+  - pooled `2`-epoch residual correction: mean MAE `0.2635`, mean RMSE `0.3991`
+  - latest-epoch `2`-epoch residual correction: mean MAE `0.2607`, mean RMSE `0.3902`
+- interpretation: temporal specificity matters more than averaging; the newest labeled epoch is slightly more relevant for calibrating the next epoch than an equal-weight average over older and newer epochs
+
 ## Likely Next Steps
 
 - Treat the nonlinear model with `movement_summaries`, `population_context`, and `cell_metadata` as the current benchmark to beat
 - Use two benchmark modes going forward:
   - strict LOSO for unseen-session generalization
-  - session-adaptive evaluation for settings where one or two labeled epochs are available, using per-unit residual correction on top of the nonlinear base model
-- Keep the strict LOSO benchmark unchanged; the adaptive benchmark should now be the nonlinear model plus per-unit residual correction with `unit_residual_shrinkage=0.0`
+  - session-adaptive evaluation for settings where one or two labeled epochs are available, using latest-epoch per-unit residual correction on top of the nonlinear base model
+- Keep the strict LOSO benchmark unchanged; the adaptive benchmark should now be the nonlinear model plus latest-epoch per-unit residual correction with `unit_residual_shrinkage=0.0`
 - Explicit one-hot unit identity should not be the default adaptive path
-- Next best step: diagnose why the second adapted epoch degrades the residual correction relative to the first, by comparing epoch-specific residual offsets and their drift
+- Next best step: test recency-weighted residual pooling or explicit epoch-distance weighting to see whether it can beat the latest-epoch-only rule without reintroducing the pooling penalty
 - Consider models that operate on actual spike-event rows or finer temporal bins if per-cell epoch aggregates are collapsing too much structure
 - Expand from `Bon` to additional animals once the single-animal workflow is stable
 
@@ -241,7 +253,7 @@ Feature-engineering lesson from the current phase:
 - explicit ablations and alpha sweeps were useful, but further hand-built linear features showed diminishing returns
 - simple target clipping did not address the main failure mode
 - moving from ridge to a stronger nonlinear baseline with population and cell context gave the first meaningful hard-session improvement
-- naive one-hot unit identity in the adaptive setting increased error, but unshrunk residual correction on top of the nonlinear base model worked strongly, so the next phase should focus on calibrated adaptive corrections and adaptation-epoch quality rather than more sparse identity features
+- naive one-hot unit identity in the adaptive setting increased error, but unshrunk latest-epoch residual correction on top of the nonlinear base model worked strongly, so the next phase should focus on calibrated adaptive corrections and temporal weighting rather than more sparse identity features
 
 ## Phase Boundary
 
@@ -250,7 +262,7 @@ This is a reasonable stopping point for the initial linear-baseline phase:
 - pipeline is end-to-end
 - exports are stable and fast enough to use on Eureka
 - the repo now has a reproducible benchmark
-- the project now has a better default target (`log_firing_rate_hz`), a simple ridge reference, a strong strict-LOSO nonlinear benchmark, and a stronger session-adaptive benchmark based on per-unit residual correction with `unit_residual_shrinkage=0.0`
+- the project now has a better default target (`log_firing_rate_hz`), a simple ridge reference, a strong strict-LOSO nonlinear benchmark, and a stronger session-adaptive benchmark based on latest-epoch per-unit residual correction with `unit_residual_shrinkage=0.0`
 - the remaining problem is now localized well enough to focus on repeated-cell failures and hard-session modeling rather than more pipeline scaffolding
 
 The next phase should focus on session adaptation, unit-aware residual diagnostics, and failure-mode-specific modeling changes, not more scaffolding.

@@ -90,7 +90,7 @@ def parse_args() -> argparse.Namespace:
         "--unit-residual-shrinkage-values",
         nargs="+",
         type=float,
-        default=[4.0],
+        default=[0.0],
         help="Shrinkage strengths to compare for per-unit residual offsets.",
     )
     parser.add_argument(

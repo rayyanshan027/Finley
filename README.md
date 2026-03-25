@@ -147,15 +147,28 @@ PYTHONPATH=src python scripts/run_session_adaptation_experiment.py \
   --sessions 6 7 9 \
   --adaptation-epochs 0 1 2 \
   --target log_firing_rate_hz \
+  --feature-groups movement_summaries population_context cell_metadata
+```
+
+To run the residual-correction shrinkage sweep explicitly:
+
+```bash
+PYTHONPATH=src python scripts/run_session_adaptation_experiment.py \
+  --input data/processed/bon_run_cell_model_table.csv \
+  --output artifacts/session_adaptation_experiment.json \
+  --sessions 6 7 9 \
+  --adaptation-epochs 0 1 2 \
+  --target log_firing_rate_hz \
   --feature-groups movement_summaries population_context cell_metadata \
   --unit-residual-shrinkage-values 0 1 2 4 8 16
 ```
 
-The adaptation script now evaluates three adaptive variants by default:
+The adaptation script now evaluates four adaptive variants by default:
 
 - `baseline`: the shared nonlinear model only
 - `session_unit_identity`: the shared nonlinear model plus sparse one-hot within-session unit features
 - `baseline_plus_unit_residual`: the shared nonlinear model plus shrunken per-unit residual correction learned from the adapted epochs; if multiple `--unit-residual-shrinkage-values` are provided, this variant emits one row per shrinkage value
+- `baseline_plus_latest_unit_residual`: the shared nonlinear model plus per-unit residual correction learned only from the most recent adapted epoch
 
 To restrict it to one variant:
 
@@ -190,12 +203,12 @@ Current recommended setting:
 
 Current session-adaptive result:
 
-- best adaptive variant: nonlinear baseline plus per-unit residual correction with `unit_residual_shrinkage=0.0`
+- best adaptive variant: nonlinear baseline plus latest-epoch per-unit residual correction with `unit_residual_shrinkage=0.0`
 - adding `1` labeled epoch from the held-out session materially improves sessions `6`, `7`, and `9`
 - in the current sweep, `shrinkage=0.0` is best overall; additional shrinkage consistently weakens the adaptive correction
 - the strong gain confirms that the remaining gap is substantially session-specific and largely calibratable at the unit level
 - explicit one-hot within-session identity features were worse than the adaptive baseline despite high unit overlap across epochs
-- an additional diagnostic script now compares epoch-specific residual corrections directly so epoch `2` alone can be contrasted with epoch `4` alone and with the pooled `2+4` correction
+- epoch-specific diagnostics showed that the most recent adapted epoch is usually a better calibrator than pooling older and newer adaptation epochs with equal weight
 
 Simple linear reference:
 
@@ -229,9 +242,9 @@ tests/                 unit tests
 - `scripts/inspect_hard_sessions.py` compares hard and easy sessions using quantiles and writes top outlier cell/epoch rows for targeted inspection.
 - `scripts/inspect_hard_session_residuals.py` inspects held-out-session residuals so repeated hard-case cells can be identified directly.
 - `scripts/inspect_hard_session_residuals_nonlinear.py` inspects held-out-session residuals for the nonlinear benchmark candidate.
-- `scripts/run_session_adaptation_experiment.py` measures how much one or two labeled epochs from a held-out session reduce error, reports unit-overlap diagnostics, and compares adaptive variants including per-unit residual correction.
+- `scripts/run_session_adaptation_experiment.py` measures how much one or two labeled epochs from a held-out session reduce error, reports unit-overlap diagnostics, and compares adaptive variants including pooled and latest-epoch per-unit residual correction.
 - `scripts/diagnose_adaptation_epoch_residuals.py` compares residual corrections learned from the first adapted epoch, the second adapted epoch, and their pooled combination on the later held-out epoch(s), and reports offset drift between the first two adaptation epochs.
 - Duration-dependent targets such as `firing_rate_hz` and `log_firing_rate_hz` may be missing for some exported rows; the trainer filters those rows before fitting and reports the kept counts in its metrics output.
 - Current strict LOSO benchmark: nonlinear model with `movement_summaries`, `population_context`, and `cell_metadata`, mean MAE `0.4265`, mean RMSE `0.5764`.
-- Current adaptive benchmark: the same nonlinear model plus per-unit residual correction with `unit_residual_shrinkage=0.0`, which improves the hard sessions substantially once `1-2` labeled epochs are available.
+- Current adaptive benchmark: the same nonlinear model plus latest-epoch per-unit residual correction with `unit_residual_shrinkage=0.0`, which improves the hard sessions substantially once `1-2` labeled epochs are available.
 - Reading `.mat` files requires `scipy`, which is not vendored into this repo.
