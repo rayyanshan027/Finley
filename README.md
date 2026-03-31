@@ -2,7 +2,11 @@
 
 Cross-session neural firing-rate prediction on CRCNS HC-6 data.
 
-This project turns nested HC-6 MATLAB session files into model-ready tables, benchmarks cross-session generalization, and studies how a small amount of within-session calibration data reduces held-out error.
+Finley is an applied ML project built on the [CRCNS HC-6 dataset](https://crcns.org/data-sets/hc/hc-6), a hippocampal recording dataset containing multi-session rat navigation experiments with position, task, and spike data stored in nested MATLAB files. The goal is to predict per-cell firing rate during `run` epochs while testing generalization across recording sessions rather than relying on easier random row splits.
+
+The core problem is session shift: a model can look strong on shuffled data but fail once an entire recording session is held out. This repo focuses on that harder setting by turning raw HC-6 session files into model-ready tables, benchmarking leave-one-session-out performance, and analyzing what errors remain after strict cross-session evaluation.
+
+The main result is that a custom pure-Python nonlinear baseline outperformed XGBoost on `8/9` animals in the 9-animal sweep, and a small amount of within-session calibration data reduced hard-session MAE by roughly `25%` to `73%` across 7 animals. That makes the project less about fitting one regressor and more about showing a complete ML workflow: data wrangling, evaluation design, baseline comparison, and error-driven adaptation.
 
 Detailed experimental notes live in [PROJECT_NARRATIVE.md](PROJECT_NARRATIVE.md).
 
