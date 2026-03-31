@@ -59,9 +59,26 @@ class HC6SessionPathTests(unittest.TestCase):
             (bon / "bonspikes03.mat").write_text("", encoding="utf-8")
             (bon / "bonspikes10.mat").write_text("", encoding="utf-8")
             (bon / "bonpos03.mat").write_text("", encoding="utf-8")
+            (bon / "bontask03.mat").write_text("", encoding="utf-8")
+            (bon / "bonrawpos03.mat").write_text("", encoding="utf-8")
 
             config = DatasetConfig(root=root, animals=["Bon"], allowed_extensions=[], ignore_hidden=True)
-            self.assertEqual(list_available_sessions(config, "Bon"), [3, 10])
+            self.assertEqual(list_available_sessions(config, "Bon"), [3])
+
+    def test_list_available_sessions_requires_all_modalities(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir) / "extracted"
+            mil = root / "Mil"
+            mil.mkdir(parents=True)
+            for session in (1, 2):
+                suffix = f"{session:02d}.mat"
+                (mil / f"milspikes{suffix}").write_text("", encoding="utf-8")
+                (mil / f"milpos{suffix}").write_text("", encoding="utf-8")
+                (mil / f"milrawpos{suffix}").write_text("", encoding="utf-8")
+            (mil / "miltask01.mat").write_text("", encoding="utf-8")
+
+            config = DatasetConfig(root=root, animals=["Mil"], allowed_extensions=[], ignore_hidden=True)
+            self.assertEqual(list_available_sessions(config, "Mil"), [1])
 
 
 if __name__ == "__main__":
