@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="470" viewBox="0 0 920 470" role="img" aria-label="chart">
+<style>
+.title { font: 700 20px Georgia, serif; fill: #16202b; }
+.subtitle { font: 13px Georgia, serif; fill: #4f6475; }
+.axis { stroke: #6f8292; stroke-width: 1; }
+.grid { stroke: #d7e0e6; stroke-width: 1; stroke-dasharray: 4 4; }
+.label { font: 12px monospace; fill: #22313d; }
+.small { font: 11px monospace; fill: #5b6d7b; }
+.legend { font: 12px Georgia, serif; fill: #22313d; }
+</style>
+<rect width="100%" height="100%" fill="#f7f4ec"/>
+<text x="34" y="38" class="title">9-Animal Strict LOSO MAE</text>
+<text x="34" y="60" class="subtitle">Custom nonlinear baseline vs XGBoost. Lower is better.</text>
+<line x1="90" y1="400.0" x2="880" y2="400.0" class="grid"/>
+<text x="78" y="404.0" text-anchor="end" class="small">0.00</text>
+<line x1="90" y1="338.0" x2="880" y2="338.0" class="grid"/>
+<text x="78" y="342.0" text-anchor="end" class="small">0.25</text>
+<line x1="90" y1="276.0" x2="880" y2="276.0" class="grid"/>
+<text x="78" y="280.0" text-anchor="end" class="small">0.51</text>
+<line x1="90" y1="214.0" x2="880" y2="214.0" class="grid"/>
+<text x="78" y="218.0" text-anchor="end" class="small">0.76</text>
+<line x1="90" y1="152.0" x2="880" y2="152.0" class="grid"/>
+<text x="78" y="156.0" text-anchor="end" class="small">1.01</text>
+<line x1="90" y1="90.0" x2="880" y2="90.0" class="grid"/>
+<text x="78" y="94.0" text-anchor="end" class="small">1.27</text>
+<line x1="90" y1="90" x2="90" y2="400" class="axis"/>
+<line x1="90" y1="400" x2="880" y2="400" class="axis"/>
+<rect x="103.9" y="295.7" width="26" height="104.3" fill="#c46a2e" rx="3"/>
+<rect x="137.9" y="254.3" width="26" height="145.7" fill="#2b6f8a" rx="3"/>
+<text x="133.9" y="418" text-anchor="middle" class="label">BON</text>
+<circle cx="133.9" cy="72" r="5" fill="#c46a2e"/>
+<rect x="191.7" y="317.6" width="26" height="82.4" fill="#c46a2e" rx="3"/>
+<rect x="225.7" y="325.5" width="26" height="74.5" fill="#2b6f8a" rx="3"/>
+<text x="221.7" y="418" text-anchor="middle" class="label">CON</text>
+<circle cx="221.7" cy="72" r="5" fill="#2b6f8a"/>
+<rect x="279.4" y="315.1" width="26" height="84.9" fill="#c46a2e" rx="3"/>
+<rect x="313.4" y="254.7" width="26" height="145.3" fill="#2b6f8a" rx="3"/>
+<text x="309.4" y="418" text-anchor="middle" class="label">COR</text>
+<circle cx="309.4" cy="72" r="5" fill="#c46a2e"/>
+<rect x="367.2" y="260.9" width="26" height="139.1" fill="#c46a2e" rx="3"/>
+<rect x="401.2" y="211.2" width="26" height="188.8" fill="#2b6f8a" rx="3"/>
+<text x="397.2" y="418" text-anchor="middle" class="label">DUD</text>
+<circle cx="397.2" cy="72" r="5" fill="#c46a2e"/>
+<rect x="455.0" y="300.6" width="26" height="99.4" fill="#c46a2e" rx="3"/>
+<rect x="489.0" y="241.8" width="26" height="158.2" fill="#2b6f8a" rx="3"/>
+<text x="485.0" y="418" text-anchor="middle" class="label">EIG</text>
+<circle cx="485.0" cy="72" r="5" fill="#c46a2e"/>
+<rect x="542.8" y="337.8" width="26" height="62.2" fill="#c46a2e" rx="3"/>
+<rect x="576.8" y="317.7" width="26" height="82.3" fill="#2b6f8a" rx="3"/>
+<text x="572.8" y="418" text-anchor="middle" class="label">FIV</text>
+<circle cx="572.8" cy="72" r="5" fill="#c46a2e"/>
+<rect x="630.6" y="300.2" width="26" height="99.8" fill="#c46a2e" rx="3"/>
+<rect x="664.6" y="292.3" width="26" height="107.7" fill="#2b6f8a" rx="3"/>
+<text x="660.6" y="418" text-anchor="middle" class="label">FRA</text>
+<circle cx="660.6" cy="72" r="5" fill="#c46a2e"/>
+<rect x="718.3" y="303.8" width="26" height="96.2" fill="#c46a2e" rx="3"/>
+<rect x="752.3" y="265.5" width="26" height="134.5" fill="#2b6f8a" rx="3"/>
+<text x="748.3" y="418" text-anchor="middle" class="label">MIL</text>
+<circle cx="748.3" cy="72" r="5" fill="#c46a2e"/>
+<rect x="806.1" y="261.2" width="26" height="138.8" fill="#c46a2e" rx="3"/>
+<rect x="840.1" y="90.0" width="26" height="310.0" fill="#2b6f8a" rx="3"/>
+<text x="836.1" y="418" text-anchor="middle" class="label">TEN</text>
+<circle cx="836.1" cy="72" r="5" fill="#c46a2e"/>
+<rect x="670" y="26" width="14" height="14" fill="#c46a2e" rx="2"/>
+<text x="692" y="38" class="legend">Nonlinear MAE</text>
+<rect x="670" y="50" width="14" height="14" fill="#2b6f8a" rx="2"/>
+<text x="692" y="62" class="legend">XGBoost MAE</text>
+<text x="34" y="452" class="small">Winner markers above each animal: orange = nonlinear, blue = XGBoost.</text>
+</svg>

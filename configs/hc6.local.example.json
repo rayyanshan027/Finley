@@ -1,7 +1,7 @@
 {
   "dataset": {
-    "root": "/projects/clg_24609687d5dd/hc6/raw/extracted",
-    "animals": ["Bon"],
+    "root": "/path/to/hc6/raw/extracted",
+    "animals": [],
     "allowed_extensions": [],
     "ignore_hidden": true
   },

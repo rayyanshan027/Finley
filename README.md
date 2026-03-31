@@ -4,7 +4,7 @@ Cross-session neural firing-rate prediction on CRCNS HC-6 data.
 
 This project turns nested HC-6 MATLAB session files into model-ready tables, benchmarks cross-session generalization, and studies how a small amount of within-session calibration data reduces held-out error.
 
-Detailed experimental notes live in [PROJECT_NARRATIVE.md](/Users/rayyanshan/IdeaProjects/Finley/PROJECT_NARRATIVE.md).
+Detailed experimental notes live in [PROJECT_NARRATIVE.md](PROJECT_NARRATIVE.md).
 
 ## Problem
 
@@ -39,6 +39,8 @@ Using leave-one-session-out evaluation with `movement_summaries`, `population_co
 
 Across the 9-animal sweep, the custom nonlinear model beat XGBoost on `8/9` animals. `Con` is the exception, which is still useful: the repo shows a strong default model, but it also keeps a real standard-library counterexample instead of pretending one approach wins everywhere.
 
+![9-animal benchmark comparison](docs/figures/benchmark_9_animals.svg)
+
 ## Adaptation Result
 
 On the hardest held-out sessions, adding one labeled epoch from the held-out session and applying a per-unit residual correction substantially reduces error:
@@ -54,6 +56,8 @@ On the hardest held-out sessions, adding one labeled epoch from the held-out ses
 | Ten | `0.7516` | `0.3576` | `-52.4%` |
 
 This pattern now transfers across 7 animals tested in adaptation mode. The remaining cross-session gap is therefore not just a global session offset problem; a substantial part of it is unit-level calibration error that becomes learnable with modest within-session supervision.
+
+![7-animal adaptation improvement](docs/figures/adaptation_7_animals.svg)
 
 ## Diagnostic Takeaways
 
@@ -126,6 +130,8 @@ PYTHONPATH=src python scripts/run_session_adaptation_experiment.py \
 ## Data Note
 
 This repository does not redistribute CRCNS HC-6 data. It assumes you already have authorized access to the extracted dataset and can point the local config at that root.
+
+Full generated result artifacts live on the `portfolio-results` branch. This branch keeps only compact summary tables and lightweight figures.
 
 ## Project Layout
 

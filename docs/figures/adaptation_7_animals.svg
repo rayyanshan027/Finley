@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="470" viewBox="0 0 920 470" role="img" aria-label="chart">
+<style>
+.title { font: 700 20px Georgia, serif; fill: #16202b; }
+.subtitle { font: 13px Georgia, serif; fill: #4f6475; }
+.axis { stroke: #6f8292; stroke-width: 1; }
+.grid { stroke: #d7e0e6; stroke-width: 1; stroke-dasharray: 4 4; }
+.label { font: 12px monospace; fill: #22313d; }
+.small { font: 11px monospace; fill: #5b6d7b; }
+.legend { font: 12px Georgia, serif; fill: #22313d; }
+</style>
+<rect width="100%" height="100%" fill="#eef6f2"/>
+<text x="34" y="38" class="title">7-Animal Adaptation Improvement</text>
+<text x="34" y="60" class="subtitle">Hard-session MAE before and after one adapted epoch plus per-unit residual correction.</text>
+<line x1="90" y1="400.0" x2="880" y2="400.0" class="grid"/>
+<text x="78" y="404.0" text-anchor="end" class="small">0.00</text>
+<line x1="90" y1="338.0" x2="880" y2="338.0" class="grid"/>
+<text x="78" y="342.0" text-anchor="end" class="small">0.15</text>
+<line x1="90" y1="276.0" x2="880" y2="276.0" class="grid"/>
+<text x="78" y="280.0" text-anchor="end" class="small">0.30</text>
+<line x1="90" y1="214.0" x2="880" y2="214.0" class="grid"/>
+<text x="78" y="218.0" text-anchor="end" class="small">0.45</text>
+<line x1="90" y1="152.0" x2="880" y2="152.0" class="grid"/>
+<text x="78" y="156.0" text-anchor="end" class="small">0.60</text>
+<line x1="90" y1="90.0" x2="880" y2="90.0" class="grid"/>
+<text x="78" y="94.0" text-anchor="end" class="small">0.75</text>
+<line x1="90" y1="90" x2="90" y2="400" class="axis"/>
+<line x1="90" y1="400" x2="880" y2="400" class="axis"/>
+<rect x="113.4" y="227.1" width="28" height="172.9" fill="#6f5f90" rx="3"/>
+<rect x="151.4" y="321.8" width="28" height="78.2" fill="#2f8f6b" rx="3"/>
+<text x="146.4" y="418" text-anchor="middle" class="label">BON</text>
+<text x="146.4" y="80" text-anchor="middle" class="small">-55%</text>
+<rect x="226.3" y="242.0" width="28" height="158.0" fill="#6f5f90" rx="3"/>
+<rect x="264.3" y="298.1" width="28" height="101.9" fill="#2f8f6b" rx="3"/>
+<text x="259.3" y="418" text-anchor="middle" class="label">CON</text>
+<text x="259.3" y="80" text-anchor="middle" class="small">-36%</text>
+<rect x="339.1" y="221.0" width="28" height="179.0" fill="#6f5f90" rx="3"/>
+<rect x="377.1" y="265.3" width="28" height="134.7" fill="#2f8f6b" rx="3"/>
+<text x="372.1" y="418" text-anchor="middle" class="label">COR</text>
+<text x="372.1" y="80" text-anchor="middle" class="small">-25%</text>
+<rect x="452.0" y="96.1" width="28" height="303.9" fill="#6f5f90" rx="3"/>
+<rect x="490.0" y="316.7" width="28" height="83.3" fill="#2f8f6b" rx="3"/>
+<text x="485.0" y="418" text-anchor="middle" class="label">DUD</text>
+<text x="485.0" y="80" text-anchor="middle" class="small">-73%</text>
+<rect x="564.9" y="267.3" width="28" height="132.7" fill="#6f5f90" rx="3"/>
+<rect x="602.9" y="315.0" width="28" height="85.0" fill="#2f8f6b" rx="3"/>
+<text x="597.9" y="418" text-anchor="middle" class="label">FIV</text>
+<text x="597.9" y="80" text-anchor="middle" class="small">-36%</text>
+<rect x="677.7" y="145.7" width="28" height="254.3" fill="#6f5f90" rx="3"/>
+<rect x="715.7" y="259.4" width="28" height="140.6" fill="#2f8f6b" rx="3"/>
+<text x="710.7" y="418" text-anchor="middle" class="label">FRA</text>
+<text x="710.7" y="80" text-anchor="middle" class="small">-45%</text>
+<rect x="790.6" y="90.0" width="28" height="310.0" fill="#6f5f90" rx="3"/>
+<rect x="828.6" y="252.5" width="28" height="147.5" fill="#2f8f6b" rx="3"/>
+<text x="823.6" y="418" text-anchor="middle" class="label">TEN</text>
+<text x="823.6" y="80" text-anchor="middle" class="small">-52%</text>
+<rect x="620" y="26" width="14" height="14" fill="#6f5f90" rx="2"/>
+<text x="642" y="38" class="legend">Baseline hard-session MAE</text>
+<rect x="620" y="50" width="14" height="14" fill="#2f8f6b" rx="2"/>
+<text x="642" y="62" class="legend">1-epoch adaptive MAE</text>
+</svg>
