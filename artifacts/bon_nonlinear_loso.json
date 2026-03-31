@@ -1,0 +1,189 @@
+{
+  "summary": {
+    "target_column": "log_firing_rate_hz",
+    "feature_groups": [
+      "movement_summaries",
+      "population_context",
+      "cell_metadata"
+    ],
+    "feature_count": 26,
+    "session_count": 8,
+    "mean_mae": 0.4264703190016215,
+    "mean_rmse": 0.5764104402488643,
+    "n_estimators": 48,
+    "max_depth": 6,
+    "min_samples_leaf": 8,
+    "max_features": "sqrt",
+    "random_seed": 0
+  },
+  "sessions": [
+    {
+      "train_count": 1166,
+      "test_count": 103,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "feature_groups": [
+        "movement_summaries",
+        "population_context",
+        "cell_metadata"
+      ],
+      "feature_count": 26,
+      "held_out_session": 3,
+      "target_column": "log_firing_rate_hz",
+      "mae": 0.44150481418258797,
+      "rmse": 0.5130550261930625,
+      "n_estimators": 48,
+      "max_depth": 6,
+      "min_samples_leaf": 8,
+      "max_features": "sqrt",
+      "random_seed": 0
+    },
+    {
+      "train_count": 1068,
+      "test_count": 201,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "feature_groups": [
+        "movement_summaries",
+        "population_context",
+        "cell_metadata"
+      ],
+      "feature_count": 26,
+      "held_out_session": 4,
+      "target_column": "log_firing_rate_hz",
+      "mae": 0.35417220299939184,
+      "rmse": 0.4125385386538808,
+      "n_estimators": 48,
+      "max_depth": 6,
+      "min_samples_leaf": 8,
+      "max_features": "sqrt",
+      "random_seed": 0
+    },
+    {
+      "train_count": 1109,
+      "test_count": 160,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "feature_groups": [
+        "movement_summaries",
+        "population_context",
+        "cell_metadata"
+      ],
+      "feature_count": 26,
+      "held_out_session": 5,
+      "target_column": "log_firing_rate_hz",
+      "mae": 0.34639658506847254,
+      "rmse": 0.5153607368036577,
+      "n_estimators": 48,
+      "max_depth": 6,
+      "min_samples_leaf": 8,
+      "max_features": "sqrt",
+      "random_seed": 0
+    },
+    {
+      "train_count": 1093,
+      "test_count": 176,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "feature_groups": [
+        "movement_summaries",
+        "population_context",
+        "cell_metadata"
+      ],
+      "feature_count": 26,
+      "held_out_session": 6,
+      "target_column": "log_firing_rate_hz",
+      "mae": 0.44069134242017616,
+      "rmse": 0.6373982189044076,
+      "n_estimators": 48,
+      "max_depth": 6,
+      "min_samples_leaf": 8,
+      "max_features": "sqrt",
+      "random_seed": 0
+    },
+    {
+      "train_count": 1127,
+      "test_count": 142,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "feature_groups": [
+        "movement_summaries",
+        "population_context",
+        "cell_metadata"
+      ],
+      "feature_count": 26,
+      "held_out_session": 7,
+      "target_column": "log_firing_rate_hz",
+      "mae": 0.425855538410573,
+      "rmse": 0.6173093805896966,
+      "n_estimators": 48,
+      "max_depth": 6,
+      "min_samples_leaf": 8,
+      "max_features": "sqrt",
+      "random_seed": 0
+    },
+    {
+      "train_count": 1146,
+      "test_count": 123,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "feature_groups": [
+        "movement_summaries",
+        "population_context",
+        "cell_metadata"
+      ],
+      "feature_count": 26,
+      "held_out_session": 8,
+      "target_column": "log_firing_rate_hz",
+      "mae": 0.5486665063914703,
+      "rmse": 0.6420972010682786,
+      "n_estimators": 48,
+      "max_depth": 6,
+      "min_samples_leaf": 8,
+      "max_features": "sqrt",
+      "random_seed": 0
+    },
+    {
+      "train_count": 1082,
+      "test_count": 187,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "feature_groups": [
+        "movement_summaries",
+        "population_context",
+        "cell_metadata"
+      ],
+      "feature_count": 26,
+      "held_out_session": 9,
+      "target_column": "log_firing_rate_hz",
+      "mae": 0.3906401449826757,
+      "rmse": 0.6915720729171315,
+      "n_estimators": 48,
+      "max_depth": 6,
+      "min_samples_leaf": 8,
+      "max_features": "sqrt",
+      "random_seed": 0
+    },
+    {
+      "train_count": 1092,
+      "test_count": 177,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "feature_groups": [
+        "movement_summaries",
+        "population_context",
+        "cell_metadata"
+      ],
+      "feature_count": 26,
+      "held_out_session": 10,
+      "target_column": "log_firing_rate_hz",
+      "mae": 0.463835417557625,
+      "rmse": 0.5819523468607993,
+      "n_estimators": 48,
+      "max_depth": 6,
+      "min_samples_leaf": 8,
+      "max_features": "sqrt",
+      "random_seed": 0
+    }
+  ]
+}

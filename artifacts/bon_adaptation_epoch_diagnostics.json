@@ -1,0 +1,296 @@
+{
+  "target_column": "log_firing_rate_hz",
+  "feature_groups": [
+    "movement_summaries",
+    "population_context",
+    "cell_metadata"
+  ],
+  "sessions": [
+    6,
+    7,
+    9
+  ],
+  "unit_residual_shrinkage": 0.0,
+  "n_estimators": 48,
+  "max_depth": 6,
+  "min_samples_leaf": 8,
+  "max_features": "sqrt",
+  "random_seed": 0,
+  "results": [
+    {
+      "held_out_session": 6,
+      "subset_label": "first_epoch_only",
+      "adaptation_epochs": [
+        2
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1151,
+      "test_count": 58,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 58,
+      "corrected_evaluation_row_count": 52,
+      "adaptation_unit_count": 58,
+      "evaluation_unit_count": 58,
+      "shared_unit_count": 52,
+      "shared_unit_fraction": 0.896551724137931,
+      "evaluation_rows_on_seen_units": 52,
+      "evaluation_row_seen_unit_fraction": 0.896551724137931,
+      "mae": 0.281177836721,
+      "rmse": 0.41226461066387454
+    },
+    {
+      "held_out_session": 6,
+      "subset_label": "second_epoch_only",
+      "adaptation_epochs": [
+        4
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1153,
+      "test_count": 58,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 60,
+      "corrected_evaluation_row_count": 55,
+      "adaptation_unit_count": 60,
+      "evaluation_unit_count": 58,
+      "shared_unit_count": 55,
+      "shared_unit_fraction": 0.9482758620689655,
+      "evaluation_rows_on_seen_units": 55,
+      "evaluation_row_seen_unit_fraction": 0.9482758620689655,
+      "mae": 0.2775174898475587,
+      "rmse": 0.3963608693746236
+    },
+    {
+      "held_out_session": 6,
+      "subset_label": "first_plus_second_epochs",
+      "adaptation_epochs": [
+        2,
+        4
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1211,
+      "test_count": 58,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 64,
+      "corrected_evaluation_row_count": 57,
+      "adaptation_unit_count": 64,
+      "evaluation_unit_count": 58,
+      "shared_unit_count": 57,
+      "shared_unit_fraction": 0.9827586206896551,
+      "evaluation_rows_on_seen_units": 57,
+      "evaluation_row_seen_unit_fraction": 0.9827586206896551,
+      "mae": 0.27266559762334586,
+      "rmse": 0.41418711535925057
+    },
+    {
+      "held_out_session": 7,
+      "subset_label": "first_epoch_only",
+      "adaptation_epochs": [
+        2
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1172,
+      "test_count": 51,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 45,
+      "corrected_evaluation_row_count": 44,
+      "adaptation_unit_count": 45,
+      "evaluation_unit_count": 51,
+      "shared_unit_count": 44,
+      "shared_unit_fraction": 0.8627450980392157,
+      "evaluation_rows_on_seen_units": 44,
+      "evaluation_row_seen_unit_fraction": 0.8627450980392157,
+      "mae": 0.2525979159717993,
+      "rmse": 0.4124131897511572
+    },
+    {
+      "held_out_session": 7,
+      "subset_label": "second_epoch_only",
+      "adaptation_epochs": [
+        4
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1173,
+      "test_count": 51,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 46,
+      "corrected_evaluation_row_count": 45,
+      "adaptation_unit_count": 46,
+      "evaluation_unit_count": 51,
+      "shared_unit_count": 45,
+      "shared_unit_fraction": 0.8823529411764706,
+      "evaluation_rows_on_seen_units": 45,
+      "evaluation_row_seen_unit_fraction": 0.8823529411764706,
+      "mae": 0.2387202450235889,
+      "rmse": 0.3831213881584766
+    },
+    {
+      "held_out_session": 7,
+      "subset_label": "first_plus_second_epochs",
+      "adaptation_epochs": [
+        2,
+        4
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1218,
+      "test_count": 51,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 47,
+      "corrected_evaluation_row_count": 46,
+      "adaptation_unit_count": 47,
+      "evaluation_unit_count": 51,
+      "shared_unit_count": 46,
+      "shared_unit_fraction": 0.9019607843137255,
+      "evaluation_rows_on_seen_units": 46,
+      "evaluation_row_seen_unit_fraction": 0.9019607843137255,
+      "mae": 0.2447810230205875,
+      "rmse": 0.4064060713869742
+    },
+    {
+      "held_out_session": 9,
+      "subset_label": "first_epoch_only",
+      "adaptation_epochs": [
+        2
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1141,
+      "test_count": 64,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 59,
+      "corrected_evaluation_row_count": 59,
+      "adaptation_unit_count": 59,
+      "evaluation_unit_count": 64,
+      "shared_unit_count": 59,
+      "shared_unit_fraction": 0.921875,
+      "evaluation_rows_on_seen_units": 59,
+      "evaluation_row_seen_unit_fraction": 0.921875,
+      "mae": 0.2675739898852478,
+      "rmse": 0.36584325481587276
+    },
+    {
+      "held_out_session": 9,
+      "subset_label": "second_epoch_only",
+      "adaptation_epochs": [
+        4
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1146,
+      "test_count": 64,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 64,
+      "corrected_evaluation_row_count": 64,
+      "adaptation_unit_count": 64,
+      "evaluation_unit_count": 64,
+      "shared_unit_count": 64,
+      "shared_unit_fraction": 1.0,
+      "evaluation_rows_on_seen_units": 64,
+      "evaluation_row_seen_unit_fraction": 1.0,
+      "mae": 0.2631756410370907,
+      "rmse": 0.36418012583216874
+    },
+    {
+      "held_out_session": 9,
+      "subset_label": "first_plus_second_epochs",
+      "adaptation_epochs": [
+        2,
+        4
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1205,
+      "test_count": 64,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 64,
+      "corrected_evaluation_row_count": 64,
+      "adaptation_unit_count": 64,
+      "evaluation_unit_count": 64,
+      "shared_unit_count": 64,
+      "shared_unit_fraction": 1.0,
+      "evaluation_rows_on_seen_units": 64,
+      "evaluation_row_seen_unit_fraction": 1.0,
+      "mae": 0.2731943147524596,
+      "rmse": 0.37675669380626003
+    }
+  ],
+  "offset_drift": [
+    {
+      "held_out_session": 6,
+      "first_epoch": 2,
+      "second_epoch": 4,
+      "evaluation_epochs": [
+        6
+      ],
+      "shared_unit_count": 54,
+      "mean_signed_offset_diff": -0.00020750082397222005,
+      "mean_abs_offset_diff": 0.060924061529748115,
+      "offset_correlation": 0.9904442143700087,
+      "first_epoch_offset_count": 58,
+      "second_epoch_offset_count": 60,
+      "pooled_offset_count": 64
+    },
+    {
+      "held_out_session": 7,
+      "first_epoch": 2,
+      "second_epoch": 4,
+      "evaluation_epochs": [
+        6
+      ],
+      "shared_unit_count": 44,
+      "mean_signed_offset_diff": -0.002844479462840316,
+      "mean_abs_offset_diff": 0.06574372999114365,
+      "offset_correlation": 0.9858211662291861,
+      "first_epoch_offset_count": 45,
+      "second_epoch_offset_count": 46,
+      "pooled_offset_count": 47
+    },
+    {
+      "held_out_session": 9,
+      "first_epoch": 2,
+      "second_epoch": 4,
+      "evaluation_epochs": [
+        6
+      ],
+      "shared_unit_count": 59,
+      "mean_signed_offset_diff": 0.008904756593020237,
+      "mean_abs_offset_diff": 0.07408494925953407,
+      "offset_correlation": 0.9889982487195299,
+      "first_epoch_offset_count": 59,
+      "second_epoch_offset_count": 64,
+      "pooled_offset_count": 64
+    }
+  ]
+}
