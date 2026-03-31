@@ -23,15 +23,21 @@ The main technical question is not just "which regressor fits the table best?" b
 
 ## Main Result
 
-Using leave-one-session-out evaluation with `movement_summaries`, `population_context`, and `cell_metadata`:
+Using leave-one-session-out evaluation with `movement_summaries`, `population_context`, and `cell_metadata` across 9 animals:
 
 | Animal | Custom nonlinear LOSO | XGBoost LOSO | Takeaway |
 | --- | --- | --- | --- |
 | Bon | MAE `0.4265`, RMSE `0.5764` | MAE `0.5960`, RMSE `0.7520` | custom model is much better |
 | Con | MAE `0.3370`, RMSE `0.4848` | MAE `0.3049`, RMSE `0.4479` | XGBoost is better |
 | Cor | MAE `0.3474`, RMSE `0.4500` | MAE `0.5945`, RMSE `0.7296` | custom model is much better |
+| Dud | MAE `0.5689`, RMSE `0.7665` | MAE `0.7723`, RMSE `0.9358` | custom model is better |
+| Eig | MAE `0.4068`, RMSE `0.5692` | MAE `0.6470`, RMSE `0.7952` | custom model is much better |
+| Fiv | MAE `0.2543`, RMSE `0.3078` | MAE `0.3366`, RMSE `0.4145` | custom model is better |
+| Fra | MAE `0.4082`, RMSE `0.5200` | MAE `0.4407`, RMSE `0.5461` | custom model is better |
+| Mil | MAE `0.3937`, RMSE `0.5003` | MAE `0.5502`, RMSE `0.6740` | custom model is better |
+| Ten | MAE `0.5678`, RMSE `0.7517` | MAE `1.2682`, RMSE `1.4335` | custom model is much better |
 
-This is the most important modeling takeaway in the repo: strong model ranking is animal-dependent, so the benchmark should report both a custom method and a standard library baseline instead of assuming one fixed winner.
+Across the 9-animal sweep, the custom nonlinear model beat XGBoost on `8/9` animals. `Con` is the exception, which is still useful: the repo shows a strong default model, but it also keeps a real standard-library counterexample instead of pretending one approach wins everywhere.
 
 ## Adaptation Result
 
@@ -43,7 +49,7 @@ On the hardest held-out sessions, adding one labeled epoch from the held-out ses
 | Con | `0.3831` | `0.2470` | `-35.5%` |
 | Cor | `0.4341` | `0.3265` | `-24.8%` |
 
-That pattern transfers across all three animals tested here. The remaining cross-session gap is therefore not just a global session offset problem; a substantial part of it is unit-level calibration error that becomes learnable with modest within-session supervision.
+That pattern transfers across the first three animals tested in adaptation mode. The remaining cross-session gap is therefore not just a global session offset problem; a substantial part of it is unit-level calibration error that becomes learnable with modest within-session supervision.
 
 ## Diagnostic Takeaways
 
@@ -52,6 +58,7 @@ That pattern transfers across all three animals tested here. The remaining cross
 - sparse one-hot unit identity features are not a good low-data adaptation mechanism here
 - residual correction learned from adapted epochs is much lower variance and works substantially better
 - pooling more adaptation epochs is not always better; the calibration source matters
+- the 9-animal benchmark makes the main ranking much more credible: the custom nonlinear model is the stronger default overall, not just on one animal
 
 ## Reproduce
 

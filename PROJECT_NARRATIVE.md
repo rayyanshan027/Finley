@@ -43,6 +43,12 @@ Strict leave-one-session-out results:
 | Bon | `8` | `0.4265` | `0.5764` |
 | Con | `6` | `0.3370` | `0.4848` |
 | Cor | `9` | `0.3474` | `0.4500` |
+| Dud | `6` | `0.5689` | `0.7665` |
+| Eig | `7` | `0.4068` | `0.5692` |
+| Fiv | `9` | `0.2543` | `0.3078` |
+| Fra | `11` | `0.4082` | `0.5200` |
+| Mil | `5` | `0.3937` | `0.5003` |
+| Ten | `7` | `0.5678` | `0.7517` |
 
 ## Standard Baseline Comparison
 
@@ -53,11 +59,18 @@ XGBoost under the same feature groups and target:
 | Bon | `0.5960` | `0.7520` | much worse than the custom nonlinear model |
 | Con | `0.3049` | `0.4479` | better than the custom nonlinear model |
 | Cor | `0.5945` | `0.7296` | much worse than the custom nonlinear model |
+| Dud | `0.7723` | `0.9358` | worse than the custom nonlinear model |
+| Eig | `0.6470` | `0.7952` | much worse than the custom nonlinear model |
+| Fiv | `0.3366` | `0.4145` | worse than the custom nonlinear model |
+| Fra | `0.4407` | `0.5461` | slightly worse than the custom nonlinear model |
+| Mil | `0.5502` | `0.6740` | worse than the custom nonlinear model |
+| Ten | `1.2682` | `1.4335` | much worse than the custom nonlinear model |
 
 Interpretation:
 
-- model ranking is not stable across animals
-- reporting both the custom nonlinear model and a strong library baseline is more honest than presenting one as a universal winner
+- model ranking is not perfectly stable across animals, but the broader pattern is now clear
+- across the 9-animal sweep, the custom nonlinear model is the stronger default and beats XGBoost on `8/9` animals
+- `Con` remains an important counterexample, so reporting both models is still more honest than pretending one benchmark dominates without exceptions
 
 ## Hard Sessions And Residual Structure
 
@@ -86,7 +99,7 @@ Mean hard-session results:
 | Con | `0.3831` | `0.2470` | `0.3319` |
 | Cor | `0.4341` | `0.3265` | `0.4196` |
 
-This pattern transfers across all three animals tested.
+This pattern transfers across all three animals tested in adaptation mode.
 
 ## What Did Not Work As Well
 
@@ -117,5 +130,6 @@ The project started as a data-wrangling and baseline-modeling exercise, but the 
 - strict evaluation reveals substantial session shift
 - the remaining error is concentrated in repeated units on hard sessions
 - a small amount of within-session supervision plus per-unit residual calibration reduces that error sharply
+- the 9-animal sweep shows that the custom nonlinear model is a robust default rather than a one-animal anecdote
 
 That combination of data engineering, evaluation design, baseline comparison, and error-driven iteration is the main contribution of the repo.
