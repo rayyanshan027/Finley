@@ -48,8 +48,12 @@ On the hardest held-out sessions, adding one labeled epoch from the held-out ses
 | Bon | `0.4191` | `0.1897` | `-54.7%` |
 | Con | `0.3831` | `0.2470` | `-35.5%` |
 | Cor | `0.4341` | `0.3265` | `-24.8%` |
+| Dud | `0.7367` | `0.2020` | `-72.6%` |
+| Fiv | `0.3217` | `0.2061` | `-35.9%` |
+| Fra | `0.6165` | `0.3410` | `-44.7%` |
+| Ten | `0.7516` | `0.3576` | `-52.4%` |
 
-That pattern transfers across the first three animals tested in adaptation mode. The remaining cross-session gap is therefore not just a global session offset problem; a substantial part of it is unit-level calibration error that becomes learnable with modest within-session supervision.
+This pattern now transfers across 7 animals tested in adaptation mode. The remaining cross-session gap is therefore not just a global session offset problem; a substantial part of it is unit-level calibration error that becomes learnable with modest within-session supervision.
 
 ## Diagnostic Takeaways
 
@@ -59,6 +63,7 @@ That pattern transfers across the first three animals tested in adaptation mode.
 - residual correction learned from adapted epochs is much lower variance and works substantially better
 - pooling more adaptation epochs is not always better; the calibration source matters
 - the 9-animal benchmark makes the main ranking much more credible: the custom nonlinear model is the stronger default overall, not just on one animal
+- the 7-animal adaptation sweep shows that the calibration story is also not confined to one or two hand-picked animals
 
 ## Reproduce
 

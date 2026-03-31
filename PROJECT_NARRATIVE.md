@@ -98,14 +98,19 @@ Mean hard-session results:
 | Bon | `0.4191` | `0.1897` | `0.3031` |
 | Con | `0.3831` | `0.2470` | `0.3319` |
 | Cor | `0.4341` | `0.3265` | `0.4196` |
+| Dud | `0.7367` | `0.2020` | `0.2196` |
+| Fiv | `0.3217` | `0.2061` | `0.2683` |
+| Fra | `0.6165` | `0.3410` | `0.4493` |
+| Ten | `0.7516` | `0.3576` | `0.4388` |
 
-This pattern transfers across all three animals tested in adaptation mode.
+This pattern transfers across 7 animals tested in adaptation mode.
 
 ## What Did Not Work As Well
 
 - simple linear baselines improved only modestly under strict cross-session evaluation
 - sparse one-hot within-session unit identity features were high variance and consistently worse than residual correction in the low-data adaptation setting
 - adding more adaptation data was not automatically better than using the most relevant adaptation epoch
+- the adaptation result is no longer a narrow anecdote from Bon alone; it now holds across a broader subset of animals with very different baseline difficulty
 
 ## Evidence About Adaptation Source
 
@@ -131,5 +136,6 @@ The project started as a data-wrangling and baseline-modeling exercise, but the 
 - the remaining error is concentrated in repeated units on hard sessions
 - a small amount of within-session supervision plus per-unit residual calibration reduces that error sharply
 - the 9-animal sweep shows that the custom nonlinear model is a robust default rather than a one-animal anecdote
+- the 7-animal adaptation sweep shows that the remaining error is also systematically calibratable, not only dataset-specific noise
 
 That combination of data engineering, evaluation design, baseline comparison, and error-driven iteration is the main contribution of the repo.
