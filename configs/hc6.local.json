@@ -1,0 +1,17 @@
+{
+  "dataset": {
+    "root": "/projects/clg_24609687d5dd/hc6/raw/extracted",
+    "animals": ["Bon", "Con"],
+    "allowed_extensions": [],
+    "ignore_hidden": true
+  },
+  "inventory": {
+    "output_csv": "data/inventory/hc6_inventory.csv",
+    "output_json": "data/inventory/hc6_inventory_summary.json"
+  },
+  "training": {
+    "random_seed": 7,
+    "feature_columns": ["size_bytes", "path_depth"],
+    "min_rows": 10
+  }
+}
