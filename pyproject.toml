@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "finley"
 version = "0.1.0"
-description = "Initial ML project scaffold for working with CRCNS HC-6 data on Eureka HPC."
+description = "Cross-session neural firing-rate modeling workflow for CRCNS HC-6 data."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -14,7 +14,12 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+  "pytest>=8",
   "ruff>=0.4",
+]
+bench = [
+  "scikit-learn>=1.4",
+  "xgboost>=2.0",
 ]
 
 [tool.setuptools]
