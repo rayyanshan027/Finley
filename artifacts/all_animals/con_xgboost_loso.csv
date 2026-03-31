@@ -1,0 +1,7 @@
+train_count,test_count,dropped_train_count,dropped_test_count,feature_groups,feature_count,held_out_session,target_column,mae,rmse,n_estimators,max_depth,learning_rate,subsample,colsample_bytree,reg_lambda,random_seed,model_name
+477,69,0,0,"movement_summaries,population_context,cell_metadata",26,1,log_firing_rate_hz,0.349110735706246,0.6527647822014684,300,6,0.05,0.9,0.9,1.0,0,XGBRegressor
+457,89,0,0,"movement_summaries,population_context,cell_metadata",26,2,log_firing_rate_hz,0.20215210295793246,0.2997040012461234,300,6,0.05,0.9,0.9,1.0,0,XGBRegressor
+455,91,0,0,"movement_summaries,population_context,cell_metadata",26,3,log_firing_rate_hz,0.30647975564878405,0.37782359660867687,300,6,0.05,0.9,0.9,1.0,0,XGBRegressor
+451,95,0,0,"movement_summaries,population_context,cell_metadata",26,4,log_firing_rate_hz,0.3254843840855976,0.4893060590676611,300,6,0.05,0.9,0.9,1.0,0,XGBRegressor
+449,97,0,0,"movement_summaries,population_context,cell_metadata",26,5,log_firing_rate_hz,0.2958657788713209,0.4616464244962178,300,6,0.05,0.9,0.9,1.0,0,XGBRegressor
+441,105,0,0,"movement_summaries,population_context,cell_metadata",26,6,log_firing_rate_hz,0.3504188455131417,0.4063585627442288,300,6,0.05,0.9,0.9,1.0,0,XGBRegressor

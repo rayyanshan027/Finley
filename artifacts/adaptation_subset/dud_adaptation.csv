@@ -1,0 +1,25 @@
+held_out_session,model_variant,uses_session_unit_identity,uses_unit_residual_correction,uses_latest_unit_residual_only,adaptation_epoch_count,adaptation_epochs,residual_adaptation_epochs,evaluation_epochs,train_count,test_count,dropped_train_count,dropped_test_count,session_unit_feature_count,unit_residual_shrinkage,unit_residual_offset_count,corrected_evaluation_row_count,adaptation_unit_count,evaluation_unit_count,shared_unit_count,shared_unit_fraction,evaluation_rows_on_seen_units,evaluation_row_seen_unit_fraction,mae,rmse
+6,baseline,False,False,False,0,[],[],"[2, 4]",141,23,0,0,0,0.0,0,0,0,12,0,0.0,0,0.0,0.9805262448634781,1.0386295887684596
+6,session_unit_identity,True,False,False,0,[],[],"[2, 4]",141,23,0,0,0,0.0,0,0,0,12,0,0.0,0,0.0,0.9805262448634781,1.0386295887684596
+6,baseline_plus_unit_residual,False,True,False,0,[],[],"[2, 4]",141,23,0,0,0,0.0,0,0,0,12,0,0.0,0,0.0,0.9805262448634781,1.0386295887684596
+6,baseline_plus_latest_unit_residual,False,True,True,0,[],[],"[2, 4]",141,23,0,0,0,0.0,0,0,0,12,0,0.0,0,0.0,0.9805262448634781,1.0386295887684596
+6,baseline,False,False,False,1,[2],[2],[4],152,12,0,0,0,0.0,0,0,11,12,11,0.9166666666666666,11,0.9166666666666666,0.5263661764730242,0.5724577730608503
+6,session_unit_identity,True,False,False,1,[2],[2],[4],152,12,0,0,11,0.0,0,0,11,12,11,0.9166666666666666,11,0.9166666666666666,0.33952151494845745,0.3700679051546684
+6,baseline_plus_unit_residual,False,True,False,1,[2],[2],[4],152,12,0,0,0,0.0,11,11,11,12,11,0.9166666666666666,11,0.9166666666666666,0.3360080193057564,0.3470786575291117
+6,baseline_plus_latest_unit_residual,False,True,True,1,[2],[2],[4],152,12,0,0,0,0.0,11,11,11,12,11,0.9166666666666666,11,0.9166666666666666,0.3360080193057564,0.3470786575291117
+1,baseline,False,False,False,0,[],[],"[2, 4]",136,28,0,0,0,0.0,0,0,0,15,0,0.0,0,0.0,0.7056451559107887,0.7509740956556188
+1,session_unit_identity,True,False,False,0,[],[],"[2, 4]",136,28,0,0,0,0.0,0,0,0,15,0,0.0,0,0.0,0.7056451559107887,0.7509740956556188
+1,baseline_plus_unit_residual,False,True,False,0,[],[],"[2, 4]",136,28,0,0,0,0.0,0,0,0,15,0,0.0,0,0.0,0.7056451559107887,0.7509740956556188
+1,baseline_plus_latest_unit_residual,False,True,True,0,[],[],"[2, 4]",136,28,0,0,0,0.0,0,0,0,15,0,0.0,0,0.0,0.7056451559107887,0.7509740956556188
+1,baseline,False,False,False,1,[2],[2],[4],151,13,0,0,0,0.0,0,0,15,13,13,1.0,13,1.0,0.2902688921507427,0.32539135409882647
+1,session_unit_identity,True,False,False,1,[2],[2],[4],151,13,0,0,15,0.0,0,0,15,13,13,1.0,13,1.0,0.313446727381065,0.344231166162441
+1,baseline_plus_unit_residual,False,True,False,1,[2],[2],[4],151,13,0,0,0,0.0,15,13,15,13,13,1.0,13,1.0,0.1543072220840237,0.16225346609534935
+1,baseline_plus_latest_unit_residual,False,True,True,1,[2],[2],[4],151,13,0,0,0,0.0,15,13,15,13,13,1.0,13,1.0,0.1543072220840237,0.16225346609534935
+3,baseline,False,False,False,0,[],[],"[2, 4]",144,20,0,0,0,0.0,0,0,0,10,0,0.0,0,0.0,0.5238443458358983,0.791802346294337
+3,session_unit_identity,True,False,False,0,[],[],"[2, 4]",144,20,0,0,0,0.0,0,0,0,10,0,0.0,0,0.0,0.5238443458358983,0.791802346294337
+3,baseline_plus_unit_residual,False,True,False,0,[],[],"[2, 4]",144,20,0,0,0,0.0,0,0,0,10,0,0.0,0,0.0,0.5238443458358983,0.791802346294337
+3,baseline_plus_latest_unit_residual,False,True,True,0,[],[],"[2, 4]",144,20,0,0,0,0.0,0,0,0,10,0,0.0,0,0.0,0.5238443458358983,0.791802346294337
+3,baseline,False,False,False,1,[2],[2],[4],154,10,0,0,0,0.0,0,0,10,10,10,1.0,10,1.0,0.4805000124710312,0.7260418699458832
+3,session_unit_identity,True,False,False,1,[2],[2],[4],154,10,0,0,10,0.0,0,0,10,10,10,1.0,10,1.0,0.5104820754619004,0.7730520229790504
+3,baseline_plus_unit_residual,False,True,False,1,[2],[2],[4],154,10,0,0,0,0.0,10,10,10,10,10,1.0,10,1.0,0.1157086544750493,0.14948487461959986
+3,baseline_plus_latest_unit_residual,False,True,True,1,[2],[2],[4],154,10,0,0,0,0.0,10,10,10,10,10,1.0,10,1.0,0.1157086544750493,0.14948487461959986

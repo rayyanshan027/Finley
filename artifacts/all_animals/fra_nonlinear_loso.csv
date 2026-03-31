@@ -1,0 +1,12 @@
+train_count,test_count,dropped_train_count,dropped_test_count,feature_groups,feature_count,held_out_session,target_column,mae,rmse,n_estimators,max_depth,min_samples_leaf,max_features,random_seed
+1549,37,0,0,"movement_summaries,population_context,cell_metadata",26,2,log_firing_rate_hz,0.42463272786185463,0.5507442310866418,48,6,8,sqrt,0
+1535,51,0,0,"movement_summaries,population_context,cell_metadata",26,3,log_firing_rate_hz,0.9875415284759019,1.038416819539884,48,6,8,sqrt,0
+1459,127,0,0,"movement_summaries,population_context,cell_metadata",26,4,log_firing_rate_hz,0.33469107044916047,0.3865466017624131,48,6,8,sqrt,0
+1460,126,0,0,"movement_summaries,population_context,cell_metadata",26,5,log_firing_rate_hz,0.4170530991621715,0.5928912431404524,48,6,8,sqrt,0
+1423,163,0,0,"movement_summaries,population_context,cell_metadata",26,6,log_firing_rate_hz,0.4087961212995301,0.8043962857241164,48,6,8,sqrt,0
+1403,183,0,0,"movement_summaries,population_context,cell_metadata",26,7,log_firing_rate_hz,0.43717943075673743,0.5158209690818829,48,6,8,sqrt,0
+1379,207,0,0,"movement_summaries,population_context,cell_metadata",26,8,log_firing_rate_hz,0.29660542226890146,0.43434547859648553,48,6,8,sqrt,0
+1404,182,0,0,"movement_summaries,population_context,cell_metadata",26,9,log_firing_rate_hz,0.2383385552348166,0.3051701084588601,48,6,8,sqrt,0
+1409,177,0,0,"movement_summaries,population_context,cell_metadata",26,10,log_firing_rate_hz,0.2922285471533978,0.32933972063941147,48,6,8,sqrt,0
+1404,182,0,0,"movement_summaries,population_context,cell_metadata",26,11,log_firing_rate_hz,0.28134669832512743,0.34817695756449835,48,6,8,sqrt,0
+1435,151,0,0,"movement_summaries,population_context,cell_metadata",26,12,log_firing_rate_hz,0.37128050021235115,0.4141841754608951,48,6,8,sqrt,0

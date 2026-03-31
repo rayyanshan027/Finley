@@ -1,0 +1,168 @@
+{
+  "summary": {
+    "target_column": "log_firing_rate_hz",
+    "feature_groups": [
+      "movement_summaries",
+      "population_context",
+      "cell_metadata"
+    ],
+    "feature_count": 26,
+    "session_count": 6,
+    "mean_mae": 0.30491860046383706,
+    "mean_rmse": 0.4479339043940627,
+    "n_estimators": 300,
+    "max_depth": 6,
+    "learning_rate": 0.05,
+    "subsample": 0.9,
+    "colsample_bytree": 0.9,
+    "reg_lambda": 1.0,
+    "random_seed": 0,
+    "model_name": "XGBRegressor"
+  },
+  "sessions": [
+    {
+      "train_count": 477,
+      "test_count": 69,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "feature_groups": [
+        "movement_summaries",
+        "population_context",
+        "cell_metadata"
+      ],
+      "feature_count": 26,
+      "held_out_session": 1,
+      "target_column": "log_firing_rate_hz",
+      "mae": 0.349110735706246,
+      "rmse": 0.6527647822014684,
+      "n_estimators": 300,
+      "max_depth": 6,
+      "learning_rate": 0.05,
+      "subsample": 0.9,
+      "colsample_bytree": 0.9,
+      "reg_lambda": 1.0,
+      "random_seed": 0,
+      "model_name": "XGBRegressor"
+    },
+    {
+      "train_count": 457,
+      "test_count": 89,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "feature_groups": [
+        "movement_summaries",
+        "population_context",
+        "cell_metadata"
+      ],
+      "feature_count": 26,
+      "held_out_session": 2,
+      "target_column": "log_firing_rate_hz",
+      "mae": 0.20215210295793246,
+      "rmse": 0.2997040012461234,
+      "n_estimators": 300,
+      "max_depth": 6,
+      "learning_rate": 0.05,
+      "subsample": 0.9,
+      "colsample_bytree": 0.9,
+      "reg_lambda": 1.0,
+      "random_seed": 0,
+      "model_name": "XGBRegressor"
+    },
+    {
+      "train_count": 455,
+      "test_count": 91,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "feature_groups": [
+        "movement_summaries",
+        "population_context",
+        "cell_metadata"
+      ],
+      "feature_count": 26,
+      "held_out_session": 3,
+      "target_column": "log_firing_rate_hz",
+      "mae": 0.30647975564878405,
+      "rmse": 0.37782359660867687,
+      "n_estimators": 300,
+      "max_depth": 6,
+      "learning_rate": 0.05,
+      "subsample": 0.9,
+      "colsample_bytree": 0.9,
+      "reg_lambda": 1.0,
+      "random_seed": 0,
+      "model_name": "XGBRegressor"
+    },
+    {
+      "train_count": 451,
+      "test_count": 95,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "feature_groups": [
+        "movement_summaries",
+        "population_context",
+        "cell_metadata"
+      ],
+      "feature_count": 26,
+      "held_out_session": 4,
+      "target_column": "log_firing_rate_hz",
+      "mae": 0.3254843840855976,
+      "rmse": 0.4893060590676611,
+      "n_estimators": 300,
+      "max_depth": 6,
+      "learning_rate": 0.05,
+      "subsample": 0.9,
+      "colsample_bytree": 0.9,
+      "reg_lambda": 1.0,
+      "random_seed": 0,
+      "model_name": "XGBRegressor"
+    },
+    {
+      "train_count": 449,
+      "test_count": 97,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "feature_groups": [
+        "movement_summaries",
+        "population_context",
+        "cell_metadata"
+      ],
+      "feature_count": 26,
+      "held_out_session": 5,
+      "target_column": "log_firing_rate_hz",
+      "mae": 0.2958657788713209,
+      "rmse": 0.4616464244962178,
+      "n_estimators": 300,
+      "max_depth": 6,
+      "learning_rate": 0.05,
+      "subsample": 0.9,
+      "colsample_bytree": 0.9,
+      "reg_lambda": 1.0,
+      "random_seed": 0,
+      "model_name": "XGBRegressor"
+    },
+    {
+      "train_count": 441,
+      "test_count": 105,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "feature_groups": [
+        "movement_summaries",
+        "population_context",
+        "cell_metadata"
+      ],
+      "feature_count": 26,
+      "held_out_session": 6,
+      "target_column": "log_firing_rate_hz",
+      "mae": 0.3504188455131417,
+      "rmse": 0.4063585627442288,
+      "n_estimators": 300,
+      "max_depth": 6,
+      "learning_rate": 0.05,
+      "subsample": 0.9,
+      "colsample_bytree": 0.9,
+      "reg_lambda": 1.0,
+      "random_seed": 0,
+      "model_name": "XGBRegressor"
+    }
+  ]
+}

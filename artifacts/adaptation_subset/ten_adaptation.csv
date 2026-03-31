@@ -1,0 +1,25 @@
+held_out_session,model_variant,uses_session_unit_identity,uses_unit_residual_correction,uses_latest_unit_residual_only,adaptation_epoch_count,adaptation_epochs,residual_adaptation_epochs,evaluation_epochs,train_count,test_count,dropped_train_count,dropped_test_count,session_unit_feature_count,unit_residual_shrinkage,unit_residual_offset_count,corrected_evaluation_row_count,adaptation_unit_count,evaluation_unit_count,shared_unit_count,shared_unit_fraction,evaluation_rows_on_seen_units,evaluation_row_seen_unit_fraction,mae,rmse
+1,baseline,False,False,False,0,[],[],"[2, 4]",767,89,0,0,0,0.0,0,0,0,47,0,0.0,0,0.0,0.9673152568265244,1.0189400658617587
+1,session_unit_identity,True,False,False,0,[],[],"[2, 4]",767,89,0,0,0,0.0,0,0,0,47,0,0.0,0,0.0,0.9673152568265244,1.0189400658617587
+1,baseline_plus_unit_residual,False,True,False,0,[],[],"[2, 4]",767,89,0,0,0,0.0,0,0,0,47,0,0.0,0,0.0,0.9673152568265244,1.0189400658617587
+1,baseline_plus_latest_unit_residual,False,True,True,0,[],[],"[2, 4]",767,89,0,0,0,0.0,0,0,0,47,0,0.0,0,0.0,0.9673152568265244,1.0189400658617587
+1,baseline,False,False,False,1,[2],[2],[4],813,43,0,0,0,0.0,0,0,46,43,42,0.9767441860465116,42,0.9767441860465116,0.4112220577985973,0.4434003245672888
+1,session_unit_identity,True,False,False,1,[2],[2],[4],813,43,0,0,46,0.0,0,0,46,43,42,0.9767441860465116,42,0.9767441860465116,0.4560438483249959,0.48895590849932413
+1,baseline_plus_unit_residual,False,True,False,1,[2],[2],[4],813,43,0,0,0,0.0,46,42,46,43,42,0.9767441860465116,42,0.9767441860465116,0.3205987438873637,0.35123011003333066
+1,baseline_plus_latest_unit_residual,False,True,True,1,[2],[2],[4],813,43,0,0,0,0.0,46,42,46,43,42,0.9767441860465116,42,0.9767441860465116,0.3205987438873637,0.35123011003333066
+6,baseline,False,False,False,0,[],[],"[2, 4, 6]",716,140,0,0,0,0.0,0,0,0,47,0,0.0,0,0.0,0.8038718020754568,0.8881304575190292
+6,session_unit_identity,True,False,False,0,[],[],"[2, 4, 6]",716,140,0,0,0,0.0,0,0,0,47,0,0.0,0,0.0,0.8038718020754568,0.8881304575190292
+6,baseline_plus_unit_residual,False,True,False,0,[],[],"[2, 4, 6]",716,140,0,0,0,0.0,0,0,0,47,0,0.0,0,0.0,0.8038718020754568,0.8881304575190292
+6,baseline_plus_latest_unit_residual,False,True,True,0,[],[],"[2, 4, 6]",716,140,0,0,0,0.0,0,0,0,47,0,0.0,0,0.0,0.8038718020754568,0.8881304575190292
+6,baseline,False,False,False,1,[2],[2],"[4, 6]",763,93,0,0,0,0.0,0,0,47,47,47,1.0,93,1.0,0.6325439170309233,0.7229118551194449
+6,session_unit_identity,True,False,False,1,[2],[2],"[4, 6]",763,93,0,0,47,0.0,0,0,47,47,47,1.0,93,1.0,0.5397461267759727,0.6495612401773758
+6,baseline_plus_unit_residual,False,True,False,1,[2],[2],"[4, 6]",763,93,0,0,0,0.0,47,93,47,47,47,1.0,93,1.0,0.48951842920474176,0.5894394536521562
+6,baseline_plus_latest_unit_residual,False,True,True,1,[2],[2],"[4, 6]",763,93,0,0,0,0.0,47,93,47,47,47,1.0,93,1.0,0.48951842920474176,0.5894394536521562
+7,baseline,False,False,False,0,[],[],"[2, 4]",736,120,0,0,0,0.0,0,0,0,61,0,0.0,0,0.0,0.4837313010778525,0.6893440551505929
+7,session_unit_identity,True,False,False,0,[],[],"[2, 4]",736,120,0,0,0,0.0,0,0,0,61,0,0.0,0,0.0,0.4837313010778525,0.6893440551505929
+7,baseline_plus_unit_residual,False,True,False,0,[],[],"[2, 4]",736,120,0,0,0,0.0,0,0,0,61,0,0.0,0,0.0,0.4837313010778525,0.6893440551505929
+7,baseline_plus_latest_unit_residual,False,True,True,0,[],[],"[2, 4]",736,120,0,0,0,0.0,0,0,0,61,0,0.0,0,0.0,0.4837313010778525,0.6893440551505929
+7,baseline,False,False,False,1,[2],[2],[4],796,60,0,0,0,0.0,0,0,60,60,59,0.9833333333333333,59,0.9833333333333333,0.3900871733108662,0.6134605865826178
+7,session_unit_identity,True,False,False,1,[2],[2],[4],796,60,0,0,60,0.0,0,0,60,60,59,0.9833333333333333,59,0.9833333333333333,0.45752532188760703,0.7224844968812546
+7,baseline_plus_unit_residual,False,True,False,1,[2],[2],[4],796,60,0,0,0,0.0,60,59,60,60,59,0.9833333333333333,59,0.9833333333333333,0.2627546974840208,0.3756309828698479
+7,baseline_plus_latest_unit_residual,False,True,True,1,[2],[2],[4],796,60,0,0,0,0.0,60,59,60,60,59,0.9833333333333333,59,0.9833333333333333,0.2627546974840208,0.3756309828698479

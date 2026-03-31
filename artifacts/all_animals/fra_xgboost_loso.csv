@@ -1,0 +1,12 @@
+train_count,test_count,dropped_train_count,dropped_test_count,feature_groups,feature_count,held_out_session,target_column,mae,rmse,n_estimators,max_depth,learning_rate,subsample,colsample_bytree,reg_lambda,random_seed,model_name
+1549,37,0,0,"movement_summaries,population_context,cell_metadata",26,2,log_firing_rate_hz,0.5363668394034012,0.5847833189449914,300,6,0.05,0.9,0.9,1.0,0,XGBRegressor
+1535,51,0,0,"movement_summaries,population_context,cell_metadata",26,3,log_firing_rate_hz,0.9233159358412242,1.0105302597166508,300,6,0.05,0.9,0.9,1.0,0,XGBRegressor
+1459,127,0,0,"movement_summaries,population_context,cell_metadata",26,4,log_firing_rate_hz,0.4132882351704056,0.4843615246960424,300,6,0.05,0.9,0.9,1.0,0,XGBRegressor
+1460,126,0,0,"movement_summaries,population_context,cell_metadata",26,5,log_firing_rate_hz,0.43155890777585254,0.6979977182585229,300,6,0.05,0.9,0.9,1.0,0,XGBRegressor
+1423,163,0,0,"movement_summaries,population_context,cell_metadata",26,6,log_firing_rate_hz,0.3771367019022292,0.7010526898329464,300,6,0.05,0.9,0.9,1.0,0,XGBRegressor
+1403,183,0,0,"movement_summaries,population_context,cell_metadata",26,7,log_firing_rate_hz,0.44601097792242106,0.5213693807188167,300,6,0.05,0.9,0.9,1.0,0,XGBRegressor
+1379,207,0,0,"movement_summaries,population_context,cell_metadata",26,8,log_firing_rate_hz,0.23360640327158944,0.27434226568355274,300,6,0.05,0.9,0.9,1.0,0,XGBRegressor
+1404,182,0,0,"movement_summaries,population_context,cell_metadata",26,9,log_firing_rate_hz,0.17473869976776482,0.24851119744671904,300,6,0.05,0.9,0.9,1.0,0,XGBRegressor
+1409,177,0,0,"movement_summaries,population_context,cell_metadata",26,10,log_firing_rate_hz,0.4902406456332692,0.5256941362378991,300,6,0.05,0.9,0.9,1.0,0,XGBRegressor
+1404,182,0,0,"movement_summaries,population_context,cell_metadata",26,11,log_firing_rate_hz,0.2526701655122089,0.3184943941788918,300,6,0.05,0.9,0.9,1.0,0,XGBRegressor
+1435,151,0,0,"movement_summaries,population_context,cell_metadata",26,12,log_firing_rate_hz,0.5688822389449107,0.6400857503330674,300,6,0.05,0.9,0.9,1.0,0,XGBRegressor

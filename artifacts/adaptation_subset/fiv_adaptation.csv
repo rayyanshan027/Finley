@@ -1,0 +1,25 @@
+held_out_session,model_variant,uses_session_unit_identity,uses_unit_residual_correction,uses_latest_unit_residual_only,adaptation_epoch_count,adaptation_epochs,residual_adaptation_epochs,evaluation_epochs,train_count,test_count,dropped_train_count,dropped_test_count,session_unit_feature_count,unit_residual_shrinkage,unit_residual_offset_count,corrected_evaluation_row_count,adaptation_unit_count,evaluation_unit_count,shared_unit_count,shared_unit_fraction,evaluation_rows_on_seen_units,evaluation_row_seen_unit_fraction,mae,rmse
+1,baseline,False,False,False,0,[],[],"[2, 4]",264,29,0,0,0,0.0,0,0,0,16,0,0.0,0,0.0,0.39959354673917014,0.5453208680055244
+1,session_unit_identity,True,False,False,0,[],[],"[2, 4]",264,29,0,0,0,0.0,0,0,0,16,0,0.0,0,0.0,0.39959354673917014,0.5453208680055244
+1,baseline_plus_unit_residual,False,True,False,0,[],[],"[2, 4]",264,29,0,0,0,0.0,0,0,0,16,0,0.0,0,0.0,0.39959354673917014,0.5453208680055244
+1,baseline_plus_latest_unit_residual,False,True,True,0,[],[],"[2, 4]",264,29,0,0,0,0.0,0,0,0,16,0,0.0,0,0.0,0.39959354673917014,0.5453208680055244
+1,baseline,False,False,False,1,[2],[2],[4],278,15,0,0,0,0.0,0,0,14,15,13,0.8666666666666667,13,0.8666666666666667,0.3581093415859533,0.4715740817239427
+1,session_unit_identity,True,False,False,1,[2],[2],[4],278,15,0,0,14,0.0,0,0,14,15,13,0.8666666666666667,13,0.8666666666666667,0.374191939890724,0.4883361124042688
+1,baseline_plus_unit_residual,False,True,False,1,[2],[2],[4],278,15,0,0,0,0.0,14,13,14,15,13,0.8666666666666667,13,0.8666666666666667,0.3538827008599594,0.4556991035909076
+1,baseline_plus_latest_unit_residual,False,True,True,1,[2],[2],[4],278,15,0,0,0,0.0,14,13,14,15,13,0.8666666666666667,13,0.8666666666666667,0.3538827008599594,0.4556991035909076
+8,baseline,False,False,False,0,[],[],"[2, 4, 6]",260,33,0,0,0,0.0,0,0,0,12,0,0.0,0,0.0,0.28745036329980506,0.3326433499813219
+8,session_unit_identity,True,False,False,0,[],[],"[2, 4, 6]",260,33,0,0,0,0.0,0,0,0,12,0,0.0,0,0.0,0.28745036329980506,0.3326433499813219
+8,baseline_plus_unit_residual,False,True,False,0,[],[],"[2, 4, 6]",260,33,0,0,0,0.0,0,0,0,12,0,0.0,0,0.0,0.28745036329980506,0.3326433499813219
+8,baseline_plus_latest_unit_residual,False,True,True,0,[],[],"[2, 4, 6]",260,33,0,0,0,0.0,0,0,0,12,0,0.0,0,0.0,0.28745036329980506,0.3326433499813219
+8,baseline,False,False,False,1,[2],[2],"[4, 6]",271,22,0,0,0,0.0,0,0,11,12,11,0.9166666666666666,20,0.9090909090909091,0.27937353758261346,0.32794881854351654
+8,session_unit_identity,True,False,False,1,[2],[2],"[4, 6]",271,22,0,0,11,0.0,0,0,11,12,11,0.9166666666666666,20,0.9090909090909091,0.2609533078749149,0.31262908241902776
+8,baseline_plus_unit_residual,False,True,False,1,[2],[2],"[4, 6]",271,22,0,0,0,0.0,11,20,11,12,11,0.9166666666666666,20,0.9090909090909091,0.18078113731405798,0.23051100752316386
+8,baseline_plus_latest_unit_residual,False,True,True,1,[2],[2],"[4, 6]",271,22,0,0,0,0.0,11,20,11,12,11,0.9166666666666666,20,0.9090909090909091,0.18078113731405798,0.23051100752316386
+6,baseline,False,False,False,0,[],[],"[2, 4, 6]",269,24,0,0,0,0.0,0,0,0,8,0,0.0,0,0.0,0.27814704835816767,0.31344504151294994
+6,session_unit_identity,True,False,False,0,[],[],"[2, 4, 6]",269,24,0,0,0,0.0,0,0,0,8,0,0.0,0,0.0,0.27814704835816767,0.31344504151294994
+6,baseline_plus_unit_residual,False,True,False,0,[],[],"[2, 4, 6]",269,24,0,0,0,0.0,0,0,0,8,0,0.0,0,0.0,0.27814704835816767,0.31344504151294994
+6,baseline_plus_latest_unit_residual,False,True,True,0,[],[],"[2, 4, 6]",269,24,0,0,0,0.0,0,0,0,8,0,0.0,0,0.0,0.27814704835816767,0.31344504151294994
+6,baseline,False,False,False,1,[2],[2],"[4, 6]",277,16,0,0,0,0.0,0,0,8,8,8,1.0,16,1.0,0.2785462853247769,0.31244162945371334
+6,session_unit_identity,True,False,False,1,[2],[2],"[4, 6]",277,16,0,0,8,0.0,0,0,8,8,8,1.0,16,1.0,0.2852020055546284,0.3148433083917812
+6,baseline_plus_unit_residual,False,True,False,1,[2],[2],"[4, 6]",277,16,0,0,0,0.0,8,16,8,8,8,1.0,16,1.0,0.08361378940852954,0.11876154163925891
+6,baseline_plus_latest_unit_residual,False,True,True,1,[2],[2],"[4, 6]",277,16,0,0,0,0.0,8,16,8,8,8,1.0,16,1.0,0.08361378940852954,0.11876154163925891

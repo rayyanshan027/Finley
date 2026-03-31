@@ -1,0 +1,1231 @@
+{
+  "target_column": "log_firing_rate_hz",
+  "feature_groups": [
+    "movement_summaries",
+    "population_context",
+    "cell_metadata"
+  ],
+  "model_variants": [
+    "baseline",
+    "session_unit_identity",
+    "baseline_plus_unit_residual",
+    "baseline_plus_latest_unit_residual"
+  ],
+  "sessions": [
+    3,
+    7,
+    2
+  ],
+  "adaptation_epochs": [
+    0,
+    1,
+    2
+  ],
+  "n_estimators": 48,
+  "max_depth": 6,
+  "min_samples_leaf": 8,
+  "max_features": "sqrt",
+  "random_seed": 0,
+  "unit_residual_shrinkage_values": [
+    0.0
+  ],
+  "results": [
+    {
+      "held_out_session": 3,
+      "model_variant": "baseline",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": false,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 0,
+      "adaptation_epochs": [],
+      "residual_adaptation_epochs": [],
+      "evaluation_epochs": [
+        2,
+        4,
+        6
+      ],
+      "train_count": 1535,
+      "test_count": 51,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 0,
+      "evaluation_unit_count": 18,
+      "shared_unit_count": 0,
+      "shared_unit_fraction": 0.0,
+      "evaluation_rows_on_seen_units": 0,
+      "evaluation_row_seen_unit_fraction": 0.0,
+      "mae": 0.9875415284759019,
+      "rmse": 1.038416819539884
+    },
+    {
+      "held_out_session": 3,
+      "model_variant": "session_unit_identity",
+      "uses_session_unit_identity": true,
+      "uses_unit_residual_correction": false,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 0,
+      "adaptation_epochs": [],
+      "residual_adaptation_epochs": [],
+      "evaluation_epochs": [
+        2,
+        4,
+        6
+      ],
+      "train_count": 1535,
+      "test_count": 51,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 0,
+      "evaluation_unit_count": 18,
+      "shared_unit_count": 0,
+      "shared_unit_fraction": 0.0,
+      "evaluation_rows_on_seen_units": 0,
+      "evaluation_row_seen_unit_fraction": 0.0,
+      "mae": 0.9875415284759019,
+      "rmse": 1.038416819539884
+    },
+    {
+      "held_out_session": 3,
+      "model_variant": "baseline_plus_unit_residual",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": true,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 0,
+      "adaptation_epochs": [],
+      "residual_adaptation_epochs": [],
+      "evaluation_epochs": [
+        2,
+        4,
+        6
+      ],
+      "train_count": 1535,
+      "test_count": 51,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 0,
+      "evaluation_unit_count": 18,
+      "shared_unit_count": 0,
+      "shared_unit_fraction": 0.0,
+      "evaluation_rows_on_seen_units": 0,
+      "evaluation_row_seen_unit_fraction": 0.0,
+      "mae": 0.9875415284759019,
+      "rmse": 1.038416819539884
+    },
+    {
+      "held_out_session": 3,
+      "model_variant": "baseline_plus_latest_unit_residual",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": true,
+      "uses_latest_unit_residual_only": true,
+      "adaptation_epoch_count": 0,
+      "adaptation_epochs": [],
+      "residual_adaptation_epochs": [],
+      "evaluation_epochs": [
+        2,
+        4,
+        6
+      ],
+      "train_count": 1535,
+      "test_count": 51,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 0,
+      "evaluation_unit_count": 18,
+      "shared_unit_count": 0,
+      "shared_unit_fraction": 0.0,
+      "evaluation_rows_on_seen_units": 0,
+      "evaluation_row_seen_unit_fraction": 0.0,
+      "mae": 0.9875415284759019,
+      "rmse": 1.038416819539884
+    },
+    {
+      "held_out_session": 3,
+      "model_variant": "baseline",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": false,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 1,
+      "adaptation_epochs": [
+        2
+      ],
+      "residual_adaptation_epochs": [
+        2
+      ],
+      "evaluation_epochs": [
+        4,
+        6
+      ],
+      "train_count": 1552,
+      "test_count": 34,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 17,
+      "evaluation_unit_count": 18,
+      "shared_unit_count": 17,
+      "shared_unit_fraction": 0.9444444444444444,
+      "evaluation_rows_on_seen_units": 33,
+      "evaluation_row_seen_unit_fraction": 0.9705882352941176,
+      "mae": 0.6481955998955875,
+      "rmse": 0.7142861822920008
+    },
+    {
+      "held_out_session": 3,
+      "model_variant": "session_unit_identity",
+      "uses_session_unit_identity": true,
+      "uses_unit_residual_correction": false,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 1,
+      "adaptation_epochs": [
+        2
+      ],
+      "residual_adaptation_epochs": [
+        2
+      ],
+      "evaluation_epochs": [
+        4,
+        6
+      ],
+      "train_count": 1552,
+      "test_count": 34,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 17,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 17,
+      "evaluation_unit_count": 18,
+      "shared_unit_count": 17,
+      "shared_unit_fraction": 0.9444444444444444,
+      "evaluation_rows_on_seen_units": 33,
+      "evaluation_row_seen_unit_fraction": 0.9705882352941176,
+      "mae": 0.5667869558247824,
+      "rmse": 0.6189712956058339
+    },
+    {
+      "held_out_session": 3,
+      "model_variant": "baseline_plus_unit_residual",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": true,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 1,
+      "adaptation_epochs": [
+        2
+      ],
+      "residual_adaptation_epochs": [
+        2
+      ],
+      "evaluation_epochs": [
+        4,
+        6
+      ],
+      "train_count": 1552,
+      "test_count": 34,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 17,
+      "corrected_evaluation_row_count": 33,
+      "adaptation_unit_count": 17,
+      "evaluation_unit_count": 18,
+      "shared_unit_count": 17,
+      "shared_unit_fraction": 0.9444444444444444,
+      "evaluation_rows_on_seen_units": 33,
+      "evaluation_row_seen_unit_fraction": 0.9705882352941176,
+      "mae": 0.5566652301612958,
+      "rmse": 0.611361510164883
+    },
+    {
+      "held_out_session": 3,
+      "model_variant": "baseline_plus_latest_unit_residual",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": true,
+      "uses_latest_unit_residual_only": true,
+      "adaptation_epoch_count": 1,
+      "adaptation_epochs": [
+        2
+      ],
+      "residual_adaptation_epochs": [
+        2
+      ],
+      "evaluation_epochs": [
+        4,
+        6
+      ],
+      "train_count": 1552,
+      "test_count": 34,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 17,
+      "corrected_evaluation_row_count": 33,
+      "adaptation_unit_count": 17,
+      "evaluation_unit_count": 18,
+      "shared_unit_count": 17,
+      "shared_unit_fraction": 0.9444444444444444,
+      "evaluation_rows_on_seen_units": 33,
+      "evaluation_row_seen_unit_fraction": 0.9705882352941176,
+      "mae": 0.5566652301612958,
+      "rmse": 0.611361510164883
+    },
+    {
+      "held_out_session": 3,
+      "model_variant": "baseline",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": false,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 2,
+      "adaptation_epochs": [
+        2,
+        4
+      ],
+      "residual_adaptation_epochs": [
+        2,
+        4
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1568,
+      "test_count": 18,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 17,
+      "evaluation_unit_count": 18,
+      "shared_unit_count": 17,
+      "shared_unit_fraction": 0.9444444444444444,
+      "evaluation_rows_on_seen_units": 17,
+      "evaluation_row_seen_unit_fraction": 0.9444444444444444,
+      "mae": 0.5975228662768206,
+      "rmse": 0.6327625207438744
+    },
+    {
+      "held_out_session": 3,
+      "model_variant": "session_unit_identity",
+      "uses_session_unit_identity": true,
+      "uses_unit_residual_correction": false,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 2,
+      "adaptation_epochs": [
+        2,
+        4
+      ],
+      "residual_adaptation_epochs": [
+        2,
+        4
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1568,
+      "test_count": 18,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 17,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 17,
+      "evaluation_unit_count": 18,
+      "shared_unit_count": 17,
+      "shared_unit_fraction": 0.9444444444444444,
+      "evaluation_rows_on_seen_units": 17,
+      "evaluation_row_seen_unit_fraction": 0.9444444444444444,
+      "mae": 0.4725485549124535,
+      "rmse": 0.4967366479519531
+    },
+    {
+      "held_out_session": 3,
+      "model_variant": "baseline_plus_unit_residual",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": true,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 2,
+      "adaptation_epochs": [
+        2,
+        4
+      ],
+      "residual_adaptation_epochs": [
+        2,
+        4
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1568,
+      "test_count": 18,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 17,
+      "corrected_evaluation_row_count": 17,
+      "adaptation_unit_count": 17,
+      "evaluation_unit_count": 18,
+      "shared_unit_count": 17,
+      "shared_unit_fraction": 0.9444444444444444,
+      "evaluation_rows_on_seen_units": 17,
+      "evaluation_row_seen_unit_fraction": 0.9444444444444444,
+      "mae": 0.5595568669789527,
+      "rmse": 0.6120203014463553
+    },
+    {
+      "held_out_session": 3,
+      "model_variant": "baseline_plus_latest_unit_residual",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": true,
+      "uses_latest_unit_residual_only": true,
+      "adaptation_epoch_count": 2,
+      "adaptation_epochs": [
+        2,
+        4
+      ],
+      "residual_adaptation_epochs": [
+        4
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1568,
+      "test_count": 18,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 16,
+      "corrected_evaluation_row_count": 16,
+      "adaptation_unit_count": 17,
+      "evaluation_unit_count": 18,
+      "shared_unit_count": 17,
+      "shared_unit_fraction": 0.9444444444444444,
+      "evaluation_rows_on_seen_units": 17,
+      "evaluation_row_seen_unit_fraction": 0.9444444444444444,
+      "mae": 0.5939298059150393,
+      "rmse": 0.6560526999086231
+    },
+    {
+      "held_out_session": 7,
+      "model_variant": "baseline",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": false,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 0,
+      "adaptation_epochs": [],
+      "residual_adaptation_epochs": [],
+      "evaluation_epochs": [
+        2,
+        4,
+        6
+      ],
+      "train_count": 1403,
+      "test_count": 183,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 0,
+      "evaluation_unit_count": 62,
+      "shared_unit_count": 0,
+      "shared_unit_fraction": 0.0,
+      "evaluation_rows_on_seen_units": 0,
+      "evaluation_row_seen_unit_fraction": 0.0,
+      "mae": 0.43717943075673743,
+      "rmse": 0.5158209690818829
+    },
+    {
+      "held_out_session": 7,
+      "model_variant": "session_unit_identity",
+      "uses_session_unit_identity": true,
+      "uses_unit_residual_correction": false,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 0,
+      "adaptation_epochs": [],
+      "residual_adaptation_epochs": [],
+      "evaluation_epochs": [
+        2,
+        4,
+        6
+      ],
+      "train_count": 1403,
+      "test_count": 183,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 0,
+      "evaluation_unit_count": 62,
+      "shared_unit_count": 0,
+      "shared_unit_fraction": 0.0,
+      "evaluation_rows_on_seen_units": 0,
+      "evaluation_row_seen_unit_fraction": 0.0,
+      "mae": 0.43717943075673743,
+      "rmse": 0.5158209690818829
+    },
+    {
+      "held_out_session": 7,
+      "model_variant": "baseline_plus_unit_residual",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": true,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 0,
+      "adaptation_epochs": [],
+      "residual_adaptation_epochs": [],
+      "evaluation_epochs": [
+        2,
+        4,
+        6
+      ],
+      "train_count": 1403,
+      "test_count": 183,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 0,
+      "evaluation_unit_count": 62,
+      "shared_unit_count": 0,
+      "shared_unit_fraction": 0.0,
+      "evaluation_rows_on_seen_units": 0,
+      "evaluation_row_seen_unit_fraction": 0.0,
+      "mae": 0.43717943075673743,
+      "rmse": 0.5158209690818829
+    },
+    {
+      "held_out_session": 7,
+      "model_variant": "baseline_plus_latest_unit_residual",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": true,
+      "uses_latest_unit_residual_only": true,
+      "adaptation_epoch_count": 0,
+      "adaptation_epochs": [],
+      "residual_adaptation_epochs": [],
+      "evaluation_epochs": [
+        2,
+        4,
+        6
+      ],
+      "train_count": 1403,
+      "test_count": 183,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 0,
+      "evaluation_unit_count": 62,
+      "shared_unit_count": 0,
+      "shared_unit_fraction": 0.0,
+      "evaluation_rows_on_seen_units": 0,
+      "evaluation_row_seen_unit_fraction": 0.0,
+      "mae": 0.43717943075673743,
+      "rmse": 0.5158209690818829
+    },
+    {
+      "held_out_session": 7,
+      "model_variant": "baseline",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": false,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 1,
+      "adaptation_epochs": [
+        2
+      ],
+      "residual_adaptation_epochs": [
+        2
+      ],
+      "evaluation_epochs": [
+        4,
+        6
+      ],
+      "train_count": 1463,
+      "test_count": 123,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 60,
+      "evaluation_unit_count": 62,
+      "shared_unit_count": 60,
+      "shared_unit_fraction": 0.967741935483871,
+      "evaluation_rows_on_seen_units": 119,
+      "evaluation_row_seen_unit_fraction": 0.967479674796748,
+      "mae": 0.30678428461849055,
+      "rmse": 0.4192558022752239
+    },
+    {
+      "held_out_session": 7,
+      "model_variant": "session_unit_identity",
+      "uses_session_unit_identity": true,
+      "uses_unit_residual_correction": false,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 1,
+      "adaptation_epochs": [
+        2
+      ],
+      "residual_adaptation_epochs": [
+        2
+      ],
+      "evaluation_epochs": [
+        4,
+        6
+      ],
+      "train_count": 1463,
+      "test_count": 123,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 60,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 60,
+      "evaluation_unit_count": 62,
+      "shared_unit_count": 60,
+      "shared_unit_fraction": 0.967741935483871,
+      "evaluation_rows_on_seen_units": 119,
+      "evaluation_row_seen_unit_fraction": 0.967479674796748,
+      "mae": 0.3220222653324759,
+      "rmse": 0.49468989188705814
+    },
+    {
+      "held_out_session": 7,
+      "model_variant": "baseline_plus_unit_residual",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": true,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 1,
+      "adaptation_epochs": [
+        2
+      ],
+      "residual_adaptation_epochs": [
+        2
+      ],
+      "evaluation_epochs": [
+        4,
+        6
+      ],
+      "train_count": 1463,
+      "test_count": 123,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 60,
+      "corrected_evaluation_row_count": 119,
+      "adaptation_unit_count": 60,
+      "evaluation_unit_count": 62,
+      "shared_unit_count": 60,
+      "shared_unit_fraction": 0.967741935483871,
+      "evaluation_rows_on_seen_units": 119,
+      "evaluation_row_seen_unit_fraction": 0.967479674796748,
+      "mae": 0.19611091903943717,
+      "rmse": 0.2828775155373844
+    },
+    {
+      "held_out_session": 7,
+      "model_variant": "baseline_plus_latest_unit_residual",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": true,
+      "uses_latest_unit_residual_only": true,
+      "adaptation_epoch_count": 1,
+      "adaptation_epochs": [
+        2
+      ],
+      "residual_adaptation_epochs": [
+        2
+      ],
+      "evaluation_epochs": [
+        4,
+        6
+      ],
+      "train_count": 1463,
+      "test_count": 123,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 60,
+      "corrected_evaluation_row_count": 119,
+      "adaptation_unit_count": 60,
+      "evaluation_unit_count": 62,
+      "shared_unit_count": 60,
+      "shared_unit_fraction": 0.967741935483871,
+      "evaluation_rows_on_seen_units": 119,
+      "evaluation_row_seen_unit_fraction": 0.967479674796748,
+      "mae": 0.19611091903943717,
+      "rmse": 0.2828775155373844
+    },
+    {
+      "held_out_session": 7,
+      "model_variant": "baseline",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": false,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 2,
+      "adaptation_epochs": [
+        2,
+        4
+      ],
+      "residual_adaptation_epochs": [
+        2,
+        4
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1524,
+      "test_count": 62,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 62,
+      "evaluation_unit_count": 62,
+      "shared_unit_count": 62,
+      "shared_unit_fraction": 1.0,
+      "evaluation_rows_on_seen_units": 62,
+      "evaluation_row_seen_unit_fraction": 1.0,
+      "mae": 0.3144624777032666,
+      "rmse": 0.41677874852401475
+    },
+    {
+      "held_out_session": 7,
+      "model_variant": "session_unit_identity",
+      "uses_session_unit_identity": true,
+      "uses_unit_residual_correction": false,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 2,
+      "adaptation_epochs": [
+        2,
+        4
+      ],
+      "residual_adaptation_epochs": [
+        2,
+        4
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1524,
+      "test_count": 62,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 62,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 62,
+      "evaluation_unit_count": 62,
+      "shared_unit_count": 62,
+      "shared_unit_fraction": 1.0,
+      "evaluation_rows_on_seen_units": 62,
+      "evaluation_row_seen_unit_fraction": 1.0,
+      "mae": 0.2834149902553136,
+      "rmse": 0.4702849139061036
+    },
+    {
+      "held_out_session": 7,
+      "model_variant": "baseline_plus_unit_residual",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": true,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 2,
+      "adaptation_epochs": [
+        2,
+        4
+      ],
+      "residual_adaptation_epochs": [
+        2,
+        4
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1524,
+      "test_count": 62,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 62,
+      "corrected_evaluation_row_count": 62,
+      "adaptation_unit_count": 62,
+      "evaluation_unit_count": 62,
+      "shared_unit_count": 62,
+      "shared_unit_fraction": 1.0,
+      "evaluation_rows_on_seen_units": 62,
+      "evaluation_row_seen_unit_fraction": 1.0,
+      "mae": 0.2316321545338592,
+      "rmse": 0.3256931659726957
+    },
+    {
+      "held_out_session": 7,
+      "model_variant": "baseline_plus_latest_unit_residual",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": true,
+      "uses_latest_unit_residual_only": true,
+      "adaptation_epoch_count": 2,
+      "adaptation_epochs": [
+        2,
+        4
+      ],
+      "residual_adaptation_epochs": [
+        4
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1524,
+      "test_count": 62,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 61,
+      "corrected_evaluation_row_count": 61,
+      "adaptation_unit_count": 62,
+      "evaluation_unit_count": 62,
+      "shared_unit_count": 62,
+      "shared_unit_fraction": 1.0,
+      "evaluation_rows_on_seen_units": 62,
+      "evaluation_row_seen_unit_fraction": 1.0,
+      "mae": 0.24005793300195363,
+      "rmse": 0.3411855532678347
+    },
+    {
+      "held_out_session": 2,
+      "model_variant": "baseline",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": false,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 0,
+      "adaptation_epochs": [],
+      "residual_adaptation_epochs": [],
+      "evaluation_epochs": [
+        2,
+        4,
+        6
+      ],
+      "train_count": 1549,
+      "test_count": 37,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 0,
+      "evaluation_unit_count": 14,
+      "shared_unit_count": 0,
+      "shared_unit_fraction": 0.0,
+      "evaluation_rows_on_seen_units": 0,
+      "evaluation_row_seen_unit_fraction": 0.0,
+      "mae": 0.42463272786185463,
+      "rmse": 0.5507442310866418
+    },
+    {
+      "held_out_session": 2,
+      "model_variant": "session_unit_identity",
+      "uses_session_unit_identity": true,
+      "uses_unit_residual_correction": false,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 0,
+      "adaptation_epochs": [],
+      "residual_adaptation_epochs": [],
+      "evaluation_epochs": [
+        2,
+        4,
+        6
+      ],
+      "train_count": 1549,
+      "test_count": 37,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 0,
+      "evaluation_unit_count": 14,
+      "shared_unit_count": 0,
+      "shared_unit_fraction": 0.0,
+      "evaluation_rows_on_seen_units": 0,
+      "evaluation_row_seen_unit_fraction": 0.0,
+      "mae": 0.42463272786185463,
+      "rmse": 0.5507442310866418
+    },
+    {
+      "held_out_session": 2,
+      "model_variant": "baseline_plus_unit_residual",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": true,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 0,
+      "adaptation_epochs": [],
+      "residual_adaptation_epochs": [],
+      "evaluation_epochs": [
+        2,
+        4,
+        6
+      ],
+      "train_count": 1549,
+      "test_count": 37,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 0,
+      "evaluation_unit_count": 14,
+      "shared_unit_count": 0,
+      "shared_unit_fraction": 0.0,
+      "evaluation_rows_on_seen_units": 0,
+      "evaluation_row_seen_unit_fraction": 0.0,
+      "mae": 0.42463272786185463,
+      "rmse": 0.5507442310866418
+    },
+    {
+      "held_out_session": 2,
+      "model_variant": "baseline_plus_latest_unit_residual",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": true,
+      "uses_latest_unit_residual_only": true,
+      "adaptation_epoch_count": 0,
+      "adaptation_epochs": [],
+      "residual_adaptation_epochs": [],
+      "evaluation_epochs": [
+        2,
+        4,
+        6
+      ],
+      "train_count": 1549,
+      "test_count": 37,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 0,
+      "evaluation_unit_count": 14,
+      "shared_unit_count": 0,
+      "shared_unit_fraction": 0.0,
+      "evaluation_rows_on_seen_units": 0,
+      "evaluation_row_seen_unit_fraction": 0.0,
+      "mae": 0.42463272786185463,
+      "rmse": 0.5507442310866418
+    },
+    {
+      "held_out_session": 2,
+      "model_variant": "baseline",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": false,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 1,
+      "adaptation_epochs": [
+        2
+      ],
+      "residual_adaptation_epochs": [
+        2
+      ],
+      "evaluation_epochs": [
+        4,
+        6
+      ],
+      "train_count": 1563,
+      "test_count": 23,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 14,
+      "evaluation_unit_count": 13,
+      "shared_unit_count": 13,
+      "shared_unit_fraction": 1.0,
+      "evaluation_rows_on_seen_units": 23,
+      "evaluation_row_seen_unit_fraction": 1.0,
+      "mae": 0.4136629277355043,
+      "rmse": 0.570788885221782
+    },
+    {
+      "held_out_session": 2,
+      "model_variant": "session_unit_identity",
+      "uses_session_unit_identity": true,
+      "uses_unit_residual_correction": false,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 1,
+      "adaptation_epochs": [
+        2
+      ],
+      "residual_adaptation_epochs": [
+        2
+      ],
+      "evaluation_epochs": [
+        4,
+        6
+      ],
+      "train_count": 1563,
+      "test_count": 23,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 14,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 14,
+      "evaluation_unit_count": 13,
+      "shared_unit_count": 13,
+      "shared_unit_fraction": 1.0,
+      "evaluation_rows_on_seen_units": 23,
+      "evaluation_row_seen_unit_fraction": 1.0,
+      "mae": 0.4399623216223267,
+      "rmse": 0.6107125472874125
+    },
+    {
+      "held_out_session": 2,
+      "model_variant": "baseline_plus_unit_residual",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": true,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 1,
+      "adaptation_epochs": [
+        2
+      ],
+      "residual_adaptation_epochs": [
+        2
+      ],
+      "evaluation_epochs": [
+        4,
+        6
+      ],
+      "train_count": 1563,
+      "test_count": 23,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 14,
+      "corrected_evaluation_row_count": 23,
+      "adaptation_unit_count": 14,
+      "evaluation_unit_count": 13,
+      "shared_unit_count": 13,
+      "shared_unit_fraction": 1.0,
+      "evaluation_rows_on_seen_units": 23,
+      "evaluation_row_seen_unit_fraction": 1.0,
+      "mae": 0.27033188656034257,
+      "rmse": 0.4537568219405814
+    },
+    {
+      "held_out_session": 2,
+      "model_variant": "baseline_plus_latest_unit_residual",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": true,
+      "uses_latest_unit_residual_only": true,
+      "adaptation_epoch_count": 1,
+      "adaptation_epochs": [
+        2
+      ],
+      "residual_adaptation_epochs": [
+        2
+      ],
+      "evaluation_epochs": [
+        4,
+        6
+      ],
+      "train_count": 1563,
+      "test_count": 23,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 14,
+      "corrected_evaluation_row_count": 23,
+      "adaptation_unit_count": 14,
+      "evaluation_unit_count": 13,
+      "shared_unit_count": 13,
+      "shared_unit_fraction": 1.0,
+      "evaluation_rows_on_seen_units": 23,
+      "evaluation_row_seen_unit_fraction": 1.0,
+      "mae": 0.27033188656034257,
+      "rmse": 0.4537568219405814
+    },
+    {
+      "held_out_session": 2,
+      "model_variant": "baseline",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": false,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 2,
+      "adaptation_epochs": [
+        2,
+        4
+      ],
+      "residual_adaptation_epochs": [
+        2,
+        4
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1575,
+      "test_count": 11,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 14,
+      "evaluation_unit_count": 11,
+      "shared_unit_count": 11,
+      "shared_unit_fraction": 1.0,
+      "evaluation_rows_on_seen_units": 11,
+      "evaluation_row_seen_unit_fraction": 1.0,
+      "mae": 0.469080688120774,
+      "rmse": 0.6226123640627317
+    },
+    {
+      "held_out_session": 2,
+      "model_variant": "session_unit_identity",
+      "uses_session_unit_identity": true,
+      "uses_unit_residual_correction": false,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 2,
+      "adaptation_epochs": [
+        2,
+        4
+      ],
+      "residual_adaptation_epochs": [
+        2,
+        4
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1575,
+      "test_count": 11,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 14,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 0,
+      "corrected_evaluation_row_count": 0,
+      "adaptation_unit_count": 14,
+      "evaluation_unit_count": 11,
+      "shared_unit_count": 11,
+      "shared_unit_fraction": 1.0,
+      "evaluation_rows_on_seen_units": 11,
+      "evaluation_row_seen_unit_fraction": 1.0,
+      "mae": 0.527964652777629,
+      "rmse": 0.6937875993210333
+    },
+    {
+      "held_out_session": 2,
+      "model_variant": "baseline_plus_unit_residual",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": true,
+      "uses_latest_unit_residual_only": false,
+      "adaptation_epoch_count": 2,
+      "adaptation_epochs": [
+        2,
+        4
+      ],
+      "residual_adaptation_epochs": [
+        2,
+        4
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1575,
+      "test_count": 11,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 14,
+      "corrected_evaluation_row_count": 11,
+      "adaptation_unit_count": 14,
+      "evaluation_unit_count": 11,
+      "shared_unit_count": 11,
+      "shared_unit_fraction": 1.0,
+      "evaluation_rows_on_seen_units": 11,
+      "evaluation_row_seen_unit_fraction": 1.0,
+      "mae": 0.395875793157505,
+      "rmse": 0.5986902842436672
+    },
+    {
+      "held_out_session": 2,
+      "model_variant": "baseline_plus_latest_unit_residual",
+      "uses_session_unit_identity": false,
+      "uses_unit_residual_correction": true,
+      "uses_latest_unit_residual_only": true,
+      "adaptation_epoch_count": 2,
+      "adaptation_epochs": [
+        2,
+        4
+      ],
+      "residual_adaptation_epochs": [
+        4
+      ],
+      "evaluation_epochs": [
+        6
+      ],
+      "train_count": 1575,
+      "test_count": 11,
+      "dropped_train_count": 0,
+      "dropped_test_count": 0,
+      "session_unit_feature_count": 0,
+      "unit_residual_shrinkage": 0.0,
+      "unit_residual_offset_count": 12,
+      "corrected_evaluation_row_count": 10,
+      "adaptation_unit_count": 14,
+      "evaluation_unit_count": 11,
+      "shared_unit_count": 11,
+      "shared_unit_fraction": 1.0,
+      "evaluation_rows_on_seen_units": 11,
+      "evaluation_row_seen_unit_fraction": 1.0,
+      "mae": 0.40551766434154773,
+      "rmse": 0.5942944542020155
+    }
+  ]
+}
